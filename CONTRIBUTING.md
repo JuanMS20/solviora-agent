@@ -121,7 +121,11 @@ solviora-agent/
 ├── model_tools.py            # Tool orchestration (thin layer over tools/registry.py)
 ├── toolsets.py               # Tool groupings and presets (solviora-cli, solviora-telegram, etc.)
 ├── solviora_state.py         # SQLite session database with FTS5 full-text search, session titles
-├── hermes_state.py           # DEPRECATED — backward-compat shim
+├── solviora_logging.py       # Centralized logging setup (agent.log / errors.log / gateway.log)
+├── solviora_time.py          # Timezone-aware clock helper
+├── hermes_state.py           # DEPRECATED — backward-compat shim (Phase 3B)
+├── hermes_logging.py         # DEPRECATED — backward-compat shim (Phase 3B)
+├── hermes_time.py            # DEPRECATED — backward-compat shim (Phase 3B)
 ├── batch_runner.py           # Parallel batch processing for trajectory generation
 │
 ├── agent/                    # Agent internals (extracted modules)
@@ -223,7 +227,7 @@ User message → AIAgent._run_agent_loop()
 
 - **Self-registering tools**: Each tool file calls `registry.register()` at import time. `model_tools.py` triggers discovery by importing all tool modules.
 - **Toolset grouping**: Tools are grouped into toolsets (`web`, `terminal`, `file`, `browser`, etc.) that can be enabled/disabled per platform.
-- **Session persistence**: All conversations are stored in SQLite (`hermes_state.py`) with full-text search and unique session titles. JSON logs go to `~/.solviora/sessions/`.
+- **Session persistence**: All conversations are stored in SQLite (`solviora_state.py`) with full-text search and unique session titles. JSON logs go to `~/.solviora/sessions/`.
 - **Ephemeral injection**: System prompts and prefill messages are injected at API call time, never persisted to the database or logs.
 - **Provider abstraction**: The agent works with any OpenAI-compatible API. Provider resolution happens at init time (Nous Portal OAuth, OpenRouter API key, or custom endpoint).
 - **Provider routing**: When using OpenRouter, `provider_routing` in config.yaml controls provider selection (sort by throughput/latency/price, allow/ignore specific providers, data retention policies). These are injected as `extra_body.provider` in API requests.

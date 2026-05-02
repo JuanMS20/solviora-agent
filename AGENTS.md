@@ -26,9 +26,12 @@ solviora-agent/
 ├── toolsets.py           # Toolset definitions, _HERMES_CORE_TOOLS list
 ├── cli.py                # SolvioraCLI class — interactive CLI orchestrator (~11k LOC)
 ├── solviora_cli/         # Canonical CLI package. New imports go here.
-├── hermes_state.py       # SessionDB — SQLite session store (FTS5 search)
+├── solviora_state.py     # SessionDB — SQLite session store (FTS5 search)
+├── solviora_logging.py   # setup_logging() — agent.log / errors.log / gateway.log
+├── solviora_time.py      # Timezone-aware clock helper
+├── hermes_state.py       # DEPRECATED — backward-compat shim (Phase 3B)
 ├── hermes_constants.py   # get_hermes_home(), display_hermes_home() — profile-aware paths
-├── hermes_logging.py     # setup_logging() — agent.log / errors.log / gateway.log (profile-aware)
+├── hermes_logging.py     # DEPRECATED — backward-compat shim (Phase 3B)
 ├── batch_runner.py       # Parallel batch processing
 ├── agent/                # Agent internals (provider adapters, memory, caching, compression, etc.)
 ├── hermes_cli/           # DEPRECATED — dual-tree compat (Phase 3A.1)
