@@ -318,6 +318,20 @@ a:hover {
   font-family: var(--solv-font-display);
 }
 
+/* ── Mobile sidebar fix ────────────────────────────── */
+/* Docusaurus CSS modules scope visibility/opacity with hashed class names,
+   making plain class selectors insufficient.  Force the show state via the
+   global class. */
+.navbar-sidebar--show .navbar-sidebar {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.navbar-sidebar {
+  z-index: var(--ifm-z-index-fixed, 100);
+}
+
 .navbar__item--languages {
   font-size: 1rem;
 }
