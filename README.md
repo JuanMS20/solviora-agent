@@ -95,3 +95,4 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 MIT — see [LICENSE](LICENSE).
 
 This project includes code originally developed by Nous Research (Hermes Agent), also under the MIT License. See [NOTICE](NOTICE) for details.
+
