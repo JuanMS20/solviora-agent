@@ -1,0 +1,81 @@
+---
+slug: /learning-path
+title: Ruta de aprendizaje
+description: Orden de lectura recomendado según tu perfil — usuarios nuevos, avanzados, automatización y contribuidores.
+---
+
+# Ruta de aprendizaje
+
+Elige la ruta que coincida con cómo planeas usar Solviora.
+
+## Usuario nuevo
+
+Acabas de instalar Solviora y quieres empezar a chatear.
+
+1. **[Inicio rápido](./quickstart)** — instala, configura tu API key y envía tu primer mensaje.
+2. **[Conceptos básicos del CLI](./cli-basics)** — prompt interactivo, comandos slash, entrada multilínea, sesiones.
+3. **[Configuración](./configuration)** — estructura de `config.yaml`, `.env` para secretos, ajustes de pantalla y terminal.
+4. **[Proveedores](./providers)** — cambia entre OpenAI, Anthropic, Google y otros.
+5. **[Herramientas](./tools)** — qué son las herramientas integradas y cómo habilitarlas/deshabilitarlas.
+6. **[Sesiones](./sessions)** — reanuda conversaciones, busca en el historial y gestiona datos de sesión.
+
+**Resultado:** puedes chatear, cambiar modelos, usar herramientas y reanudar conversaciones pasadas.
+
+## Usuario avanzado
+
+Usas Solviora a diario y quieres aprovecharlo más.
+
+1. Todo en la ruta de **Usuario nuevo**, más:
+2. **[Perfiles](./profiles)** — instancias aisladas para trabajo, personal y experimentos.
+3. **[TUI](./tui)** — la interfaz de terminal moderna con ratón, overlays e integración con editores.
+4. **[Skills](./skills)** — instala y gestiona paquetes de skills para flujos especializados.
+5. **[Comandos CLI](./cli-commands)** — referencia completa de comandos slash.
+6. **[Referencia de configuración](./configuration-reference)** — cada clave de config y su valor por defecto.
+7. **[Seguridad](./security)** — flujos de aprobación, modo YOLO y valores seguros por defecto.
+
+**Resultado:** manejas múltiples perfiles, usas la TUI y has ajustado la configuración a tu flujo.
+
+## Automatización y mensajería
+
+Quieres ejecutar Solviora como bot en Telegram, Discord, Slack u otra plataforma.
+
+1. **[Inicio rápido](./quickstart)** — instalación básica y API key.
+2. **[Configuración](./configuration)** — ajustes del gateway, `terminal.cwd` y configuración de plataformas.
+3. **[Proveedores](./providers)** — selección de modelos para cargas automatizadas.
+4. **[Seguridad](./security)** — flujos de aprobación para operación desatendida.
+5. **[Sesiones](./sessions)** — cómo se almacenan y buscan las sesiones del gateway.
+
+:::note
+La configuración de plataformas de mensajería se cubre en la documentación de cada adaptador. Este sitio se enfoca en el CLI y el motor central.
+:::
+
+## Contribuidor
+
+Quieres contribuir con código o documentación.
+
+1. **[Inicio rápido](./quickstart)** — verifica que tu instalación de desarrollo funciona.
+2. **[Configuración](./configuration)** — entiende el sistema de config antes de modificarlo.
+3. **[Herramientas](./tools)** — el registro de herramientas y cómo se descubren.
+4. **[Skills](./skills)** — convenciones de empaquetado de skills.
+5. **[Ejemplos](./examples)** — patrones de uso real que los tests deberían cubrir.
+6. **[Solución de problemas](./troubleshooting)** — problemas comunes y sus soluciones.
+
+**Resultado:** puedes añadir herramientas, skills o docs que sigan los patrones existentes.
+
+## Referencia rápida: qué leer
+
+| Tema | Página | Cuándo leer |
+|------|--------|-------------|
+| Instalar y primer chat | [Inicio rápido](./quickstart) | Día 1 |
+| Prompt interactivo | [Conceptos básicos del CLI](./cli-basics) | Día 1 |
+| Ajustes y claves | [Configuración](./configuration) | Día 1 |
+| Proveedores de modelos | [Proveedores](./providers) | Al cambiar modelos |
+| Capacidades integradas | [Herramientas](./tools) | Al personalizar herramientas |
+| Paquetes de skills | [Skills](./skills) | Al extender comportamiento |
+| Historial de sesiones | [Sesiones](./sessions) | Al reanudar trabajo |
+| Instancias aisladas | [Perfiles](./profiles) | Al manejar contextos |
+| Interfaz de terminal moderna | [TUI](./tui) | Cuando quieres una UI más rica |
+| Seguridad y aprobaciones | [Seguridad](./security) | Antes del modo YOLO |
+| Lista completa de comandos | [Comandos CLI](./cli-commands) | Según necesidad |
+| Todas las claves de config | [Referencia de configuración](./configuration-reference) | Según necesidad |
+| Patrones del mundo real | [Ejemplos](./examples) | Cuando buscas ideas |

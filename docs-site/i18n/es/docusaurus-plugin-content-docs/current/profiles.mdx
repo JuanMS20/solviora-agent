@@ -1,0 +1,164 @@
+---
+slug: /profiles
+title: Perfiles
+description: Ejecuta múltiples instancias aisladas de Solviora con configuraciones, sesiones y skills independientes.
+---
+
+# Perfiles
+
+Los perfiles te permiten ejecutar múltiples instancias completamente aisladas de Solviora en la misma máquina. Cada perfil tiene su propio `config.yaml`, `.env`, sesiones, skills, memorias, estado del gateway y logs.
+
+## Por qué usar perfiles
+
+Usa perfiles cuando necesites:
+
+- **Separar trabajo y personal** — diferentes API keys, modelos y skills.
+- **Probar de forma segura** — experimenta con cambios de config sin afectar tu uso diario.
+- **Ejecutar agentes en paralelo** — cada perfil tiene su propio gateway, cron y base de datos de sesiones.
+- **Aislar proyectos** — diferentes `terminal.cwd` por defecto, configs de herramientas y memoria.
+
+## Cómo funcionan los perfiles
+
+Cada perfil con nombre vive en `~/.solviora/profiles/<nombre>/`. El perfil por defecto es `~/.solviora` — no requiere migración.
+
+```
+~/.solviora/                    # perfil por defecto (compatible hacia atrás)
+  config.yaml
+  .env
+  state.db
+  sessions/
+  skills/
+  logs/
+
+~/.solviora/profiles/work/      # perfil con nombre "work"
+  config.yaml
+  .env
+  state.db
+  sessions/
+  skills/
+  logs/
+```
+
+Cuando un perfil está activo, cada búsqueda de ruta (`get_hermes_home()`, `get_config_path()`, etc.) resuelve al directorio del perfil. Los datos nunca se cruzan entre perfiles.
+
+## Gestión de perfiles
+
+### Crear un perfil
+
+```bash
+solviora profile create work
+```
+
+Esto crea `~/.solviora/profiles/work/` con una config nueva, skills vacíos y sin API keys.
+
+### Clonar un perfil existente
+
+```bash
+solviora profile create work --clone        # copia config, .env, SOUL.md, memorias
+solviora profile create work --clone-all    # copia completa (sesiones, skills, caches)
+```
+
+`--clone` copia archivos de identidad (config, `.env`, `SOUL.md`, `memories/`). `--clone-all` copia todo excepto el estado en tiempo de ejecución (gateway PID, lista de procesos).
+
+### Cambiar a un perfil
+
+Dos formas:
+
+```bash
+# 1. Flag por invocación
+solviora -p work
+solviora --profile work
+
+# 2. Valor fijo (persiste entre invocaciones)
+solviora profile use work
+```
+
+Después de `profile use`, ejecutar `solviora` sin `-p` usa automáticamente el perfil `work`. Limpia el valor fijo con:
+
+```bash
+solviora profile use default
+```
+
+### Listar perfiles
+
+```bash
+solviora profile list
+```
+
+### Eliminar un perfil
+
+```bash
+solviora profile delete work
+```
+
+Elimina el directorio del perfil, su alias wrapper y cualquier servicio del sistema registrado.
+
+### Verificar el perfil activo
+
+Dentro de una sesión interactiva:
+
+```
+/profile
+```
+
+Muestra el nombre del perfil y su directorio home.
+
+## Reglas de nombres de perfil
+
+- Alfanuméricos en minúscula, guiones y guiones bajos.
+- Debe empezar con una letra o dígito.
+- Máximo 64 caracteres.
+- Los nombres reservados (`hermes`, `default`, `test`, `tmp`, `root`, `sudo`) están bloqueados.
+- Los subcomandos de Solviora (`chat`, `gateway`, `setup`, etc.) no pueden usarse como nombres de perfil.
+
+## Cómo los perfiles interactúan con la configuración
+
+Cada perfil lee su propio `config.yaml` y `.env`. Ver [Configuración](./configuration) para la estructura de archivos.
+
+Cuando ejecutas `solviora -p work`, el perfil se aplica **antes** de cualquier importación de módulos. Esto significa:
+
+- `SOLVIORA_HOME` (o `HERMES_HOME`) se establece al directorio del perfil.
+- Todas las rutas — config, base de datos de estado, sesiones, skills, logs — resuelven dentro del perfil.
+- El wizard de setup se ejecuta contra la config del perfil si no existe aún.
+
+## Resolución de variables de entorno
+
+Solviora prefiere `SOLVIORA_HOME` sobre el legado `HERMES_HOME`:
+
+| Variable | Prioridad |
+|----------|-----------|
+| `SOLVIORA_HOME` | Más alta (preferida) |
+| `HERMES_HOME` | Respaldo (legado, emite aviso de deprecación) |
+| `~/.solviora` | Por defecto cuando ninguna está configurada |
+
+El flag `-p` / `--profile` sobreescribe ambas calculando la ruta del perfil y configurando la variable de entorno internamente.
+
+## Aislamiento de subprocesos
+
+Los perfiles con nombre pueden crear un subdirectorio `home/` dentro de la raíz del perfil. Cuando está presente, Solviora establece `HOME` a ese directorio para subprocesos (git, ssh, npm, etc.). Esto evita que las configs de herramientas del sistema se filtren entre perfiles.
+
+Esto es automático — no necesitas configuración. Solo crea `~/.solviora/profiles/<nombre>/home/` si quieres aislamiento de subprocesos.
+
+## Qué posee cada perfil
+
+| Componente | Ubicación | ¿Aislado? |
+|-------------|-----------|-----------|
+| `config.yaml` | Raíz del perfil | Sí |
+| `.env` (API keys) | Raíz del perfil | Sí |
+| Base de datos de sesiones | `state.db` en la raíz del perfil | Sí |
+| Directorio de sesiones | `sessions/` en la raíz del perfil | Sí |
+| Skills | `skills/` en la raíz del perfil | Sí |
+| Skills opcionales | `optional-skills/` en la raíz del perfil | Sí |
+| Memorias | `memories/` en la raíz del perfil | Sí |
+| Logs | `logs/` en la raíz del perfil | Sí |
+| Estado del gateway | `gateway.pid`, `gateway_state.json` | Sí |
+| Trabajos cron | `cron/` en la raíz del perfil | Sí |
+| Historial de input | `.hermes_history` en la raíz del perfil | Sí |
+| Skins | `skins/` en la raíz del perfil | Sí |
+
+## Relacionado
+
+- [Configuración](./configuration) — estructura de config.yaml y .env
+- [Sesiones](./sessions) — almacenamiento y reanudación de sesiones
+- [Seguridad](./security) — flujos de aprobación por perfil
+- [Comandos CLI](./cli-commands) — referencia del comando `/profile`

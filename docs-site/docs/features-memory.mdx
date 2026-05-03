@@ -1,0 +1,41 @@
+---
+title: Memory System
+description: Persistent memory that grows across sessions.
+---
+
+# Memory System
+
+Solviora's memory system persists knowledge across conversations. The agent stores, retrieves, and summarizes information automatically, building a growing knowledge base as it interacts with you.
+
+## How Memory Works
+
+Memory operates in two layers:
+
+1. **Working memory** — active context within the current conversation
+2. **Persistent memory** — stored across sessions, searchable via FTS5 with LLM summarization
+
+The agent periodically commits important information to persistent memory, ensuring that lessons learned and context gathered in one session are available in future ones.
+
+## Commands
+
+```bash
+/memory              # Show memory status
+/memory search <q>   # Search past memories
+/memory forget       # Clear current session memory context
+```
+
+## Configuration
+
+Memory storage is local by default under `~/.solviora/memories/`. External memory providers (Honcho, Mem0, Supermemory, etc.) are available as plugins.
+
+```yaml
+# ~/.solviora/config.yaml
+memory:
+  provider: built-in    # or honcho, mem0, supermemory, etc.
+  auto_summarize: true  # automatically summarize long sessions
+  nudge_frequency: 5    # prompt agent to persist every N turns
+```
+
+## External Providers
+
+See the [Plugins](/docs/features-plugins) documentation for configuring alternative memory backends.

@@ -5,7 +5,7 @@ without risk of circular imports.
 
 Environment variable transition:
   SOLVIORA_HOME is preferred.  Falls back to HERMES_HOME for compatibility
-  with existing deployments migrated from Hermes Agent.
+  with existing deployments migrated from Solviora Agent.
 
 Env var helper API (Phase 3C):
   Use ``resolve_env_str`` / ``resolve_env_bool`` / ``resolve_env_int`` /

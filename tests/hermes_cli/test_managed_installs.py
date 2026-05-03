@@ -20,7 +20,7 @@ def test_get_managed_system_homebrew(monkeypatch):
 def test_format_managed_message_homebrew(monkeypatch):
     monkeypatch.setenv("HERMES_MANAGED", "homebrew")
 
-    message = format_managed_message("update Hermes Agent")
+    message = format_managed_message("update Solviora Agent")
 
     assert "managed by Homebrew" in message
     assert "brew upgrade hermes-agent" in message
@@ -29,7 +29,7 @@ def test_format_managed_message_homebrew(monkeypatch):
 def test_recommended_update_command_defaults_to_hermes_update(monkeypatch):
     monkeypatch.delenv("HERMES_MANAGED", raising=False)
 
-    assert recommended_update_command() == "hermes update"
+    assert recommended_update_command() == "solviora update"
 
 
 def test_cmd_update_blocks_managed_homebrew(monkeypatch, capsys):

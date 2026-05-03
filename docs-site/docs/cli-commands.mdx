@@ -6,6 +6,10 @@ description: Full list of solviora CLI commands, flags, and subcommands.
 
 # CLI Commands Reference
 
+:::tip See also
+For CLI usage walkthrough, see [CLI Basics](./cli-basics). For config command details, see [Configuration](./configuration). For the `--yolo` flag and security, see [Security](./security).
+:::
+
 ## `solviora`
 
 Start the interactive agent session.
@@ -14,49 +18,392 @@ Start the interactive agent session.
 solviora [options] [prompt]
 ```
 
-### Options
+### Global options
 
 | Flag | Description |
 |------|-------------|
-| `--model <name>` | Model to use (e.g. `gpt-4o`, `claude-sonnet-4-20250514`) |
+| `-z, --oneshot <prompt>` | One-shot mode: send prompt, print response text, exit. Tools and memory are loaded, approvals auto-bypassed. |
+| `-m, --model <name>` | Model to use (e.g. `gpt-4o`, `claude-sonnet-4-20250514`) |
 | `--provider <name>` | Provider (e.g. `openai`, `anthropic`, `ollama`) |
-| `--base-url <url>` | Custom API base URL |
-| `--api-key <key>` | API key (overrides env var) |
-| `-p, --profile <name>` | Use a named profile |
-| `--resume` | Resume last session |
-| `--quiet` | Suppress tool output |
-| `--no-tools` | Disable all tools for this session |
-| `--enabled-toolsets <list>` | Comma-separated toolsets to enable |
-| `--disabled-toolsets <list>` | Comma-separated toolsets to disable |
-| `--max-iterations <n>` | Max tool-calling iterations (default: 90) |
-| `--save-trajectories` | Save conversation trajectories |
-| `--tui` | Launch the TUI (terminal UI) instead of classic CLI |
-| `--version` | Print version and exit |
+| `-t, --toolsets <list>` | Comma-separated toolsets to enable |
+| `-s, --skills <name>` | Preload a skill for the session (repeat flag) |
+| `-r, --resume <session>` | Resume a previous session by ID or title |
+| `-c, --continue [name]` | Resume a session by name, or the most recent if no name given |
+| `-w, --worktree` | Run in isolated git worktree (for parallel agents) |
+| `--yolo` | Bypass all dangerous command approval prompts |
+| `--tui` | Launch the modern TUI instead of classic REPL |
+| `--dev` | With `--tui`: run TypeScript sources via tsx (skip dist build) |
+| `--accept-hooks` | Auto-approve shell hooks without TTY prompt |
+| `--pass-session-id` | Include session ID in the system prompt |
+| `--ignore-user-config` | Ignore config.yaml, use built-in defaults |
+| `--ignore-rules` | Skip AGENTS.md, SOUL.md, memory, and preloaded skills |
+| `--version`, `-V` | Print version and exit |
 | `-h, --help` | Show help message |
 
 ### Examples
 
 ```bash
 # One-shot prompt
-solviora "Explain Docker multi-stage builds"
+solviora -z "Explain Docker multi-stage builds"
 
 # Specific model and provider
 solviora --model claude-sonnet-4-20250514 --provider anthropic
 
-# Resume a session
-solviora --resume
+# Resume most recent session
+solviora -c
 
-# Quiet mode — only final response
-solviora --quiet "Summarize this file"
+# Resume a specific session
+solviora -r abc123
+
+# YOLO mode — skip approvals
+solviora --yolo
+
+# TUI mode
+solviora --tui
 ```
+
+---
+
+## `solviora chat`
+
+Start an interactive chat session (default).
+
+```bash
+solviora chat [options]
+```
+
+| Flag | Description |
+|------|-------------|
+| `-q, --query <text>` | Single query (non-interactive mode) |
+| `--image <path>` | Attach a local image to a single query |
+| `-m, --model <name>` | Model override |
+| `--provider <name>` | Provider override |
+| `-t, --toolsets <list>` | Comma-separated toolsets to enable |
+| `-s, --skills <name>` | Preload a skill (repeat flag) |
+| `-v, --verbose` | Verbose output |
+| `-Q, --quiet` | Suppress banner, spinner, tool previews |
+| `-r, --resume <id>` | Resume a session by ID |
+| `-c, --continue [name]` | Resume by name, or most recent |
+| `-w, --worktree` | Isolated git worktree |
+| `--checkpoints` | Enable filesystem checkpoints before destructive ops |
+| `--max-turns <n>` | Max tool-calling iterations per turn (default: 90) |
+| `--source <tag>` | Session source tag (default: `cli`) |
+| `--yolo` | Bypass approval prompts |
+| `--tui` | Launch TUI |
+| `--pass-session-id` | Include session ID in system prompt |
+| `--ignore-user-config` | Ignore config.yaml |
+| `--ignore-rules` | Skip rules files |
+| `--accept-hooks` | Auto-approve shell hooks |
+
+---
 
 ## `solviora setup`
 
-Run the first-time setup wizard.
+Run the interactive setup wizard.
 
 ```bash
-solviora setup
+solviora setup                    # Full wizard
+solviora setup model              # Model/provider only
+solviora setup tts                # TTS configuration
+solviora setup terminal           # Terminal backend
+solviora setup gateway            # Messaging gateway
+solviora setup tools              # Tool configuration
+solviora setup agent              # Agent settings
 ```
+
+| Flag | Description |
+|------|-------------|
+| `--non-interactive` | Use defaults/env vars (no prompts) |
+| `--reset` | Reset config to defaults |
+| `--quick` | Only prompt for missing/unset items |
+
+---
+
+## `solviora model`
+
+Select inference provider and default model interactively.
+
+```bash
+solviora model
+```
+
+| Flag | Description |
+|------|-------------|
+| `--portal-url <url>` | Portal base URL for OAuth login |
+| `--inference-url <url>` | Inference API base URL |
+| `--client-id <id>` | OAuth client ID |
+| `--scope <scope>` | OAuth scope |
+| `--no-browser` | Skip browser auto-open during OAuth |
+| `--timeout <sec>` | HTTP request timeout (default: 15) |
+| `--ca-bundle <path>` | Custom CA bundle for TLS |
+| `--insecure` | Disable TLS verification (testing only) |
+
+---
+
+## `solviora config`
+
+Manage configuration.
+
+```bash
+solviora config              # View current config
+solviora config edit         # Open config.yaml in editor
+solviora config set KEY VAL  # Set a value (routes to right file automatically)
+solviora config check        # Check for missing options
+solviora config migrate      # Interactively add missing options
+```
+
+---
+
+## `solviora gateway`
+
+Manage the messaging gateway.
+
+```bash
+solviora gateway run          # Run gateway in foreground
+solviora gateway start        # Start background service
+solviora gateway stop         # Stop gateway service
+solviora gateway restart      # Restart gateway service
+solviora gateway status       # Show gateway status
+solviora gateway install      # Install as systemd/launchd service
+solviora gateway uninstall    # Remove service
+solviora gateway setup        # Configure messaging platforms
+```
+
+Gateway subcommand flags:
+| Flag | Description |
+|------|-------------|
+| `--replace` | Replace existing gateway instance |
+| `--system` | Target system-level (not user-level) service |
+| `--all` | Operate on all profiles |
+| `--deep` | Deep status check |
+| `-v, -vv` | Increase verbosity |
+| `-q, --quiet` | Suppress log output |
+
+---
+
+## `solviora cron`
+
+Manage scheduled jobs.
+
+```bash
+solviora cron list                           # List jobs
+solviora cron create <schedule> [prompt]      # Create a job
+solviora cron edit <job-id>                   # Edit an existing job
+solviora cron pause <job-id>                  # Pause a job
+solviora cron resume <job-id>                 # Resume a job
+solviora cron run <job-id>                    # Trigger immediate run
+solviora cron remove <job-id>                 # Delete a job
+solviora cron status                          # Check if scheduler is running
+solviora cron tick                            # Run due jobs once and exit
+```
+
+`cron create` flags:
+| Flag | Description |
+|------|-------------|
+| `--name <name>` | Human-friendly job name |
+| `--deliver <target>` | Delivery target (`origin`, `telegram`, `discord`, etc.) |
+| `--repeat <n>` | Repeat count |
+| `--skill <name>` | Attach a skill (repeat flag) |
+| `--script <path>` | Python script whose stdout injects into the prompt |
+| `--workdir <path>` | Working directory (injects context files) |
+
+---
+
+## `solviora doctor`
+
+Diagnose configuration and dependency issues.
+
+```bash
+solviora doctor
+solviora doctor --fix   # Attempt auto-fix
+```
+
+---
+
+## `solviora status`
+
+Show status of all components.
+
+```bash
+solviora status
+solviora status --all    # Show all details (redacted for sharing)
+solviora status --deep   # Run deep checks
+```
+
+---
+
+## `solviora auth`
+
+Manage pooled provider credentials.
+
+```bash
+solviora auth add <provider>       # Add a pooled credential
+solviora auth list [provider]       # List pooled credentials
+solviora auth remove <provider> <id> # Remove a credential
+solviora auth reset <provider>      # Clear exhaustion status
+solviora auth status <provider>     # Show auth status
+solviora auth logout <provider>     # Log out and clear auth state
+```
+
+`auth add` flags:
+| Flag | Description |
+|------|-------------|
+| `--type <type>` | Credential type (`oauth`, `api-key`) |
+| `--label <text>` | Optional display label |
+| `--api-key <key>` | API key value |
+| `--no-browser` | Skip browser auto-open for OAuth |
+
+---
+
+## `solviora login` / `solviora logout`
+
+Authenticate or de-authenticate inference providers.
+
+```bash
+solviora login   # Log into an inference provider
+solviora logout  # Clear stored credentials
+solviora logout --provider nous
+solviora logout --provider openai-codex
+```
+
+---
+
+## `solviora fallback`
+
+Manage fallback provider chain.
+
+```bash
+solviora fallback list     # Show current fallback chain
+solviora fallback add      # Add a provider+model to the chain
+solviora fallback remove   # Remove an entry
+solviora fallback clear    # Clear all fallback entries
+```
+
+---
+
+## `solviora webhook`
+
+Manage dynamic webhook subscriptions for event-driven agent activation.
+
+```bash
+solviora webhook subscribe <name>   # Create a webhook subscription
+solviora webhook list               # List subscriptions
+solviora webhook remove <name>      # Remove a subscription
+solviora webhook test <name>        # Send a test POST
+```
+
+---
+
+## `solviora hooks`
+
+Inspect and manage shell-script hooks.
+
+```bash
+solviora hooks list          # List configured hooks
+solviora hooks test <event>  # Fire hooks against a synthetic payload
+solviora hooks revoke <cmd>  # Remove allowlist entries for a command
+solviora hooks doctor        # Check hook health
+```
+
+---
+
+## `solviora skills`
+
+Manage skills.
+
+```bash
+solviora skills list              # List installed skills
+solviora skills browse            # Browse hub skills
+solviora skills search <query>    # Search skills
+solviora skills inspect <skill>   # Preview before install
+solviora skills install <skill>   # Install a skill
+solviora skills remove <skill>    # Remove a skill
+solviora skills update            # Update hub skills
+solviora skills check             # Check for upstream updates
+```
+
+---
+
+## `solviora slack`
+
+Slack integration helpers.
+
+```bash
+solviora slack manifest  # Print Slack app manifest with all commands
+```
+
+---
+
+## `solviora whatsapp`
+
+Set up WhatsApp integration (pair via QR code).
+
+```bash
+solviora whatsapp
+```
+
+---
+
+## `solviora pairing`
+
+Manage DM pairing codes for gateway authorization.
+
+```bash
+solviora pairing list                  # List pending and approved users
+solviora pairing approve <platform> <code>  # Approve a pairing code
+solviora pairing revoke <platform> <id>     # Revoke a user's access
+solviora pairing clear-pending            # Clear all pending codes
+```
+
+---
+
+## `solviora kanban`
+
+Multi-agent task coordination board.
+
+```bash
+solviora kanban <subcommand> [options]
+```
+
+---
+
+## `solviora sessions`
+
+Manage conversation sessions.
+
+```bash
+solviora sessions list        # List sessions
+solviora sessions search <q>  # Full-text search across sessions
+```
+
+---
+
+## `solviora dump`
+
+Output a setup summary for support/debugging.
+
+```bash
+solviora dump
+solviora dump --show-keys  # Show redacted API key prefixes
+```
+
+---
+
+## `solviora debug`
+
+Debug tools — upload logs and system info.
+
+```bash
+solviora debug share          # Upload debug report and print URL
+solviora debug delete <url>   # Delete a previously uploaded paste
+```
+
+`debug share` flags:
+| Flag | Description |
+|------|-------------|
+| `--lines <n>` | Include more log lines |
+| `--expire <days>` | Paste expiry |
+| `--local` | Print report locally (no upload) |
 
 Walks through: provider selection → API key entry → tool selection → config generation.
 
@@ -68,7 +415,7 @@ Start the messaging gateway for Telegram, Discord, Slack, etc.
 solviora gateway [options]
 ```
 
-See the [Gateway documentation](https://github.com/solviora/solviora-agent/tree/main/gateway) for platform-specific setup.
+See the [Gateway documentation](https://github.com/JuanMS20/solviora-agent/tree/main/gateway) for platform-specific setup.
 
 ## `solviora cron`
 

@@ -19,19 +19,39 @@ When you ask Solviora a question that requires external action (e.g., "read this
 
 This happens automatically — you just ask naturally.
 
-## Toolsets
+## Tool discovery
 
-Tools are organized into **toolsets** — logical groups you can enable or disable:
+Tools are auto-discovered at import time. Every Python file in the Solviora tools directory that calls `registry.register()` is loaded automatically — no manual import list to maintain. Each tool returns a JSON string result that feeds back into the agent's reasoning loop.
 
-| Toolset | Description |
-|---------|-------------|
-| `core` | File I/O, shell execution, environment management |
-| `web` | Web search, scraping, page fetching |
-| `code` | Code execution in sandboxed environments |
-| `memory` | Long-term memory read/write |
-| `terminal` | Terminal session management (local, Docker, SSH) |
-| `cron` | Scheduled jobs and recurring tasks |
-| `image` | Image generation and analysis |
+The agent decides which tool to use, calls it with the right arguments, feeds the result back into the conversation, and continues reasoning. This happens automatically — you just ask naturally.
+
+## Available toolsets
+
+Tools are organized into **toolsets** — logical groups you can enable or disable per platform:
+
+| Toolset | Tools | Description |
+|---------|-------|-------------|
+| `file` | read_file, write_file, patch, search_files | File I/O and content search |
+| `terminal` | terminal, process | Shell command execution and process management |
+| `web` | web_search, web_extract | Web research and content extraction |
+| `browser` | browser_navigate, browser_click, browser_type, browser_snapshot, etc. | Browser automation (12 tools) |
+| `code_execution` | execute_code | Python sandbox with tool RPC access |
+| `skills` | skills_list, skill_view, skill_manage | On-demand skill documents |
+| `memory` | memory | Persistent cross-session memory |
+| `session_search` | session_search | FTS5 full-text session recall |
+| `cronjob` | cronjob | Natural-language scheduled tasks |
+| `delegation` | delegate_task | Spawn isolated subagents |
+| `messaging` | send_message | Cross-platform message sending |
+| `vision` | vision_analyze | Image analysis |
+| `image_gen` | image_generate | Image generation |
+| `tts` | text_to_speech | Text-to-speech (Edge, ElevenLabs, OpenAI) |
+| `todo` | todo | Task planning and tracking |
+| `clarify` | clarify | Ask clarifying questions |
+| `moa` | mixture_of_agents | Advanced multi-model reasoning |
+| `homeassistant` | ha_list_entities, ha_get_state, etc. | Smart home control |
+| `kanban` | kanban_show, kanban_complete, etc. | Multi-agent task coordination |
+| `discord` | discord | Discord read and participate |
+| `discord_admin` | discord_admin | Discord server management |
 
 ## Enable or disable toolsets
 
@@ -39,28 +59,39 @@ Tools are organized into **toolsets** — logical groups you can enable or disab
 
 ```yaml
 enabled_toolsets:
-  - core
+  - file
   - web
-  - code
+  - code_execution
 
 disabled_toolsets:
-  - image
+  - image_gen
 ```
 
 ### At runtime
 
 ```bash
-solviora --enabled-toolsets core,web
-solviora --disabled-toolsets image
+solviora --enabled-toolsets file,web
+solviora --disabled-toolsets image_gen
 ```
+
+## Terminal backends
+
+Commands can execute on different backends based on your security needs:
+
+| Backend | Isolation | Approval checks | Use case |
+|---------|-----------|-----------------|----------|
+| `local` | None — runs on host | ✅ Yes | Development |
+| `docker` | Container (cap-drop, no-new-privs) | ❌ Skipped (container is boundary) | Production gateway |
+| `ssh` | Remote machine | ✅ Yes | Remote server |
+| `modal` | Cloud sandbox | ❌ Skipped | Ephemeral cloud compute |
+| `daytona` | Cloud container | ❌ Skipped | Persistent workspaces |
+| `singularity` | Container (HPC) | ❌ Skipped | Shared clusters |
 
 ## Notable tools
 
-Here are some of the most commonly used tools:
-
 ### `execute_code`
 
-Run Python, JavaScript, or shell commands in a sandboxed environment.
+Run Python scripts that can call tools programmatically — collapses multi-step workflows into a single inference call.
 
 ```
 You › Run a Python script that calculates fibonacci(50)
@@ -68,7 +99,7 @@ You › Run a Python script that calculates fibonacci(50)
 
 ### `web_search`
 
-Search the web using Exa or Firecrawl.
+Search the web using the configured search backend.
 
 ```
 You › Search for the latest Python 3.13 release notes
@@ -76,7 +107,7 @@ You › Search for the latest Python 3.13 release notes
 
 ### `read_file` / `write_file`
 
-Read and write files on your filesystem.
+Read and write files on your filesystem with safety bounds.
 
 ```
 You › Read src/main.py and add type hints
@@ -84,13 +115,13 @@ You › Read src/main.py and add type hints
 
 ### `terminal`
 
-Open a persistent terminal session for multi-step workflows.
+Persistent terminal session for multi-step workflows.
 
 ```
 You › Create a new git branch, make changes, and run the tests
 ```
 
-### `memory_save` / `memory_recall`
+### `memory`
 
 Store and retrieve long-term memories across sessions.
 
@@ -98,17 +129,22 @@ Store and retrieve long-term memories across sessions.
 You › Remember that I prefer dark mode in all my projects
 ```
 
+### `delegate_task`
+
+Spawn an isolated subagent with its own conversation and tools for complex subtasks.
+
+### `cronjob`
+
+Schedule recurring tasks in natural language. Runs unattended through the gateway.
+
 ## Safety
 
-- Tools operate within your `terminal.cwd` directory by default
+- Tools operate within your configured working directory by default
 - File operations are restricted to allowed paths
-- Shell commands require approval based on your safety settings
+- Shell commands are checked against an approval system for dangerous patterns
+- Container backends skip local approval checks (the container is the boundary)
 - Use `--no-tools` to run without any tools
-
-## Extending with plugins
-
-You can add custom tools via the plugin system. See [Skills & Plugins](./skills) for details.
 
 ## Next step
 
-→ [Skills](./skills) — extend Solviora with community and custom skills.
+→ [Skills](./skills) — extend Solviora with community skills and custom plugins.

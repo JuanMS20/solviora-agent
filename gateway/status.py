@@ -137,7 +137,7 @@ def _read_process_cmdline(pid: int) -> Optional[str]:
 
 
 def _looks_like_gateway_process(pid: int) -> bool:
-    """Return True when the live PID still looks like the Hermes gateway."""
+    """Return True when the live PID still looks like the Solviora gateway."""
     cmdline = _read_process_cmdline(pid)
     if not cmdline:
         return False
@@ -145,7 +145,7 @@ def _looks_like_gateway_process(pid: int) -> bool:
     patterns = (
         "hermes_cli.main gateway",
         "hermes_cli/main.py gateway",
-        "hermes gateway",
+        "Solviora gateway",
         "hermes-gateway",
         "gateway/run.py",
     )
@@ -165,7 +165,7 @@ def _record_looks_like_gateway(record: dict[str, Any]) -> bool:
     patterns = (
         "hermes_cli.main gateway",
         "hermes_cli/main.py gateway",
-        "hermes gateway",
+        "Solviora gateway",
         "gateway/run.py",
     )
     return any(pattern in cmdline for pattern in patterns)

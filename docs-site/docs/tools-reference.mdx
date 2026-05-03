@@ -6,9 +6,13 @@ description: Complete reference for built-in tools and their parameters.
 
 # Tools Reference
 
-This page lists all built-in tools organized by toolset. Tools are called automatically by the agent — you don't invoke them directly.
+This page lists all built-in tools organized by toolset. Tools are called automatically by the agent — you don't invoke them directly. Each tool returns a JSON string result that feeds back into the agent's reasoning loop.
 
-## Core (`core`)
+:::tip See also
+For an overview of how tools and toolsets work, see the [Tools guide](./tools). For extending tools via plugins, see [Skills & Plugins](./skills).
+:::
+
+## File (`file`)
 
 ### `read_file`
 
@@ -29,44 +33,25 @@ Write content to a file. Creates the file if it doesn't exist.
 | `path` | string | Yes | File path |
 | `content` | string | Yes | Content to write |
 
-### `execute_code`
+### `patch`
 
-Execute code in a sandboxed environment.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `code` | string | Yes | Code to execute |
-| `language` | string | No | `python`, `javascript`, `bash` |
-| `timeout` | number | No | Max execution time in seconds |
-
-### `list_directory`
-
-List contents of a directory.
+Apply a targeted diff to an existing file. Uses fuzzy matching for resilience.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `path` | string | Yes | Directory path |
-| `recursive` | boolean | No | List recursively |
+| `path` | string | Yes | File path |
+| `old_string` | string | Yes | Exact text to replace |
+| `new_string` | string | Yes | Replacement text |
 
-## Web (`web`)
+### `search_files`
 
-### `web_search`
-
-Search the web using Exa or Firecrawl.
-
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `query` | string | Yes | Search query |
-| `max_results` | number | No | Max results to return |
-
-### `fetch_webpage`
-
-Fetch and extract content from a URL.
+Search file contents across the filesystem.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `url` | string | Yes | URL to fetch |
-| `query` | string | No | Query to focus extraction |
+| `pattern` | string | Yes | Search pattern (glob or text) |
+| `path` | string | No | Directory to search |
+| `regex` | boolean | No | Use regex matching |
 
 ## Terminal (`terminal`)
 
@@ -78,6 +63,244 @@ Execute shell commands in a persistent terminal session.
 |-----------|------|----------|-------------|
 | `command` | string | Yes | Command to run |
 | `background` | boolean | No | Run in background |
+| `timeout` | number | No | Timeout in seconds |
+| `stdin_data` | string | No | Input data for the command |
+| `workdir` | string | No | Working directory override |
+
+### `process`
+
+List, monitor, and manage background processes.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | `list`, `kill`, `wait`, `logs` |
+| `process_id` | string | No | Process ID to act on |
+
+## Web (`web`)
+
+### `web_search`
+
+Search the web using the configured backend.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | string | Yes | Search query |
+| `max_results` | number | No | Max results to return |
+
+### `web_extract`
+
+Extract content from a URL with optional LLM summarization.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | string | Yes | URL to extract |
+| `query` | string | No | Specific question to answer |
+| `max_chars` | number | No | Max characters to extract |
+
+## Browser (`browser`)
+
+14 tools for browser automation:
+
+| Tool | Description |
+|------|-------------|
+| `browser_navigate` | Navigate to a URL |
+| `browser_snapshot` | Get text snapshot of current page |
+| `browser_click` | Click an element (by ref or selector) |
+| `browser_type` | Type text into an element |
+| `browser_scroll` | Scroll the page |
+| `browser_back` | Go back in history |
+| `browser_press` | Press a key combination |
+| `browser_get_images` | Get image URLs from the page |
+| `browser_vision` | Analyze page screenshot with vision |
+| `browser_console` | Read browser console logs |
+| `browser_cdp` | Execute Chrome DevTools Protocol commands |
+| `browser_dialog` | Handle browser dialogs |
+| `browser_supervisor` | Dialog + frame detection supervisor |
+
+Web search is included in the browser toolset for URL finding.
+
+## Code Execution (`code_execution`)
+
+### `execute_code`
+
+Run Python scripts that can call tools programmatically via RPC. Collapses multi-step workflows into a single inference call.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `code` | string | Yes | Code to execute |
+| `language` | string | No | `python`, `javascript`, `bash` |
+| `timeout` | number | No | Max execution time in seconds |
+
+The sandboxed environment has access to the same tool registry as the agent, allowing programmatic tool orchestration.
+
+## Delegation (`delegation`)
+
+### `delegate_task`
+
+Spawn an isolated subagent with its own conversation, tools, and terminal.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `tasks` | array | Yes | List of task descriptions |
+| `message` | string | No | Instructions for the subagent |
+| `toolsets` | array | No | Toolsets to enable for the subagent |
+| `pass_context` | boolean | No | Pass relevant context files |
+
+## Memory (`memory`)
+
+### `memory`
+
+Store and retrieve persistent memories across sessions.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | `save`, `recall`, `search`, `forget` |
+| `content` | string | No | Content to remember |
+| `query` | string | No | Search query for recall |
+| `tags` | array | No | Tags for organization |
+
+## Session Search (`session_search`)
+
+### `session_search`
+
+Full-text search across past conversations with LLM summarization.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | string | Yes | Search query |
+| `max_results` | number | No | Max sessions to return |
+
+## Skills (`skills`)
+
+### `skills_list`
+
+List all available skills with names, descriptions, and categories.
+
+### `skill_view`
+
+View a skill's full content by name.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Skill name |
+| `path` | string | No | Specific file within the skill |
+
+### `skill_manage`
+
+Create, edit, patch, or delete skills.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | `create`, `edit`, `patch`, `delete`, `write_file`, `remove_file` |
+| `name` | string | Yes | Skill name |
+| `content` | string | No | Full SKILL.md content |
+| `old_string` / `new_string` | string | No | For `patch` action |
+
+## Vision (`vision`)
+
+### `vision_analyze`
+
+Analyze an image using an auxiliary vision model.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `image_path` | string | Yes | Path to image file |
+| `question` | string | No | Specific question about the image |
+
+## Image Generation (`image_gen`)
+
+### `image_generate`
+
+Generate an image using the configured provider.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `prompt` | string | Yes | Image description |
+| `size` | string | No | Image size (e.g. `1024x1024`) |
+
+## TTS (`tts`)
+
+### `text_to_speech`
+
+Convert text to spoken audio (Edge TTS free, ElevenLabs/OpenAI premium).
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `text` | string | Yes | Text to speak |
+| `provider` | string | No | `edge`, `elevenlabs`, `openai` |
+| `voice` | string | No | Voice ID or name |
+
+## Cron (`cronjob`)
+
+### `cronjob`
+
+Create, list, update, pause, resume, remove, and trigger scheduled tasks.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | `create`, `list`, `update`, `pause`, `resume`, `remove`, `trigger` |
+| `schedule` | string | No | Schedule expression (`30m`, `0 9 * * *`, `every 2h`) |
+| `prompt` | string | No | Task instruction |
+| `name` | string | No | Job name |
+
+## Todo (`todo`)
+
+### `todo`
+
+Track and manage task lists within a conversation.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | `create`, `update`, `list` |
+| `items` | array | No | Task items |
+| `title` | string | No | Todo list title |
+
+## Clarify (`clarify`)
+
+### `clarify`
+
+Ask the user a clarifying question (multiple-choice or open-ended).
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `question` | string | Yes | Question to ask |
+| `options` | array | No | Multiple-choice options |
+
+## Messaging (`messaging`)
+
+### `send_message`
+
+Send a message to a platform (Telegram, Discord, Slack, etc.). Gated on gateway running.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `message` | string | Yes | Message text |
+| `platform` | string | No | Target platform |
+| `target` | string | No | Target chat or user |
+
+## Kanban (`kanban`)
+
+7 tools for multi-agent coordination: `kanban_show`, `kanban_complete`, `kanban_block`, `kanban_heartbeat`, `kanban_comment`, `kanban_create`, `kanban_link`. Active only when spawned as a kanban worker.
+
+## Discord (`discord`, `discord_admin`)
+
+### `discord`
+
+Read Discord channels, search members, create threads.
+
+### `discord_admin`
+
+Manage Discord server: list channels/roles, pin messages, assign roles.
+
+## Home Assistant (`homeassistant`)
+
+4 tools: `ha_list_entities`, `ha_get_state`, `ha_list_services`, `ha_call_service`. Gated on `HASS_TOKEN`.
+
+## MoA (`moa`)
+
+### `mixture_of_agents`
+
+Advanced reasoning using multiple model calls in a mixture-of-agents pattern.
 | `cwd` | string | No | Working directory override |
 | `timeout` | number | No | Timeout in seconds |
 

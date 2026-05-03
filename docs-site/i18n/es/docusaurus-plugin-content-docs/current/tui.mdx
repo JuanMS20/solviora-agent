@@ -1,0 +1,176 @@
+---
+slug: /tui
+title: Interfaz de Terminal (TUI)
+description: La interfaz de terminal moderna basada en Ink con renderizado rico, overlays e integración con editores.
+---
+
+# Interfaz de Terminal (TUI)
+
+La TUI es un reemplazo completo del CLI clásico de prompt_toolkit. Renderiza la transcripción de conversación, actividad de herramientas y prompts en una interfaz de terminal basada en React y potenciada por [Ink](https://github.com/vadimdemedes/ink).
+
+## Cuándo usar la TUI
+
+- Quieres **soporte de ratón** — haz clic para desplazarte, seleccionar e interactuar.
+- Quieres **renderizado más rico** — resaltado de sintaxis, salida de herramientas formateada y secciones colapsables.
+- Quieres **overlays** — diálogos de aprobación, selector de sesiones y menús de autocompletado renderizados en su lugar.
+- Usas el **dashboard** — el dashboard web integra la TUI real mediante un puente PTY.
+
+Si prefieres una experiencia más simple, el CLI clásico (`solviora` sin flags) funciona perfectamente. Ambos comparten el mismo backend.
+
+## Iniciar la TUI
+
+```bash
+solviora --tui
+```
+
+O configura la variable de entorno:
+
+```bash
+HERMES_TUI=1 solviora
+```
+
+## Arquitectura
+
+La TUI ejecuta dos procesos:
+
+```
+solviora --tui
+  └─ Node.js (Ink)  ──stdio JSON-RPC──  Python (tui_gateway)
+       │                                    └─ AIAgent + tools + sesiones
+       └─ renderiza transcripción, compositor, prompts, actividad
+```
+
+- **TypeScript** posee la pantalla — renderizado, captura de input y estado local.
+- **Python** posee sesiones, herramientas, llamadas al modelo y lógica de comandos slash.
+- **Transporte:** JSON-RPC delimitado por nuevas líneas sobre stdio.
+
+Esta separación significa que la UI se mantiene responsiva incluso durante llamadas largas al modelo o ejecución de herramientas.
+
+## Atajos de teclado
+
+### Input y edición
+
+| Tecla | Acción |
+|-------|--------|
+| `Enter` | Enviar mensaje (línea única) o insertar nueva línea (multilínea) |
+| `Shift+Enter` | Insertar nueva línea (en modo línea única) |
+| `Ctrl+Enter` | Enviar mensaje (en modo multilínea) |
+| `Escape` | Cancelar input actual o descartar overlay |
+| `Arriba/Abajo` | Navegar historial o autocompletado |
+
+### Control de sesión
+
+| Tecla | Acción |
+|-------|--------|
+| `Ctrl+C` | Interrumpir respuesta actual del agente |
+| `Ctrl+C` dos veces | Salir de la TUI |
+| `Ctrl+D` | Salir de la TUI (cuando el input está vacío) |
+| `Ctrl+L` | Limpiar la transcripción |
+
+### Navegación
+
+| Tecla | Acción |
+|-------|--------|
+| `Scroll del ratón` | Desplazar transcripción arriba/abajo |
+| `RePag / AvPag` | Desplazar por página |
+| `Inicio / Fin` | Saltar al inicio/final de la transcripción |
+
+### Actividad de herramientas
+
+Durante la ejecución de herramientas, la TUI muestra un feed de actividad en vivo con:
+- Nombre de herramienta y parámetros.
+- Streaming de salida en tiempo real.
+- Estado de éxito/fallo.
+
+## Comandos slash en la TUI
+
+La TUI maneja algunos comandos localmente y reenvía el resto al gateway de Python:
+
+### Comandos locales (manejados por Ink, instantáneos)
+
+| Comando | Descripción |
+|---------|-------------|
+| `/help` | Mostrar comandos disponibles |
+| `/quit`, `/exit`, `/q` | Salir de la TUI |
+| `/clear` | Limpiar la transcripción |
+| `/new` | Iniciar una sesión nueva |
+| `/compact` | Comprimir contexto |
+| `/resume` | Reanudar una sesión pasada (abre overlay de selector) |
+| `/copy` | Copiar última respuesta al portapapeles |
+| `/paste` | Pegar desde el portapapeles |
+| `/details` | Alternar salida detallada de herramientas |
+| `/logs` | Mostrar líneas recientes de log |
+| `/statusbar` | Alternar la barra de estado |
+| `/undo` | Eliminar último intercambio |
+| `/retry` | Reintentar última respuesta |
+
+### Comandos del gateway (reenviados a Python)
+
+Todos los demás comandos se reenvían al gateway de Python mediante `slash.exec`. Esto incluye `/tools`, `/skills`, `/config`, `/model` y cualquier comando slash personalizado de skills instaladas.
+
+## Selector de sesiones
+
+El comando `/resume` abre un overlay interactivo de selección de sesiones:
+
+1. Muestra una lista buscable de sesiones recientes (título, fecha, modelo, cantidad de mensajes).
+2. Escribe para filtrar por título o contenido.
+3. Usa las flechas para navegar.
+4. Presiona `Enter` para reanudar la sesión seleccionada.
+
+El selector de sesiones consulta la misma base de datos SQLite usada por el CLI clásico. Ver [Sesiones](./sessions) para más detalles.
+
+## Flujos de aprobación
+
+Cuando el agente necesita aprobación (ej., ejecutar un comando de terminal en modo de aprobación), la TUI renderiza un diálogo de aprobación en línea:
+
+- Muestra la acción propuesta.
+- `y` para aprobar, `n` para denegar.
+- Opcionalmente edita el comando antes de aprobar.
+
+Esto reemplaza los prompts de aprobación basados en texto del CLI clásico. Ver [Seguridad](./security) para configuración del modo de aprobación.
+
+## Temas
+
+La TUI soporta el mismo sistema de skins que el CLI clásico. Las skins se cargan desde `~/.solviora/skins/` o el catálogo de skins integrado.
+
+Configura la skin activa en `config.yaml`:
+
+```yaml
+display:
+  skin: default    # default | ares | mono | slate | <personalizada>
+```
+
+Ver [Configuración](./configuration) para todas las opciones de visualización.
+
+## Integración con el dashboard
+
+El dashboard de Solviora (`solviora dashboard`) integra la TUI real — no es una reimplementación:
+
+- El navegador carga una terminal xterm.js con renderer WebGL.
+- Se conecta al backend de Python mediante WebSocket (`/api/pty`).
+- El proceso TUI se ejecuta dentro de un PTY en el servidor.
+
+Esto significa que cualquier mejora de la TUI aparece en el dashboard automáticamente. El dashboard añade widgets en la barra lateral, selector de modelos y paneles de estado **alrededor** de la TUI — no reemplaza la transcripción ni el compositor.
+
+## Desarrollo
+
+El código fuente de la TUI está en `ui-tui/`:
+
+```bash
+cd ui-tui
+npm install        # primera vez
+npm run dev        # modo watch (reconstruye en cada cambio)
+npm start          # producción
+npm run build      # build completo
+npm run type-check # solo verificación de tipos
+npm run lint       # eslint
+npm test           # vitest
+```
+
+## Relacionado
+
+- [Conceptos básicos del CLI](./cli-basics) — el prompt del CLI clásico
+- [Sesiones](./sessions) — almacenamiento y gestión de sesiones (compartido entre CLI y TUI)
+- [Seguridad](./security) — modo de aprobación y modo YOLO
+- [Configuración](./configuration) — ajustes de visualización y TUI
+- [Perfiles](./profiles) — la TUI respeta el perfil activo

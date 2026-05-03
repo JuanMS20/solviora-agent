@@ -28,7 +28,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: "./sidebars.ts",
-          editUrl: "https://github.com/solviora/solviora-agent/tree/main/docs-site/",
+          editUrl: "https://github.com/JuanMS20/solviora-agent/tree/main/docs-site/",
           showLastUpdateTime: true,
         },
         blog: false,
@@ -78,8 +78,8 @@ const config: Config = {
       id: "beta",
       content:
         '🚧 Solviora Agent is in early development. <a href="/docs/about">Learn more</a>',
-      backgroundColor: "#26251e",
-      textColor: "#faf9f6",
+      backgroundColor: "#D81A1D",
+      textColor: "#FFFFFF",
       isCloseable: true,
     },
     navbar: {
@@ -104,14 +104,14 @@ const config: Config = {
           className: "navbar__item--languages",
         },
         {
-          href: "https://github.com/solviora/solviora-agent",
+          href: "https://github.com/JuanMS20/solviora-agent",
           label: "GitHub",
           position: "right",
         },
       ],
     },
     footer: {
-      style: "dark",
+      style: "light",
       links: [
         {
           title: "Documentation",
@@ -124,8 +124,7 @@ const config: Config = {
         {
           title: "Community",
           items: [
-            { label: "GitHub", href: "https://github.com/solviora/solviora-agent" },
-            { label: "Discord", href: "https://discord.gg/solviora" },
+            { label: "GitHub", href: "https://github.com/JuanMS20/solviora-agent" },
           ],
         },
         {

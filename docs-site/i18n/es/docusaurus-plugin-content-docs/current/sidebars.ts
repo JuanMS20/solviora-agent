@@ -3,6 +3,11 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 const sidebars: SidebarsConfig = {
   docsSidebar: [
     {
+      type: "doc",
+      id: "index",
+      label: "Inicio",
+    },
+    {
       type: "category",
       label: "Primeros pasos",
       collapsed: false,
@@ -10,7 +15,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Conceptos principales",
+      label: "Usar Solviora",
       collapsed: false,
       items: [
         "cli-basics",
@@ -18,6 +23,10 @@ const sidebars: SidebarsConfig = {
         "providers",
         "tools",
         "skills",
+        "profiles",
+        "sessions",
+        "tui",
+        "security",
       ],
     },
     {
@@ -35,6 +44,7 @@ const sidebars: SidebarsConfig = {
       label: "Ayuda",
       collapsed: true,
       items: [
+        "learning-path",
         "examples",
         "troubleshooting",
         "faq",

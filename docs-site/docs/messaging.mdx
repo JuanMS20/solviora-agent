@@ -1,0 +1,47 @@
+---
+title: Messaging Gateway
+description: Connect Solviora to Telegram, Discord, Slack, WhatsApp, and more.
+---
+
+# Messaging Gateway
+
+Solviora's messaging gateway connects the agent to your preferred chat platforms. The gateway runs as a background daemon, routing messages between platforms and the agent.
+
+## Supported Platforms
+
+| Platform | Status | Setup |
+|----------|--------|-------|
+| Telegram | ✅ Full support | Bot token via `solviora setup` |
+| Discord | ✅ Full support | Bot token via `solviora setup` |
+| Slack | ✅ Full support | App manifest + tokens |
+| WhatsApp | ✅ Full support | Business API or bridge |
+| Signal | ✅ Community | Signal CLI bridge |
+| Matrix | ✅ Community | Matrix bot |
+| Mattermost | ✅ Community | Webhook + bot |
+| Email | ✅ Basic | SMTP/IMAP config |
+| SMS | ✅ Community | Twilio bridge |
+| DingTalk | ✅ Community | DingTalk bot |
+| Feishu | ✅ Community | Feishu app |
+| WeCom | ✅ Community | WeCom bot |
+| Home Assistant | ✅ Integration | Long-lived token |
+
+## Starting the Gateway
+
+```bash
+solviora gateway start
+```
+
+This launches the gateway daemon, connects all configured platforms, and begins listening for messages.
+
+## Gateway Lifecycle
+
+- **Start:** `solviora gateway start`
+- **Stop:** `solviora gateway stop`
+- **Restart:** `solviora gateway restart`
+- **Status:** `solviora gateway status`
+
+## Per-Platform Configuration
+
+Each platform requires its own credentials. Run `solviora setup` and select the messaging section to configure platforms interactively.
+
+For detailed per-platform guides, see the platform-specific documentation in the reference section.

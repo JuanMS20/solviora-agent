@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solviora Design System — Proof</title>
+  <link rel="stylesheet" href="design-tokens.css" />
+  <style>
+    /* ── Proof-specific layout ──────────────────────────── */
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--solv-space-8);
+      align-items: start;
+    }
+    .proof-full { grid-column: 1 / -1; }
+    .proof-section-title {
+      font-size: var(--solv-text-label);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--solv-muted);
+      font-family: var(--solv-font-body);
+      margin-bottom: var(--solv-space-4);
+      padding-bottom: var(--solv-space-2);
+      border-bottom: 1px solid var(--solv-hairline);
+    }
+    .demo-space {
+      display: flex;
+      flex-direction: column;
+      gap: var(--solv-space-4);
+    }
+    .demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--solv-space-3);
+      align-items: center;
+    }
+    .theme-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: var(--solv-space-3);
+      padding: var(--solv-space-4);
+      border-radius: var(--solv-radius-sm);
+      background: var(--solv-surface);
+      box-shadow: var(--solv-shadow-card);
+      margin-bottom: var(--solv-space-6);
+    }
+    .focus-ring-demo:focus-visible {
+      outline: 2px solid var(--solv-primary);
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      .proof-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body style="padding: 2rem;">
+
+  <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+
+    <!-- Theme toggle for proof page -->
+    <div class="theme-toggle-row">
+      <span style="font-weight:600;font-family:var(--solv-font-display);color:var(--solv-ink);font-size:1.25rem">Solviora Design System — Proof</span>
+      <span style="flex:1"></span>
+      <button id="proof-theme-toggle" class="btn btn-secondary" style="padding:0.375rem 0.75rem;font-size:0.75rem">
+        Toggle Theme
+      </button>
+    </div>
+
+    <!-- ════ Heading Hierarchy ════ -->
+    <div class="proof-section-title">Typography — Heading Hierarchy</div>
+    <div class="demo-space" style="margin-bottom:var(--solv-space-10)">
+      <h1>Hero heading (6vw max, uppercase)</h1>
+      <h1 style="text-transform:uppercase;font-size:var(--solv-text-hero);font-weight:700;letter-spacing:-0.0036em">
+        An agent infrastructure
+      </h1>
+      <h2>Section heading (H2, sentence case)</h2>
+      <h3>Card heading (H3, sentence case)</h3>
+      <h4>Subheading (H4, sentence case)</h4>
+      <p>Body text (Inter 400, 1rem, line-height 1.65). Solviora is an autonomous agent that runs on your own infrastructure — your server, a cloud VM, or a container. It connects to any LLM provider, persists what it learns across sessions, and extends through tools, skills, and MCP servers.</p>
+      <p style="font-size:var(--solv-text-body-lg);color:var(--solv-body)">
+        Large body text (Inter, 1.125rem). Used for hero subtitles and introduction paragraphs. Slightly larger but same line-height rhythm.
+      </p>
+      <span style="font-size:var(--solv-text-label);font-family:var(--solv-font-body);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--solv-muted)">
+        Label text — uppercase, 0.75rem, tracking 0.06em
+      </span>
+      <span style="font-size:var(--solv-text-small);color:var(--solv-muted)">
+        Small / metadata text — 0.875rem, muted color
+      </span>
+    </div>
+
+    <!-- ════ Buttons ════ -->
+    <div class="proof-section-title">Components — Buttons</div>
+    <div class="demo-row" style="margin-bottom:var(--solv-space-10)">
+      <button class="btn btn-primary">Primary Action</button>
+      <button class="btn btn-secondary">Secondary Action</button>
+      <a href="#" class="btn btn-primary">Link as Button</a>
+      <a href="#" class="btn btn-secondary">Secondary Link</a>
+      <button class="btn btn-primary" style="opacity:0.5" disabled>Disabled</button>
+    </div>
+
+    <!-- ════ Cards ════ -->
+    <div class="proof-section-title">Components — Cards</div>
+    <div class="proof-grid" style="margin-bottom:var(--solv-space-10)">
+      <div class="card">
+        <h3 style="margin-bottom:0.5rem">Standard card</h3>
+        <p style="margin:0;font-size:0.9375rem;line-height:1.6">The agent stores what it learns across conversations. FTS5 recall, automatic summarization, and periodic persistence nudges.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:0.5rem">Interactive card</h3>
+        <p style="margin:0;font-size:0.9375rem;line-height:1.6">Hover to see the elevated border effect. Smooth 150ms transition on shadow and transform.</p>
+      </div>
+    </div>
+
+    <!-- ════ Code Blocks ════ -->
+    <div class="proof-section-title">Components — Code Blocks</div>
+    <div class="proof-grid" style="margin-bottom:var(--solv-space-10)">
+      <div class="demo-space">
+        <pre><code><span style="color:var(--solv-muted)"># Inline code example</span>
+$ <span style="color:var(--solv-ink)">solviora chat --model openai/gpt-4o</span>
+<span style="color:var(--solv-muted)">Using provider: openai · model: gpt-4o</span></code></pre>
+        <p>Inline code: install <code>solviora</code> via <code>curl</code> or <code>pip</code>. Run <code>solviora setup</code> to configure.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:0.5rem">Terminal simulation</h3>
+        <p style="margin:0;font-size:0.875rem;line-height:1.6;color:var(--solv-body)">The terminal block above uses the same 2px radius, surface background, and border shadow as cards — consistent material system.</p>
+      </div>
+    </div>
+
+    <!-- ════ Admonitions / Callouts ════ -->
+    <div class="proof-section-title">Components — Admonitions / Callouts</div>
+    <div class="demo-space" style="margin-bottom:var(--solv-space-10)">
+      <div style="background:var(--solv-surface);border-radius:var(--solv-radius-sm);box-shadow:var(--solv-shadow-card);border-left:3px solid var(--solv-primary);padding:1rem 1.25rem">
+        <strong style="color:var(--solv-ink);font-family:var(--solv-font-display);text-transform:uppercase;font-size:0.8125rem;letter-spacing:0.03em">Note</strong>
+        <p style="margin:0.25rem 0 0;font-size:0.9375rem">This is a note admonition with red left border — used for important information callouts.</p>
+      </div>
+      <div style="background:var(--solv-surface);border-radius:var(--solv-radius-sm);box-shadow:var(--solv-shadow-card);border-left:3px solid #1f8a65;padding:1rem 1.25rem">
+        <strong style="color:var(--solv-ink);font-family:var(--solv-font-display);text-transform:uppercase;font-size:0.8125rem;letter-spacing:0.03em">Tip</strong>
+        <p style="margin:0.25rem 0 0;font-size:0.9375rem">Green left border for tips and best practices.</p>
+      </div>
+      <div style="background:var(--solv-surface);border-radius:var(--solv-radius-sm);box-shadow:var(--solv-shadow-card);border-left:3px solid #c08532;padding:1rem 1.25rem">
+        <strong style="color:var(--solv-ink);font-family:var(--solv-font-display);text-transform:uppercase;font-size:0.8125rem;letter-spacing:0.03em">Warning</strong>
+        <p style="margin:0.25rem 0 0;font-size:0.9375rem">Amber left border for warnings and cautionary information.</p>
+      </div>
+    </div>
+
+    <!-- ════ Navbar Simulation ════ -->
+    <div class="proof-section-title">Components — Navbar</div>
+    <div style="background:rgba(var(--solv-canvas-rgb),0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--solv-shadow-border);border-radius:var(--solv-radius-sm);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:3.5rem;margin-bottom:var(--solv-space-10)">
+      <span style="font-family:var(--solv-font-display);font-weight:700;font-size:1.25rem;color:var(--solv-ink);letter-spacing:-0.02em">Solviora</span>
+      <div style="display:flex;align-items:center;gap:2rem">
+        <a href="#" style="font-size:0.875rem;font-weight:500;color:var(--solv-body);text-decoration:none">Documentation</a>
+        <a href="#" style="font-size:0.875rem;font-weight:500;color:var(--solv-body);text-decoration:none">GitHub</a>
+        <a href="#" style="font-size:0.875rem;font-weight:500;color:var(--solv-primary);text-decoration:none">Active link</a>
+        <button style="background:none;border:1px solid var(--solv-hairline);border-radius:var(--solv-radius-none);padding:0.375rem;cursor:pointer;color:var(--solv-muted);display:flex;align-items:center;justify-content:center" aria-label="Toggle theme">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ════ Footer Simulation ════ -->
+    <div class="proof-section-title">Components — Footer</div>
+    <div style="background:#111111;border-radius:var(--solv-radius-sm);padding:2rem 1.5rem;margin-bottom:var(--solv-space-10)">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;color:rgba(255,255,255,0.7)">
+        <div>
+          <p style="font-size:0.875rem;margin:0;color:rgba(255,255,255,0.5)">An autonomous agent infrastructure for developers. Open source (MIT).</p>
+        </div>
+        <div>
+          <h4 style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.4);margin-bottom:1rem;font-family:var(--solv-font-body)">Documentation</h4>
+          <ul style="list-style:none">
+            <li style="margin-bottom:0.5rem"><a href="#" style="font-size:0.875rem;color:rgba(255,255,255,0.6)">Installation</a></li>
+            <li style="margin-bottom:0.5rem"><a href="#" style="font-size:0.875rem;color:rgba(255,255,255,0.6)">Quickstart</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.4);margin-bottom:1rem;font-family:var(--solv-font-body)">Community</h4>
+          <ul style="list-style:none">
+            <li style="margin-bottom:0.5rem"><a href="#" style="font-size:0.875rem;color:rgba(255,255,255,0.6)">GitHub</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.4);margin-bottom:1rem;font-family:var(--solv-font-body)">Info</h4>
+          <ul style="list-style:none">
+            <li style="margin-bottom:0.5rem"><a href="#" style="font-size:0.875rem;color:rgba(255,255,255,0.6)">About</a></li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);font-size:0.8125rem;color:rgba(255,255,255,0.4)">
+        v0.1.0 · MIT License · 2026
+      </div>
+    </div>
+
+    <!-- ════ Dark Mode Check ════ -->
+    <div class="proof-section-title">Color Contrast — Light / Dark Mode</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--solv-hairline);border-radius:var(--solv-radius-sm);overflow:hidden;margin-bottom:var(--solv-space-10)">
+      <div style="background:var(--solv-canvas);padding:1.5rem">
+        <span style="font-size:var(--solv-text-label);color:var(--solv-muted);font-family:var(--solv-font-body)">Canvas bg</span>
+        <p style="margin:0;font-size:0.875rem;color:var(--solv-body)">Body text on canvas</p>
+      </div>
+      <div style="background:var(--solv-surface);padding:1.5rem">
+        <span style="font-size:var(--solv-text-label);color:var(--solv-muted);font-family:var(--solv-font-body)">Surface bg</span>
+        <p style="margin:0;font-size:0.875rem;color:var(--solv-body)">Body text on surface</p>
+      </div>
+      <div style="background:var(--solv-canvas);padding:1.5rem">
+        <span style="font-size:var(--solv-text-label);color:var(--solv-primary);font-family:var(--solv-font-body)">Primary accent</span>
+        <p style="margin:0;font-size:0.875rem;margin-top:0.25rem"><a href="#">Active link</a> on canvas</p>
+      </div>
+      <div style="background:var(--solv-surface);padding:1.5rem">
+        <span style="font-size:var(--solv-text-label);color:var(--solv-primary);font-family:var(--solv-font-body)">Accent on surface</span>
+        <p style="margin:0;font-size:0.875rem;margin-top:0.25rem"><a href="#">Active link</a> on surface</p>
+      </div>
+    </div>
+
+    <!-- ════ Spacing Scale Reference ════ -->
+    <div class="proof-section-title">Spacing Scale (Base: 4px)</div>
+    <div style="display:flex;flex-wrap:wrap;gap:var(--solv-space-3);margin-bottom:var(--solv-space-10)">
+      <div style="display:flex;align-items:center;gap:var(--solv-space-2)">
+        <div style="width:var(--solv-space-1);height:1rem;background:var(--solv-primary);border-radius:1px"></div>
+        <span style="font-size:0.75rem;color:var(--solv-muted)">1 (4px)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--solv-space-2)">
+        <div style="width:var(--solv-space-2);height:1rem;background:var(--solv-primary);border-radius:1px"></div>
+        <span style="font-size:0.75rem;color:var(--solv-muted)">2 (8px)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--solv-space-2)">
+        <div style="width:var(--solv-space-4);height:1rem;background:var(--solv-primary);border-radius:1px"></div>
+        <span style="font-size:0.75rem;color:var(--solv-muted)">4 (16px)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--solv-space-2)">
+        <div style="width:var(--solv-space-6);height:1rem;background:var(--solv-primary);border-radius:1px"></div>
+        <span style="font-size:0.75rem;color:var(--solv-muted)">6 (24px)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--solv-space-2)">
+        <div style="width:var(--solv-space-8);height:1rem;background:var(--solv-primary);border-radius:1px"></div>
+        <span style="font-size:0.75rem;color:var(--solv-muted)">8 (32px)</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:var(--solv-space-2)">
+        <div style="width:var(--solv-space-12);height:1rem;background:var(--solv-primary);border-radius:1px"></div>
+        <span style="font-size:0.75rem;color:var(--solv-muted)">12 (48px)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const toggle = document.getElementById('proof-theme-toggle');
+    const html = document.documentElement;
+    toggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      html.classList.toggle('light');
+    });
+    // Init
+    if (!html.classList.contains('dark')) {
+      html.classList.add('light');
+    }
+  </script>
+</body>
+</html>

@@ -85,10 +85,51 @@ Yes, via Edge TTS (free, built-in) or ElevenLabs (premium, requires API key).
 
 ### Can I use it from Telegram/Discord?
 
-Yes, via the messaging gateway:
+Yes, via the messaging gateway. See the messaging platform guides in the docs for setup instructions.
 
 ```bash
 solviora gateway --platform telegram
 ```
 
-See [CLI Commands](./cli-commands#solviora-gateway) for details.
+### What's the difference between CLI and TUI?
+
+Solviora ships two terminal interfaces. The classic CLI uses prompt_toolkit for a familiar readline experience. The TUI (Ink-based) adds mouse support, modal overlays, and non-blocking input. Both share the same sessions, slash commands, and config — try each with `solviora` vs `solviora --tui`.
+
+### How do sessions work?
+
+Solviora saves every conversation to `~/.solviora/sessions/` using a SQLite database with FTS5 full-text search. Resume any past session with `solviora --resume` or list them with `solviora sessions list`. Each session maintains lineage tracking across compressions.
+
+### Can I run multiple instances?
+
+Yes, with profiles:
+
+```bash
+solviora -p work
+solviora -p personal
+```
+
+Each profile has its own `~/.solviora/profiles/<name>/` directory with independent config, API keys, sessions, and skills.
+
+### What are skills, and how are they different from plugins?
+
+Skills are prompt-based knowledge documents that teach the agent new workflows without writing code. Plugins are Python packages that add new capabilities (tools, hooks, memory backends) to the agent itself. See the [Skills page](./skills) for details.
+
+### Can I create my own skills?
+
+Yes. Skills follow the SKILL.md format (frontmatter + markdown). You can create them manually or let the agent create them automatically from its experience. Community skills can be installed from the skills hub.
+
+### Does Solviora support MCP?
+
+Yes, Solviora can connect to MCP (Model Context Protocol) servers for extended tool capabilities. MCP server configuration goes in `config.yaml` under `mcp_servers`. *(Advanced feature — see the integration docs for setup details.)*
+
+### How can I customize the agent's personality?
+
+Create a `~/.solviora/SOUL.md` file with your desired voice and behavior. This is injected at the top of the system prompt in every conversation. You can also use the `/personality` slash command to switch built-in personalities mid-session.
+
+### What models does Solviora work with?
+
+Any model with at least 64K tokens of context. Most hosted models (Claude, GPT, Gemini, Qwen, DeepSeek) meet this easily. For local models, set the context size to at least 64K (e.g., `--ctx-size 65536` for llama.cpp).
+
+## Next step
+
+→ [Skills & Plugins](./skills) — extend Solviora with community skills and custom plugins.

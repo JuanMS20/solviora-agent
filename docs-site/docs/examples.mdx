@@ -6,85 +6,137 @@ description: Common usage patterns and recipes for Solviora Agent.
 
 # Examples
 
-Practical patterns for common tasks.
+Practical patterns for common tasks. These examples assume you have Solviora installed and a provider configured. See [Quickstart](./quickstart) if you haven't set that up yet.
 
-## One-shot commands
+## CLI & one-shot
+
+Run Solviora as a pipe-friendly CLI tool for quick tasks without entering interactive mode:
 
 ```bash
 # Summarize a file
-solviora "Read README.md and give me a 3-bullet summary"
+solviora -z "Read README.md and give me a 3-bullet summary"
 
 # Generate a PR description
-solviora "Look at my recent git commits and draft a PR description"
+solviora -z "Look at my recent git commits and draft a PR description"
 
-# Convert formats
-solviora "Read data.csv and convert it to JSON"
+# Batch format conversion
+solviora -z "Read data.csv and convert it to JSON"
+
+# Oneshot with specific model
+solviora -z "Explain Docker multi-stage builds" --model claude-sonnet-4-20250514
 ```
+
+See [CLI Commands](./cli-commands) for all flags.
 
 ## Code assistance
 
+Use Solviora interactively for code reviews, refactoring, and testing:
+
 ```bash
+solviora
+# Inside the prompt:
+
 # Add type hints
-solviora "Read src/utils.py and add type hints to all public functions"
+❯ Read src/utils.py and add type hints to all public functions
 
 # Write tests
-solviora "Read src/calculator.py and write pytest tests for every function"
+❯ Read src/calculator.py and write pytest tests for every function
 
 # Refactor
-solviora "Read src/main.py and extract the database logic into a separate module"
+❯ Read src/main.py and extract the database logic into a separate module
+
+# Code review
+❯ Review the last 5 commits and tell me if there are any security issues
 ```
 
-## Research
+See [Tools](./tools) for how the agent reads files and executes code.
+
+## Research & web
+
+Let the agent search the web, browse documentation, and summarize findings:
 
 ```bash
-# Web research
-solviora "Search for the latest best practices for FastAPI authentication in 2025"
+solviora -z "Search for the latest best practices for FastAPI authentication in 2025"
+solviora -z "Find the Pydantic v2 docs on custom validators and summarize the pattern"
+```
 
-# Documentation lookup
-solviora "Find the Pydantic v2 docs on custom validators and summarize the pattern"
+Inside a session:
+```
+❯ Research the top 3 React state management libraries for 2025 and compare them
 ```
 
 ## File management
 
 ```bash
 # Batch rename
-solviora "Rename all .jpeg files in ./images to .jpg"
+solviora -z "Rename all .jpeg files in ./images to .jpg"
 
 # Find and fix
-solviora "Find all TODO comments in the src/ directory and list them by file"
+solviora -z "Find all TODO comments in the src/ directory and list them by file"
+
+# Bulk edit
+❯ Add a copyright header to all Python files in src/
 ```
 
-## DevOps
+## DevOps & Docker
 
 ```bash
-# Docker help
-solviora "Create a Dockerfile for a Python FastAPI app with multi-stage build"
+# Generate Dockerfile
+solviora -z "Create a Dockerfile for a Python FastAPI app with multi-stage build"
 
-# CI/CD
-solviora "Write a GitHub Actions workflow for testing and deploying this project"
+# CI/CD pipeline
+solviora -z "Write a GitHub Actions workflow for testing and deploying this project"
+
+# Infrastructure review
+❯ Review my docker-compose.yml and suggest improvements for production
 ```
 
-## Scheduled tasks
+See [Security](./security) for safe container execution guidelines.
+
+## Scheduled automation
+
+Create recurring tasks that run unattended through the gateway:
 
 ```bash
-# Daily summary
-solviora cron add --schedule "0 9 * * *" --prompt "Summarize recent git commits"
+# Daily commit summary
+solviora cron create "0 9 * * *" --prompt "Summarize recent git commits" --name "daily-summary"
 
 # Weekly report
-solviora cron add --schedule "0 17 * * 5" --prompt "Generate a weekly progress report"
+solviora cron create "0 17 * * 5" --prompt "Generate a weekly progress report" --deliver telegram
+
+# Every 30 minutes — check a URL
+solviora cron create "30m" --prompt "Check https://status.example.com and report if down"
+
+# List scheduled jobs
+solviora cron list
+
+# Remove a job
+solviora cron remove daily-summary
 ```
+
+See [CLI Commands](./cli-commands#solviora-cron) for all cron subcommands.
 
 ## Messaging gateway
 
-```bash
-# Start Telegram bot
-solviora gateway --platform telegram
+Run the gateway to connect messaging platforms:
 
-# Start Discord bot
-solviora gateway --platform discord
+```bash
+# Start gateway with Telegram
+solviora gateway run
+
+# Start gateway with specific platforms configured
+solviora gateway setup
+solviora gateway run
+
+# Check gateway status
+solviora gateway status
 ```
 
-## Profiles
+See [Security](./security#user-authorization-gateway) for allowlist setup.
+
+## Profiles & multi-instance
+
+Run isolated instances with different configs:
 
 ```bash
 # Work profile with OpenAI
@@ -92,4 +144,26 @@ solviora -p work
 
 # Personal profile with local Ollama
 solviora -p personal --provider ollama --model llama3
+
+# Telegram bot profile (isolated gateway)
+solviora -p telegram-bot gateway run
 ```
+
+See [CLI Basics](./cli-basics#profiles) for profile management.
+
+## Security & approvals
+
+Test dangerous command approval:
+
+```bash
+# This will prompt for approval
+solviora -z "Delete all .log files older than 30 days"
+
+# Skip approvals with --yolo
+solviora --yolo -z "Delete all .log files older than 30 days"
+
+# Use smart mode (config.yaml)
+# approvals.mode: smart
+```
+
+See [Security](./security) for all approval modes.

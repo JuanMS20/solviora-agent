@@ -1,0 +1,49 @@
+---
+title: Personality & SOUL.md
+description: Define Solviora's default voice with a global SOUL.md.
+---
+
+# Personality & SOUL.md
+
+Solviora's personality can be customized through a global `SOUL.md` file that defines its default voice, tone, and behavior.
+
+## SOUL.md
+
+The `SOUL.md` file lives at `~/.solviora/SOUL.md`. It contains a system prompt that shapes every conversation. Create it with:
+
+```bash
+solviora doctor --fix
+```
+
+## Built-in Personalities
+
+Switch personalities at runtime:
+
+```bash
+/personality helpful     # default, friendly assistant
+/personality concise     # brief, to-the-point responses
+/personality technical   # precise technical language
+/personality creative    # imaginative and exploratory
+/personality teacher     # explains concepts step by step
+/personality pirate      # arrr!
+/personality kawaii      # cute and expressive
+/personality shakespeare # thou shalt receive verse
+/personality noir        # dark and mysterious
+/personality philosopher # deep and contemplative
+/personality hype        # high-energy motivation
+/personality surfer      # chill and laid back
+/personality uwu         # soft and affectionate
+/personality catgirl     # nyaa~
+```
+
+## Custom Personalities
+
+Define your own in `~/.solviora/config.yaml`:
+
+```yaml
+personalities:
+  my-custom: "You are a helpful assistant specialized in Python development."
+  mentor: "You are a patient mentor who guides users to discover answers themselves."
+```
+
+Then use `/personality mentor` in any conversation.

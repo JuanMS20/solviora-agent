@@ -44,7 +44,7 @@ def _build_full_manifest(bot_name: str, bot_description: str) -> dict:
         },
         "display_information": {
             "name": bot_name[:35],
-            "description": (bot_description or "Your Hermes agent on Slack")[:140],
+            "description": (bot_description or "Your Solviora agent on Slack")[:140],
             "background_color": "#1a1a2e",
         },
         "features": {
@@ -109,7 +109,7 @@ def slack_manifest_command(args) -> int:
                       merging into an existing manifest manually)
     """
     name = getattr(args, "name", None) or "Hermes"
-    description = getattr(args, "description", None) or "Your Hermes agent on Slack"
+    description = getattr(args, "description", None) or "Your Solviora agent on Slack"
 
     if getattr(args, "slashes_only", False):
         from hermes_cli.commands import slack_app_manifest
@@ -145,7 +145,7 @@ def slack_manifest_command(args) -> int:
             "     slash commands changed.\n"
             "  4. Make sure Socket Mode is enabled and you have a bot token\n"
             "     (xoxb-...) and app token (xapp-...) configured via\n"
-            "     `hermes setup`.\n",
+            "     `solviora setup`.\n",
             file=sys.stderr,
         )
     else:

@@ -2511,11 +2511,11 @@ def setup_gateway(config: dict):
                             print_error(f"  Start failed: {e}")
                 except Exception as e:
                     print_error(f"  Install failed: {e}")
-                    print_info("  You can try manually: hermes gateway install")
+                    print_info("  You can try manually: solviora gateway install")
             else:
-                print_info("  You can install later: hermes gateway install")
+                print_info("  You can install later: solviora gateway install")
                 if supports_systemd:
-                    print_info("  Or as a boot-time service: sudo hermes gateway install --system")
+                    print_info("  Or as a boot-time service: sudo solviora gateway install --system")
                 print_info("  Or run in foreground:  solviora gateway")
         else:
             from hermes_constants import is_container

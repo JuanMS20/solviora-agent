@@ -1,0 +1,168 @@
+---
+slug: /sessions
+title: Sesiones
+description: Cómo Solviora almacena, reanuda, busca y gestiona las sesiones de conversación.
+---
+
+# Sesiones
+
+Cada conversación en Solviora es una **sesión** — un registro autoguardado de mensajes, llamadas a herramientas y respuestas del modelo. Las sesiones persisten entre reinicios y son completamente buscables.
+
+## Cómo se almacenan las sesiones
+
+Solviora usa una base de datos SQLite (`state.db`) ubicada en tu directorio home:
+
+```
+~/.solviora/state.db       # perfil por defecto
+```
+
+La base de datos usa modo WAL para lecturas concurrentes y reintento con jitter para contención de escritura. La búsqueda de texto completo (FTS5) indexa títulos de sesión y contenido de mensajes, incluyendo soporte trigram para lenguajes CJK.
+
+Campos principales de sesión:
+
+| Campo | Descripción |
+|-------|-------------|
+| `id` | Identificador único de sesión (UUID) |
+| `source` | Cómo inició la sesión (`cli`, `gateway`, `tui`, etc.) |
+| `model` | Modelo usado en la sesión |
+| `title` | Título autogenerado o establecido manualmente |
+| `started_at` | Timestamp de creación (UTC) |
+| `ended_at` | Timestamp de fin (UTC), nulo si está activa |
+| `end_reason` | Por qué terminó la sesión (`user_exit`, `new`, `interrupt`, etc.) |
+| `message_count` | Número de mensajes en la sesión |
+| `parent_session_id` | Enlace al padre para cadenas de compresión |
+
+## Gestión automática de sesiones
+
+No necesitas hacer nada para crear sesiones. Solviora automáticamente:
+
+- **Crea** una sesión cuando inicias una conversación.
+- **Guarda** cada mensaje (usuario, asistente, herramienta) a medida que ocurre.
+- **Termina** la sesión cuando sales, escribes `/new` o empiezas una nueva conversación.
+- **Titula** la sesión basándose en el primer mensaje del usuario (puedes sobreescribirlo).
+
+## Reanudar sesiones
+
+Reanuda tu última sesión:
+
+```bash
+solviora --resume
+solviora -r
+```
+
+Reanuda una sesión específica por su ID o término de búsqueda:
+
+```bash
+solviora --resume "arreglar bug de auth"
+solviora --resume abc12345
+```
+
+Dentro de una sesión interactiva, usa el comando `/resume`:
+
+```
+/resume                  # elige entre sesiones recientes
+/resume "arreglar auth"  # busca una sesión
+```
+
+El selector de sesiones muestra título, fecha, modelo y cantidad de mensajes. Selecciona una para continuar exactamente donde la dejaste.
+
+## Comandos de sesión (interactivo)
+
+Estos comandos slash gestionan sesiones desde el prompt:
+
+| Comando | Alias | Descripción |
+|---------|-------|-------------|
+| `/new` | | Termina la sesión actual y empieza nueva |
+| `/clear` | | Limpia la conversación actual (mantiene la sesión) |
+| `/history` | `/h` | Muestra historial de sesiones con títulos y fechas |
+| `/save` | | Guarda la sesión a un archivo |
+| `/retry` | | Reintenta la última respuesta del asistente |
+| `/undo` | | Elimina el último intercambio |
+| `/title <nombre>` | | Establece el título de la sesión |
+| `/branch` | | Bifurca la sesión actual en una nueva |
+| `/compress` | | Comprime la sesión para liberar ventana de contexto |
+| `/rollback` | | Revierte a un punto anterior |
+| `/snapshot` | | Guarda una instantánea del estado actual |
+| `/resume` | | Reanuda una sesión pasada |
+
+## Buscar sesiones
+
+Usa `/history` para navegar sesiones recientes, o el flag `--resume` con un término de búsqueda:
+
+```bash
+# Flag CLI — busca y reanuda
+solviora --resume "docker compose"
+
+# Interactivo — navega historial
+/history
+```
+
+La búsqueda usa SQLite FTS5, que soporta:
+
+- **Coincidencia de prefijo** — `docker*` coincide con `docker` y `dockerize`.
+- **Coincidencia de frase** — `"arreglar auth"` coincide con esa frase exacta.
+- **Soporte CJK** — el tokenizador trigram maneja texto en chino, japonés y coreano.
+
+## Ramificación y compresión de sesiones
+
+### Ramificación
+
+`/branch` crea una nueva sesión que copia el historial de conversación actual. La sesión original permanece intacta. Útil cuando quieres explorar un enfoque diferente sin perder contexto.
+
+### Compresión
+
+`/compress` resume la conversación hasta el momento y reemplaza el historial completo con un resumen más corto. Esto libera espacio en la ventana de contexto para sesiones largas. La sesión original se vincula mediante `parent_session_id` para que siempre puedas rastrear hacia atrás.
+
+Cadenas de compresión: si comprimes múltiples veces, cada nueva sesión se vincula a su padre, formando una cadena. El listado y búsqueda de sesiones recorre estas cadenas de forma transparente.
+
+## Exportar y limpiar sesiones
+
+### Exportar una sesión
+
+```
+/save
+```
+
+Exporta la sesión actual como archivo JSON a `~/.solviora/sessions/`.
+
+### Limpiar sesiones antiguas
+
+Las sesiones se acumulan con el tiempo. Limpia con:
+
+```bash
+solviora sessions prune --days 90
+```
+
+Esto elimina sesiones de más de 90 días que ya han terminado. Las sesiones activas nunca se eliminan.
+
+## Sesiones y perfiles
+
+Cada [perfil](./profiles) tiene su propio `state.db`. Las sesiones están completamente aisladas entre perfiles — una sesión creada en el perfil `work` es invisible desde el perfil `personal`.
+
+```bash
+solviora -p work --resume       # reanuda en el perfil work
+solviora -p personal --resume   # reanuda en el perfil personal
+```
+
+## Ciclo de vida de una sesión
+
+```
+Inicio → Activa → (autoguardado de cada mensaje) → Fin
+                    ↓                                ↑
+                 /branch                         /new, exit
+                    ↓
+              Sesión nueva (vinculada)
+```
+
+Las sesiones terminan cuando:
+
+- Escribes `/new` o `/exit`.
+- Presionas `Ctrl+C` dos veces.
+- Cierras la terminal (Solviora detecta la desconexión y termina la sesión).
+
+## Relacionado
+
+- [Conceptos básicos del CLI](./cli-basics) — uso básico de sesiones en el prompt interactivo
+- [Perfiles](./profiles) — cómo los perfiles aíslan las bases de datos de sesiones
+- [TUI](./tui) — gestión de sesiones en la interfaz de terminal
+- [Referencia de configuración](./configuration-reference) — claves de config relacionadas con sesiones

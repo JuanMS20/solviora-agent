@@ -14,5 +14,9 @@
   "announcementBar.content": {
     "message": "🚧 Solviora Agent está en desarrollo inicial. <a href=\"/docs/about\">Más información</a>",
     "description": "The announcement bar content"
+  },
+  "logo.alt": {
+    "message": "Solviora Logo",
+    "description": "The alt text of navbar logo"
   }
 }

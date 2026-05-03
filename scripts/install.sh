@@ -137,7 +137,7 @@ print_banner() {
     echo "┌─────────────────────────────────────────────────────────┐"
     echo "│             Solviora Agent Installer                     │"
     echo "├─────────────────────────────────────────────────────────┤"
-    echo "│  An open source AI agent — fork of Hermes by Nous Research.  │"
+    echo "│  An open source AI agent — built on Hermes Agent by Nous Research.  │"
     echo "└─────────────────────────────────────────────────────────┘"
     echo -e "${NC}"
 }
@@ -1410,7 +1410,7 @@ maybe_start_gateway() {
         if [ "$IS_INTERACTIVE" = true ]; then
             echo ""
             log_info "WhatsApp is enabled but not yet paired."
-            log_info "Running 'solviora whatsapp' (or 'hermes whatsapp') to pair via QR code..."
+            log_info "Running 'solviora whatsapp' to pair via QR code..."
             echo ""
             if prompt_yes_no "Pair WhatsApp now?" "yes"; then
                 SOLVIORA_CMD="$(get_command_path)"
@@ -1466,7 +1466,7 @@ maybe_start_gateway() {
             GATEWAY_PID=$!
             log_success "Gateway started (PID $GATEWAY_PID). Logs: ~/.solviora/logs/gateway.log"
             log_info "To stop: kill $GATEWAY_PID"
-            log_info "To restart later: solviora gateway (or: hermes gateway)"
+            log_info "To restart later: solviora gateway"
             if [ "$DISTRO" = "termux" ]; then
                 log_warn "Android may stop background processes when Termux is suspended or the system reclaims resources."
             fi
@@ -1498,8 +1498,7 @@ print_success() {
     echo ""
     echo -e "${CYAN}${BOLD}🚀 Commands:${NC}"
     echo ""
-    echo -e "   ${GREEN}solviora${NC}            Start chatting (primary command)"
-    echo -e "   ${GREEN}hermes${NC}              Legacy alias (temporary compat)"
+    echo -e "   ${GREEN}solviora${NC}            Start chatting"
     echo -e "   ${GREEN}solviora setup${NC}      Configure API keys & settings"
     echo -e "   ${GREEN}solviora config${NC}     View/edit configuration"
     echo -e "   ${GREEN}solviora config edit${NC} Open config in editor"
@@ -1510,11 +1509,10 @@ print_success() {
     echo -e "${CYAN}─────────────────────────────────────────────────────────${NC}"
     echo ""
     if [ "$DISTRO" = "termux" ]; then
-        echo -e "${YELLOW}⚡ 'solviora' (and 'hermes' alias) was linked into $(get_command_link_display_dir), which is already on PATH in Termux.${NC}"
+        echo -e "${YELLOW}⚡ 'solviora' was linked into $(get_command_link_display_dir), which is already on PATH in Termux.${NC}"
         echo ""
     elif [ "$ROOT_FHS_LAYOUT" = true ]; then
         echo -e "${YELLOW}⚡ 'solviora' was linked into /usr/local/bin and is ready to use — no shell reload needed.${NC}"
-        echo -e "${YELLOW}   'hermes' also available as temporary compat alias.${NC}"
         echo ""
     else
         echo -e "${YELLOW}⚡ Reload your shell to use 'solviora' command:${NC}"

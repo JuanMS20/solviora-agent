@@ -1,0 +1,81 @@
+---
+slug: /learning-path
+title: Learning Path
+description: Recommended reading order by user type — new users, power users, automation, and contributors.
+---
+
+# Learning Path
+
+Pick the path that matches how you plan to use Solviora.
+
+## New user
+
+You just installed Solviora and want to start chatting.
+
+1. **[Quickstart](./quickstart)** — install, set your API key, send your first message.
+2. **[CLI Basics](./cli-basics)** — interactive prompt, slash commands, multi-line input, sessions.
+3. **[Configuration](./configuration)** — `config.yaml` structure, `.env` for secrets, display and terminal settings.
+4. **[Providers](./providers)** — switch between OpenAI, Anthropic, Google, and others.
+5. **[Tools](./tools)** — what built-in tools are and how to enable/disable them.
+6. **[Sessions](./sessions)** — resume conversations, search history, manage session data.
+
+**Outcome:** you can chat, switch models, use tools, and resume past conversations.
+
+## Power user
+
+You use Solviora daily and want to get more out of it.
+
+1. Everything in the **New user** path, plus:
+2. **[Profiles](./profiles)** — isolated instances for work, personal, and experiments.
+3. **[TUI](./tui)** — the modern terminal UI with mouse, overlays, and editor integration.
+4. **[Skills](./skills)** — install and manage skill packages for specialized workflows.
+5. **[CLI Commands](./cli-commands)** — full slash-command reference.
+6. **[Configuration Reference](./configuration-reference)** — every config key and its default.
+7. **[Security](./security)** — approval workflows, YOLO mode, and safe defaults.
+
+**Outcome:** you run multiple profiles, use the TUI, and have tuned config to your workflow.
+
+## Automation and messaging
+
+You want to run Solviora as a bot on Telegram, Discord, Slack, or another platform.
+
+1. **[Quickstart](./quickstart)** — basic install and API key.
+2. **[Configuration](./configuration)** — gateway settings, `terminal.cwd`, and messaging platform config.
+3. **[Providers](./providers)** — model selection for automated workloads.
+4. **[Security](./security)** — approval workflows for unattended operation.
+5. **[Sessions](./sessions)** — how gateway sessions are stored and searched.
+
+:::note
+Gateway platform setup is covered in each platform adapter's documentation. The docs site focuses on the CLI and core engine.
+:::
+
+## Contributor
+
+You want to contribute code or documentation.
+
+1. **[Quickstart](./quickstart)** — verify your development install works.
+2. **[Configuration](./configuration)** — understand the config system before modifying it.
+3. **[Tools](./tools)** — the tool registry and how tools are discovered.
+4. **[Skills](./skills)** — skill packaging conventions.
+5. **[Examples](./examples)** — real-world usage patterns that tests should cover.
+6. **[Troubleshooting](./troubleshooting)** — common issues and their fixes.
+
+**Outcome:** you can add tools, skills, or docs that follow existing patterns.
+
+## Quick reference: what to read
+
+| Topic | Page | When to read |
+|-------|------|--------------|
+| Install & first chat | [Quickstart](./quickstart) | Day 1 |
+| Interactive prompt | [CLI Basics](./cli-basics) | Day 1 |
+| Settings & keys | [Configuration](./configuration) | Day 1 |
+| Model providers | [Providers](./providers) | When switching models |
+| Built-in capabilities | [Tools](./tools) | When customizing tools |
+| Skill packages | [Skills](./skills) | When extending behavior |
+| Session history | [Sessions](./sessions) | When resuming work |
+| Isolated instances | [Profiles](./profiles) | When juggling contexts |
+| Modern terminal UI | [TUI](./tui) | When you want a richer UI |
+| Safety & approvals | [Security](./security) | Before YOLO mode |
+| Full command list | [CLI Commands](./cli-commands) | As needed |
+| Every config key | [Configuration Reference](./configuration-reference) | As needed |
+| Real-world patterns | [Examples](./examples) | When looking for ideas |

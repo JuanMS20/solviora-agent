@@ -48,6 +48,37 @@ Inside the interactive prompt, use slash commands:
 | `/compact` | Compress context to stay within limits |
 | `/exit` | Exit Solviora |
 
+### Multi-line input
+
+Press **Alt+Enter** or **Ctrl+J** to insert a new line. Essential for pasting code blocks or writing detailed prompts.
+
+### Interrupt the agent
+
+If Solviora is taking too long on a task, type a new message and press Enter. The agent interrupts its current work and switches to your new instructions. **Ctrl+C** also works.
+
+### Personalities
+
+Try a different personality mid-session:
+
+```
+/personality pirate
+/personality expert
+/personality default
+```
+
+Personalities are prompt overlays that change the agent's tone. Custom personas can be defined via SOUL.md.
+
+## TUI (terminal UI)
+
+Solviora ships two terminal interfaces:
+
+```bash
+solviora              # Classic CLI (prompt_toolkit)
+solviora --tui        # Modern TUI with mouse support
+```
+
+The TUI (Ink-based) offers modal overlays, mouse selection, and non-blocking input. Both share the same sessions, slash commands, and configuration.
+
 ## Sessions
 
 Solviora saves your conversation history automatically. Resume a previous session:
@@ -56,12 +87,22 @@ Solviora saves your conversation history automatically. Resume a previous sessio
 solviora --resume
 ```
 
-Or pick a session interactively:
+Or list and pick a session interactively:
 
 ```bash
-solviora --resume
-# Shows a list of past sessions to choose from
+solviora sessions list
 ```
+
+## Profiles
+
+Run multiple isolated instances with different configurations:
+
+```bash
+solviora -p work     # Uses ~/.solviora/profiles/work/
+solviora -p personal # Uses ~/.solviora/profiles/personal/
+```
+
+Each profile has its own config, API keys, sessions, and skills. Data never crosses profiles.
 
 ## Environment variables
 
@@ -79,17 +120,6 @@ Solviora also reads `HERMES_HOME` for backward compatibility with migrated insta
 ## Configuration file
 
 Your main config lives at `~/.solviora/config.yaml`. See [Configuration](./configuration) for all options.
-
-## Profiles
-
-Run multiple isolated instances with different configurations:
-
-```bash
-solviora -p work     # Uses ~/.solviora/profiles/work/
-solviora -p personal # Uses ~/.solviora/profiles/personal/
-```
-
-Each profile has its own config, API keys, sessions, and skills.
 
 ## Next step
 

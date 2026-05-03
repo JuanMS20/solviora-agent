@@ -1102,7 +1102,7 @@ def rename_profile(old_name: str, new_name: str) -> Path:
 
 def generate_bash_completion() -> str:
     """Generate a bash completion script for hermes profile names."""
-    return '''# Hermes Agent profile completion
+    return '''# Solviora Agent profile completion
 # Add to ~/.bashrc: eval "$(hermes completion bash)"
 
 _hermes_profiles() {

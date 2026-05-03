@@ -1,0 +1,244 @@
+---
+slug: /security
+title: Security
+description: Security model, command approval, user authorization, and container isolation.
+---
+
+# Security
+
+Solviora Agent is designed with a defense-in-depth security model. This page covers every security boundary — from command approval to container isolation to user authorization.
+
+The security model has seven layers:
+
+1. **Dangerous command approval** — human-in-the-loop for destructive operations
+2. **Hardline blocklist** — commands so catastrophic they can never run through the agent
+3. **Container isolation** — Docker/Singularity/Modal sandboxing with hardened settings
+4. **User authorization** — who can talk to the agent (allowlists, DM pairing)
+5. **Context file scanning** — prompt injection detection in project files
+6. **Cross-session isolation** — sessions cannot access each other's data or state
+7. **Input sanitization** — working directory parameters are validated against an allowlist
+
+## Dangerous command approval
+
+Before executing any command, Solviora checks it against a curated list of dangerous patterns. If a match is found, the user must explicitly approve it.
+
+### Approval modes
+
+Configured via `approvals.mode` in `config.yaml`:
+
+```yaml
+approvals:
+  mode: manual    # manual | smart | off
+  timeout: 60     # seconds to wait for user response
+```
+
+| Mode | Behavior |
+|------|----------|
+| `manual` (default) | Always prompt the user for approval on dangerous commands |
+| `smart` | Use an auxiliary LLM to assess risk. Low-risk commands auto-approved. Genuinely dangerous commands auto-denied. Uncertain cases escalate to a manual prompt. |
+| `off` | Disable all approval checks — equivalent to running with `--yolo`. All commands execute without prompts. |
+
+### YOLO mode
+
+YOLO mode bypasses all dangerous command approval prompts for the current session (except the hardline blocklist). Can be activated three ways:
+
+1. **CLI flag**: `solviora --yolo` or `solviora chat --yolo`
+2. **Slash command**: `/yolo` during a session (toggles on/off)
+3. **Environment variable**: `SOLVIORA_YOLO_MODE=1`
+
+```bash
+solviora --yolo
+```
+
+The `/yolo` command is a toggle — each use flips the mode on or off.
+
+### Hardline blocklist (always-on floor)
+
+Some commands are so catastrophic — irreversible filesystem wipes, fork bombs, direct block-device writes — that Solviora refuses to run them regardless of `--yolo`, `/yolo`, or `approvals.mode: off`. The blocklist is the floor below YOLO.
+
+Patterns currently covered (defined in `tools/approval.py`):
+
+| Pattern | Risk |
+|---------|------|
+| `rm -rf /` and variants | Wipes the filesystem root |
+| `:(){ :\|:& };:` (bash fork bomb) | Pegs the host until reboot |
+| `mkfs.*` on mounted root | Formats the live system |
+| `dd if=/dev/zero of=/dev/sd*` | Zeroes a physical disk |
+| Piping untrusted URLs to `sh` at rootfs | Remote-code-execution attack vector |
+
+The blocklist only applies to environments that can damage the host (local, SSH). Containerized backends (Docker, Singularity, Modal) bypass the dangerous-command layer because nothing inside can touch the host.
+
+### What triggers approval
+
+The following patterns trigger approval prompts (full list in `tools/approval.py`):
+
+| Category | Examples |
+|----------|----------|
+| Recursive delete | `rm -r /`, `rm --recursive` |
+| Destructive permissions | `chmod 777`, `chmod o+w`, `chown -R root` |
+| Filesystem destruction | `mkfs`, `dd if=`, `> /dev/sd` |
+| SQL destruction | `DROP TABLE`, `DELETE FROM` without `WHERE`, `TRUNCATE` |
+| System config overwrite | `tee /etc/`, `> /etc/`, `cp/mv/install /etc/` |
+| Service disruption | `systemctl stop/restart`, `kill -9 -1`, `pkill -9` |
+| Fork bombs | Shell fork bomb patterns |
+| Remote execution | `curl \| sh`, `wget \| sh`, `bash <(curl ...)` |
+| Script execution | `python -c`, `bash -c`, `perl -e` |
+| Git destruction | `git reset --hard`, `git push --force`, `git clean -f`, `git branch -D` |
+| Self-termination | `pkill solviora`, `kill $(pgrep solviora)` |
+
+### Approval flow (CLI)
+
+In the interactive CLI, dangerous commands show an inline approval prompt:
+
+```
+  ⚠️  DANGEROUS COMMAND: recursive delete
+      rm -rf /tmp/old-project
+
+      [o]nce  |  [s]ession  |  [a]lways  |  [d]eny
+
+      Choice [o/s/a/D]:
+```
+
+The four options:
+- **once** — allow this single execution
+- **session** — allow this pattern for the rest of the session
+- **always** — add to permanent allowlist (saved to `config.yaml`)
+- **deny** (default) — block the command
+
+### Permanent allowlist
+
+Commands approved with "always" are saved to `config.yaml`:
+
+```yaml
+# Permanently allowed dangerous command patterns
+command_allowlist:
+  - rm
+  - systemctl
+```
+
+Use `solviora config edit` to review or remove patterns from your permanent allowlist.
+
+### Container backend behavior
+
+When running in `docker`, `singularity`, `modal`, `daytona`, or `vercel_sandbox` backends, dangerous command checks are skipped entirely. The container itself is the security boundary — destructive commands inside a container cannot harm the host.
+
+## User authorization (gateway)
+
+When running the messaging gateway, Solviora controls who can interact with the bot through a layered authorization system.
+
+### Authorization check order
+
+1. Per-platform allow-all flag (e.g., `DISCORD_ALLOW_ALL_USERS=true`)
+2. DM pairing approved list (users approved via pairing codes)
+3. Platform-specific allowlists (e.g., `TELEGRAM_ALLOWED_USERS=12345,67890`)
+4. Global allowlist (`GATEWAY_ALLOWED_USERS=12345,67890`)
+5. Global allow-all (`GATEWAY_ALLOW_ALL_USERS=true`)
+6. Default: **deny**
+
+### Platform allowlists
+
+Set allowed user IDs in `~/.solviora/.env`:
+
+```bash
+# Platform-specific
+TELEGRAM_ALLOWED_USERS=123456789,987654321
+DISCORD_ALLOWED_USERS=111222333444555666
+
+# Cross-platform (checked for all)
+GATEWAY_ALLOWED_USERS=123456789
+
+# Per-platform allow-all (use with caution)
+DISCORD_ALLOW_ALL_USERS=true
+```
+
+If no allowlists are configured and `GATEWAY_ALLOW_ALL_USERS` is not set, **all users are denied**.
+
+### DM pairing system
+
+For flexible authorization, Solviora includes a code-based pairing system. Unknown users receive a one-time pairing code that the bot owner approves via the CLI.
+
+1. An unknown user sends a DM to the bot
+2. The bot replies with an 8-character pairing code
+3. The owner runs `solviora pairing approve <platform> <code>` on the CLI
+4. The user is permanently approved for that platform
+
+```bash
+solviora pairing list
+solviora pairing approve telegram ABC12DEF
+solviora pairing revoke telegram 123456789
+solviora pairing clear-pending
+```
+
+Pairing data is stored in `~/.solviora/pairing/` with per-platform JSON files.
+
+## Container isolation
+
+When using the `docker` terminal backend, Solviora applies strict security hardening.
+
+### Docker security flags
+
+Every container runs with hardened settings:
+- All Linux capabilities dropped (only `DAC_OVERRIDE`, `CHOWN`, `FOWNER` added back)
+- No privilege escalation (`--security-opt no-new-privileges`)
+- Process count limit (`--pids-limit 256`)
+- Size-limited tmpfs for `/tmp` (512MB), `/var/tmp` (256MB), `/run` (64MB)
+
+### Resource limits
+
+Configurable in `config.yaml`:
+
+```yaml
+terminal:
+  container_cpu: 1           # CPU cores (0 = unlimited)
+  container_memory: 5120     # MB (default 5GB)
+  container_disk: 51200      # MB (default 50GB)
+```
+
+### Filesystem persistence
+
+- **Persistent mode** (`container_persistent: true`): Bind-mounts `/workspace` and `/root` from `~/.solviora/sandboxes/<backend>/<task_id>/`
+- **Ephemeral mode** (`container_persistent: false`): Uses tmpfs — everything is lost on cleanup
+
+## Terminal backend security comparison
+
+| Backend | Isolation | Approval checks | Use case |
+|---------|-----------|-----------------|----------|
+| `local` | None — runs on host | ✅ Yes | Development |
+| `ssh` | Remote machine | ✅ Yes | Remote server |
+| `docker` | Container (hardened) | ❌ Skipped | Production gateway |
+| `singularity` | Container (HPC) | ❌ Skipped | Shared clusters |
+| `modal` | Cloud sandbox | ❌ Skipped | Ephemeral cloud |
+| `daytona` | Cloud container | ❌ Skipped | Persistent cloud |
+| `vercel_sandbox` | Cloud microVM | ❌ Skipped | Cloud execution |
+
+## Environment variable passthrough
+
+Two mechanisms control which env vars pass through to sandboxed execution:
+
+1. **Skill-scoped passthrough** (automatic) — when a skill declares `required_environment_variables`, set ones are auto-forwarded to `execute_code` and `terminal` backends
+2. **Config-based passthrough** (manual) — add to `terminal.env_passthrough` in `config.yaml`
+
+```yaml
+terminal:
+  env_passthrough:
+    - MY_CUSTOM_KEY
+    - ANOTHER_TOKEN
+```
+
+## Related pages
+
+- [Configuration](./configuration) — configure approval modes, terminal backend, and env passthrough
+- [CLI Commands](./cli-commands) — `--yolo` flag, `solviora pairing` commands
+- [Tools](./tools) — terminal backend isolation comparison
+- [Configuration Reference](./configuration-reference) — full approvals and terminal config keys
+
+## Best practices
+
+| Scenario | Recommendation |
+|----------|---------------|
+| Local development | Use `local` backend with `manual` approval mode |
+| Production gateway | Use `docker` backend (approval checks skipped — container is the boundary) |
+| CI/CD pipelines | Use `--yolo` or `approvals.mode: off` only in disposable environments |
+| Shared machines | Use `singularity` or `ssh` backend for isolation |
+| Team bot | Use `docker` backend + platform allowlists |
+| Sensitive data | Never add secrets to `docker_forward_env` unless required by the task |

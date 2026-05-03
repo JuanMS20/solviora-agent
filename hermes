@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Hermes Agent CLI launcher.
+Backward-compatible alias launcher — delegates to Solviora Agent CLI.
 
-This wrapper should behave like the installed `hermes` command, including
-subcommands such as `gateway`, `cron`, and `doctor`.
+This file is kept so that existing aliases, scripts, or muscle memory
+using `hermes` continue to work during the transition period.
+The primary command is `solviora` (see the `solviora` file in this directory).
 """
 
 if __name__ == "__main__":

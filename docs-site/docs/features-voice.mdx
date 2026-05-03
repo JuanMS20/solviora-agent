@@ -1,0 +1,38 @@
+---
+title: Voice Mode
+description: Real-time voice interaction in CLI, Telegram, Discord, and Discord VC.
+---
+
+# Voice Mode
+
+Solviora supports real-time voice interaction across multiple platforms. Speak to the agent and hear spoken responses, all within your terminal or messaging platform.
+
+## Platforms
+
+- **CLI** — press `Ctrl+B` to record, `Ctrl+B` again to stop
+- **Telegram** — send voice messages directly
+- **Discord** — voice channel recording and playback
+- **Discord VC** — real-time voice conversation
+
+## Setup
+
+```bash
+solviora setup
+# Select the "tts" section
+```
+
+## Commands
+
+```bash
+/voice on       # Enable voice mode
+/voice off      # Disable voice mode
+/voice tts      # Toggle spoken playback of responses
+```
+
+## Requirements
+
+- `edge-tts` or `elevenlabs` for speech synthesis
+- A working microphone for recording
+- Voice activity detection (VAD) for automatic turn-taking in CLI mode
+
+Detailed setup instructions coming soon in the Voice Mode guide.

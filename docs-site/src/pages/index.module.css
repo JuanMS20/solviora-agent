@@ -1,134 +1,77 @@
-/* ── Hero — Vercel × Cursor editorial ─────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Homepage — Docs-first layout (no marketing hero)
+   ═══════════════════════════════════════════════════════════ */
 
-.heroBanner {
-  padding: 7rem 1rem 5rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+/* ── Hero: left-aligned text + right code block ────── */
+
+.heroSection {
+  padding: 5rem 1rem 3.5rem;
+  border-bottom: 1px solid var(--solv-hairline);
 }
 
-/* Subtle dot-grid pattern (Cursor-inspired) */
-.heroBanner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(
-    var(--solv-hairline) 1px,
-    transparent 1px
-  );
-  background-size: 24px 24px;
-  opacity: 0.5;
-  pointer-events: none;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-}
-
-.heroBadge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.6875rem;
+.heroLabel {
+  font-family: var(--solv-font-body);
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  background: var(--solv-accent-light);
-  color: var(--solv-accent);
-  margin-bottom: 1.5rem;
+  letter-spacing: 0.08em;
+  color: var(--solv-muted);
+  margin: 0 0 0.75rem;
 }
 
 .heroTitle {
-  font-size: 3.5rem;
+  font-family: var(--solv-font-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  margin-bottom: 1.25rem;
+  letter-spacing: -0.003em;
+  line-height: 1.15;
+  margin-bottom: 1rem;
   color: var(--solv-ink);
 }
 
-.heroSubtitle {
-  font-size: 1.125rem;
+.heroBody {
+  font-size: 1.25rem;
   color: var(--solv-body);
   max-width: 520px;
-  margin: 0 auto 2.5rem;
   line-height: 1.65;
+  margin: 0 0 1.5rem;
 }
 
-.heroButtons {
+.heroLinks {
   display: flex;
-  gap: 0.75rem;
-  justify-content: center;
+  gap: 1.25rem;
   flex-wrap: wrap;
+  align-items: baseline;
 }
 
-.heroButtons .button {
-  min-width: 160px;
-  padding: 0.7rem 1.5rem;
-  font-size: 0.9375rem;
-}
-
-/* ── Features — elevated cards on cream canvas ──────── */
-
-.features {
-  padding: 5rem 1rem;
-}
-
-.featureCard {
-  text-align: left;
-  height: 100%;
-}
-
-.featureIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--solv-accent-light);
-  color: var(--solv-accent);
+.heroLinks a {
+  font-family: var(--solv-font-body);
   font-size: 1.125rem;
-  margin-bottom: 1rem;
+  font-weight: 500;
+  color: var(--solv-primary);
+  text-decoration: none;
 }
 
-.features h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin-bottom: 0.5rem;
-  color: var(--solv-ink);
+.heroLinks a:hover {
+  color: var(--solv-primary-hover);
+  text-decoration: underline;
 }
 
-.features p {
-  font-size: 0.875rem;
-  color: var(--solv-body);
-  margin: 0;
-  line-height: 1.65;
-}
-
-/* ── Quick look — terminal-style code block ──────── */
-
-.quickLook {
-  padding: 5rem 1rem 6rem;
-  text-align: center;
-}
-
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-bottom: 2rem;
-  color: var(--solv-ink);
+.codeColumn {
+  display: flex;
+  align-items: center;
 }
 
 .codeBlock {
   background: var(--solv-surface);
-  border-radius: var(--ifm-card-border-radius);
-  padding: 1.75rem 2rem;
+  border-radius: var(--solv-radius-sm);
+  padding: 1.5rem 1.75rem;
   text-align: left;
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.875rem;
+  font-family: var(--solv-font-code);
+  font-size: 1rem;
   line-height: 1.8;
-  box-shadow: var(--solv-shadow-elevated), var(--solv-shadow-inner-ring);
+  width: 100%;
+  box-shadow: var(--solv-shadow-card), var(--solv-shadow-inner-ring);
 }
 
 .comment {
@@ -139,22 +82,226 @@
   color: var(--solv-ink);
 }
 
+/* ── Install tabs ─────────────────────────────────────── */
+
+.installPanel {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: var(--solv-radius-sm);
+  box-shadow: var(--solv-shadow-card), var(--solv-shadow-inner-ring);
+}
+
+.installHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--solv-surface);
+  border-bottom: 1px solid var(--solv-hairline);
+  padding-right: 0.75rem;
+}
+
+.installTabs {
+  display: flex;
+  margin-bottom: 0;
+}
+
+.installTab {
+  font-family: var(--solv-font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  padding: 0.625rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--solv-muted);
+  cursor: pointer;
+  transition: color var(--solv-transition-fast),
+              border-color var(--solv-transition-fast);
+}
+
+.installTab:hover {
+  color: var(--solv-ink);
+}
+
+.installTabActive {
+  color: var(--solv-primary);
+  border-bottom-color: var(--solv-primary);
+  font-weight: 600;
+}
+
+.installCodeWrap {
+  background: var(--solv-surface);
+  border-radius: 0 0 var(--solv-radius-sm) var(--solv-radius-sm);
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.installCodeWrap code {
+  display: block;
+  font-family: var(--solv-font-code);
+  font-size: 1rem;
+  line-height: 1.9;
+  white-space: pre;
+  min-width: max-content;
+}
+
+.copyBtn {
+  font-family: var(--solv-font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  background: none;
+  border: 1px solid var(--solv-hairline);
+  border-radius: var(--solv-radius-sm);
+  color: var(--solv-body);
+  cursor: pointer;
+  transition: background var(--solv-transition-fast),
+              color var(--solv-transition-fast);
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.copyBtn:hover {
+  background: var(--solv-hairline);
+  color: var(--solv-ink);
+}
+
+.copyBtnCopied {
+  background: var(--solv-primary-light);
+  color: var(--solv-primary);
+  border-color: var(--solv-primary);
+}
+
+/* ── Task navigation — two-column, asymmetric ─────── */
+
+.taskSection {
+  padding: 3.5rem 1rem 5rem;
+}
+
+.taskHeading {
+  font-family: var(--solv-font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--solv-muted);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--solv-hairline-soft);
+}
+
+.taskList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.taskItem {
+  margin-bottom: 1.25rem;
+}
+
+.taskItem:last-child {
+  margin-bottom: 0;
+}
+
+.taskLink {
+  font-family: var(--solv-font-body);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--solv-ink);
+  text-decoration: none;
+}
+
+.taskLink:hover {
+  color: var(--solv-primary);
+  text-decoration: underline;
+}
+
+.taskDesc {
+  font-size: 1.0625rem;
+  color: var(--solv-muted);
+  margin: 0.25rem 0 0;
+  line-height: 1.5;
+}
+
 /* ── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 996px) {
-  .heroTitle {
-    font-size: 2.5rem;
-  }
-  .heroSubtitle {
-    font-size: 1rem;
+  .codeColumn {
+    margin-top: 2rem;
   }
 }
 
 @media (max-width: 576px) {
-  .heroBanner {
-    padding: 5rem 1rem 3rem;
+  .heroSection {
+    padding: 3rem 1rem 2rem;
   }
   .heroTitle {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
+  .heroLinks {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* ── Why Solviora ──────────────────────────────────────── */
+
+.whySection {
+  padding: 4rem 1rem 3.5rem;
+  border-top: 1px solid var(--solv-hairline);
+}
+
+.whyHeading {
+  font-family: var(--solv-font-display);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.002em;
+  margin-bottom: 1rem;
+  color: var(--solv-ink);
+}
+
+.whyBody {
+  font-size: 1.25rem;
+  line-height: 1.65;
+  color: var(--solv-muted);
+  max-width: 48rem;
+  margin-bottom: 2.5rem;
+}
+
+.pillarCard {
+  padding: 1.5rem;
+  border: 1px solid var(--solv-hairline-soft);
+  border-radius: 2px;
+  margin-bottom: 1rem;
+}
+
+.pillarVerb {
+  font-family: var(--solv-font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--solv-primary);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.pillarDesc {
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--solv-muted);
+  margin: 0;
+}
+
+.whyTagline {
+  font-family: var(--solv-font-display);
+  font-size: 1.375rem;
+  text-align: center;
+  color: var(--solv-ink);
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--solv-hairline);
 }

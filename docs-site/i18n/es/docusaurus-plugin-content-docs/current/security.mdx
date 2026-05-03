@@ -1,0 +1,133 @@
+---
+slug: /security
+title: Seguridad
+description: Modelo de seguridad, aprobación de comandos, autorización de usuarios y aislamiento de contenedores.
+---
+
+# Seguridad
+
+Solviora Agent está diseñado con un modelo de seguridad de defensa en profundidad. Esta página cubre cada frontera de seguridad, desde la aprobación de comandos hasta el aislamiento de contenedores y la autorización de usuarios.
+
+El modelo de seguridad tiene siete capas:
+
+1. **Aprobación de comandos peligrosos** — supervisión humana para operaciones destructivas
+2. **Lista negra absoluta** — comandos tan catastróficos que nunca pueden ejecutarse a través del agente
+3. **Aislamiento de contenedores** — sandboxing con Docker/Singularity/Modal con configuraciones endurecidas
+4. **Autorización de usuarios** — quién puede hablar con el agente (listas permitidas, emparejamiento DM)
+5. **Escaneo de archivos de contexto** — detección de inyección de prompts en archivos del proyecto
+6. **Aislamiento entre sesiones** — las sesiones no pueden acceder a datos o estado de otras sesiones
+7. **Sanitización de entrada** — los parámetros de directorio de trabajo se validan contra una lista permitida
+
+## Aprobación de comandos peligrosos
+
+Antes de ejecutar cualquier comando, Solviora lo compara contra una lista curada de patrones peligrosos. Si hay una coincidencia, el usuario debe aprobarlo explícitamente.
+
+### Modos de aprobación
+
+Se configura mediante `approvals.mode` en `config.yaml`:
+
+```yaml
+approvals:
+  mode: manual    # manual | smart | off
+  timeout: 60     # segundos para esperar respuesta del usuario
+```
+
+| Modo | Comportamiento |
+|------|---------------|
+| `manual` (por defecto) | Siempre preguntar al usuario para comandos peligrosos |
+| `smart` | Usar un LLM auxiliar para evaluar el riesgo. Comandos de bajo riesgo se auto-aprueban. Peligrosos se auto-denegan. Casos inciertos escalan a aprobación manual. |
+| `off` | Deshabilitar todas las comprobaciones — equivalente a ejecutar con `--yolo` |
+
+### Modo YOLO
+
+El modo YOLO omite todas las aprobaciones de comandos peligrosos (excepto la lista negra absoluta). Se activa de tres formas:
+
+1. **Flag CLI**: `solviora --yolo` o `solviora chat --yolo`
+2. **Comando slash**: `/yolo` durante una sesión (activa/desactiva)
+3. **Variable de entorno**: `SOLVIORA_YOLO_MODE=1`
+
+### Lista negra absoluta (siempre activa)
+
+Algunos comandos son tan catastróficos — borrados irreversibles del sistema de archivos, fork bombs, escritura directa a dispositivos de bloque — que Solviora se niega a ejecutarlos independientemente de `--yolo`, `/yolo` o `approvals.mode: off`.
+
+Patrones cubiertos (definidos en `tools/approval.py`):
+
+| Patrón | Riesgo |
+|--------|--------|
+| `rm -rf /` y variantes | Borra la raíz del sistema de archivos |
+| `:(){ :\|:& };:` (fork bomb) | Congela el sistema hasta reiniciar |
+| `mkfs.*` en dispositivo montado | Formatea el sistema en vivo |
+| `dd if=/dev/zero of=/dev/sd*` | Sobrescribe un disco físico |
+| Tuberías de URLs no confiables a `sh` | Vector de ataque de ejecución remota |
+
+### ¿Qué activa la aprobación?
+
+| Categoría | Ejemplos |
+|-----------|----------|
+| Borrado recursivo | `rm -r /`, `rm --recursive` |
+| Permisos destructivos | `chmod 777`, `chmod o+w`, `chown -R root` |
+| Destrucción de sistema | `mkfs`, `dd if=`, `> /dev/sd` |
+| Destrucción SQL | `DROP TABLE`, `DELETE FROM` sin `WHERE`, `TRUNCATE` |
+| Servicios del sistema | `systemctl stop/restart`, `kill -9 -1` |
+| Ejecución remota | `curl \| sh`, `wget \| sh`, `bash <(curl ...)` |
+| Destrucción Git | `git reset --hard`, `git push --force`, `git branch -D` |
+
+### Flujo de aprobación (CLI)
+
+```
+  ⚠️  COMANDO PELIGROSO: recursive delete
+      rm -rf /tmp/old-project
+
+      [o]nce  |  [s]ession  |  [a]lways  |  [d]eny
+
+      Choice [o/s/a/D]:
+```
+
+## Autorización de usuarios (gateway)
+
+Cuando se ejecuta el gateway de mensajería, Solviora controla quién puede interactuar con el bot mediante un sistema de autorización en capas.
+
+### Listas permitidas por plataforma
+
+```bash
+# En ~/.solviora/.env
+TELEGRAM_ALLOWED_USERS=123456789,987654321
+DISCORD_ALLOWED_USERS=111222333444555666
+GATEWAY_ALLOWED_USERS=123456789
+```
+
+### Sistema de emparejamiento DM
+
+Usuarios desconocidos reciben un código de emparejamiento de un solo uso que el dueño del bot aprueba vía CLI:
+
+```bash
+solviora pairing approve telegram ABC12DEF
+solviora pairing revoke telegram 123456789
+```
+
+## Aislamiento de contenedores
+
+Cuando se usa el backend `docker`, Solviora aplica configuraciones de seguridad estrictas:
+
+- Todos los capabilities de Linux eliminados
+- Sin escalada de privilegios
+- Límite de procesos (`--pids-limit 256`)
+- tmpfs con límite de tamaño para `/tmp`, `/var/tmp`, `/run`
+
+```yaml
+terminal:
+  backend: docker
+  container_cpu: 1
+  container_memory: 5120     # MB
+  container_disk: 51200      # MB
+```
+
+## Buenas prácticas
+
+| Escenario | Recomendación |
+|-----------|---------------|
+| Desarrollo local | Backend `local` con modo `manual` |
+| Gateway en producción | Backend `docker` (el contenedor es la frontera de seguridad) |
+| CI/CD | Usar `--yolo` solo en entornos desechables |
+| Máquinas compartidas | Backend `singularity` o `ssh` |
+| Bot de equipo | Backend `docker` + listas permitidas |

@@ -1,0 +1,43 @@
+---
+title: Skills System
+description: Procedural memory the agent creates and reuses.
+---
+
+# Skills System
+
+Skills are procedural knowledge documents that teach Solviora how to perform specific tasks. They provide structured instructions, examples, and constraints that the agent follows when relevant.
+
+## How Skills Work
+
+Skills are markdown files with YAML frontmatter stored under `~/.solviora/skills/`. Each skill defines:
+
+- **Name and description** — what the skill does
+- **Category** — organizational grouping
+- **Platform compatibility** — CLI, Telegram, Discord, etc.
+- **Instructions** — the procedural knowledge body
+
+Skills are loaded into context when the agent detects they are relevant, or when explicitly invoked via slash command.
+
+## Skill Commands
+
+```bash
+# Browse and install skills
+/skills browse
+
+# List installed skills
+/skills list
+
+# Install a skill
+/skills install <name>
+
+# Remove a skill
+/skills remove <name>
+```
+
+## Built-in Skills
+
+Solviora ships with built-in skills covering areas like GitHub workflows, development tooling, and system administration. Community-contributed skills are available through the Skills Hub.
+
+## Creating a Skill
+
+Skills follow the open standard compatible with [agentskills.io](https://agentskills.io). Create a `.md` file in `~/.solviora/skills/` with the required frontmatter and instructions.

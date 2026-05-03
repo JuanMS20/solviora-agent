@@ -1,0 +1,176 @@
+---
+slug: /tui
+title: Terminal UI (TUI)
+description: The modern Ink-based terminal interface with rich rendering, overlays, and editor integration.
+---
+
+# Terminal UI (TUI)
+
+The TUI is a full replacement for the classic prompt_toolkit CLI. It renders the conversation transcript, tool activity, and prompts in a React-based terminal UI powered by [Ink](https://github.com/vadimdemedes/ink).
+
+## When to use the TUI
+
+- You want **mouse support** — click to scroll, select, and interact.
+- You want **richer rendering** — syntax highlighting, formatted tool output, and collapsible sections.
+- You want **overlays** — approval dialogs, session picker, and completion menus rendered in-place.
+- You use the **dashboard** — the web dashboard embeds the real TUI via a PTY bridge.
+
+If you prefer a simpler experience, the classic CLI (`solviora` without flags) works fine. Both share the same backend.
+
+## Starting the TUI
+
+```bash
+solviora --tui
+```
+
+Or set the environment variable:
+
+```bash
+HERMES_TUI=1 solviora
+```
+
+## Architecture
+
+The TUI runs two processes:
+
+```
+solviora --tui
+  └─ Node.js (Ink)  ──stdio JSON-RPC──  Python (tui_gateway)
+       │                                    └─ AIAgent + tools + sessions
+       └─ renders transcript, composer, prompts, activity
+```
+
+- **TypeScript** owns the screen — rendering, input capture, and local state.
+- **Python** owns sessions, tools, model calls, and slash command logic.
+- **Transport:** newline-delimited JSON-RPC over stdio.
+
+This separation means the UI stays responsive even during long model calls or tool execution.
+
+## Keyboard shortcuts
+
+### Input and editing
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Send message (single-line) or insert newline (multi-line) |
+| `Shift+Enter` | Insert newline (when in single-line mode) |
+| `Ctrl+Enter` | Send message (when in multi-line mode) |
+| `Escape` | Cancel current input or dismiss overlay |
+| `Up/Down` | Navigate history or autocomplete |
+
+### Session control
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+C` | Interrupt current agent response |
+| `Ctrl+C` twice | Exit the TUI |
+| `Ctrl+D` | Exit the TUI (when input is empty) |
+| `Ctrl+L` | Clear the transcript |
+
+### Navigation
+
+| Key | Action |
+|-----|--------|
+| `Mouse scroll` | Scroll transcript up/down |
+| `PageUp / PageDown` | Scroll by page |
+| `Home / End` | Jump to top/bottom of transcript |
+
+### Tool activity
+
+During tool execution, the TUI shows a live activity feed with:
+- Tool name and parameters.
+- Real-time output streaming.
+- Success/failure status.
+
+## Slash commands in the TUI
+
+The TUI handles some commands locally and forwards the rest to the Python gateway:
+
+### Local commands (handled by Ink, instant)
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show available commands |
+| `/quit`, `/exit`, `/q` | Exit the TUI |
+| `/clear` | Clear the transcript |
+| `/new` | Start a new session |
+| `/compact` | Compress context |
+| `/resume` | Resume a past session (opens session picker overlay) |
+| `/copy` | Copy last response to clipboard |
+| `/paste` | Paste from clipboard |
+| `/details` | Toggle detailed tool output |
+| `/logs` | Show recent log lines |
+| `/statusbar` | Toggle the status bar |
+| `/undo` | Remove last exchange |
+| `/retry` | Retry last response |
+
+### Gateway commands (forwarded to Python)
+
+All other commands are forwarded to the Python gateway via `slash.exec`. This includes `/tools`, `/skills`, `/config`, `/model`, and any custom slash commands from installed skills.
+
+## Session picker
+
+The `/resume` command opens an interactive session picker overlay:
+
+1. Shows a searchable list of recent sessions (title, date, model, message count).
+2. Type to filter by title or content.
+3. Use arrow keys to navigate.
+4. Press `Enter` to resume the selected session.
+
+The session picker queries the same SQLite database used by the classic CLI. See [Sessions](./sessions) for details.
+
+## Approval flows
+
+When the agent needs approval (e.g., running a terminal command in approval mode), the TUI renders an inline approval dialog:
+
+- Shows the proposed action.
+- `y` to approve, `n` to deny.
+- Optionally edit the command before approving.
+
+This replaces the text-based approval prompts in the classic CLI. See [Security](./security) for approval mode configuration.
+
+## Theming
+
+The TUI supports the same skin system as the classic CLI. Skins are loaded from `~/.solviora/skins/` or the built-in skin catalog.
+
+Configure the active skin in `config.yaml`:
+
+```yaml
+display:
+  skin: default    # default | ares | mono | slate | <custom>
+```
+
+See [Configuration](./configuration) for all display options.
+
+## Dashboard integration
+
+The Solviora dashboard (`solviora dashboard`) embeds the real TUI — not a reimplementation:
+
+- Browser loads an xterm.js terminal with WebGL renderer.
+- Connects to the Python backend via WebSocket (`/api/pty`).
+- The TUI process runs inside a PTY on the server.
+
+This means any TUI improvements appear in the dashboard automatically. The dashboard adds sidebar widgets, model picker, and status panels **around** the TUI — it does not replace the transcript or composer.
+
+## Development
+
+The TUI source lives in `ui-tui/`:
+
+```bash
+cd ui-tui
+npm install        # first time
+npm run dev        # watch mode (rebuilds on change)
+npm start          # production
+npm run build      # full build
+npm run type-check # typecheck only
+npm run lint       # eslint
+npm test           # vitest
+```
+
+## Related
+
+- [CLI Basics](./cli-basics) — the classic CLI prompt
+- [Sessions](./sessions) — session storage and management (shared between CLI and TUI)
+- [Security](./security) — approval mode and YOLO mode
+- [Configuration](./configuration) — display and TUI settings
+- [Profiles](./profiles) — the TUI respects the active profile

@@ -10,21 +10,73 @@ Solviora Agent is provider-agnostic. Switch between LLM providers by changing a 
 
 ## Supported providers
 
+:::info
+Providers below are confirmed in the Solviora codebase. If a provider you need is not listed, try OpenRouter (supports 100+ models) or a custom endpoint.
+:::
+
+### API-key providers
+
+Set the corresponding environment variable in `~/.solviora/.env`:
+
 | Provider | Config name | Required env var |
 |----------|-------------|------------------|
 | OpenAI | `openai` | `OPENAI_API_KEY` |
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` |
-| Google Gemini | `gemini` | `GOOGLE_API_KEY` |
+| Google AI Studio (Gemini) | `gemini` | `GOOGLE_API_KEY` |
+| Google Gemini (OAuth) | `google-gemini-cli` | OAuth via `solviora model` |
 | DeepSeek | `deepseek` | `DEEPSEEK_API_KEY` |
-| Groq | `groq` | `GROQ_API_KEY` |
-| Mistral | `mistral` | `MISTRAL_API_KEY` |
-| Ollama (local) | `ollama` | None |
-| LM Studio (local) | `lmstudio` | None |
 | OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
-| Azure OpenAI | `azure` | `AZURE_API_KEY` |
-| AWS Bedrock | `bedrock` | AWS credentials |
-| Google Vertex AI | `vertex` | Google Cloud credentials |
-| Hugging Face | `huggingface` | `HF_API_KEY` |
+| Hugging Face | `huggingface` | `HF_TOKEN` |
+| GitHub Copilot | `copilot` | `GITHUB_TOKEN` / `GH_TOKEN` |
+| GitHub Copilot ACP | `copilot-acp` | Requires `copilot` CLI in PATH |
+| xAI (Grok) | `xai` | `XAI_API_KEY` |
+| NVIDIA NIM | `nvidia` | `NVIDIA_API_KEY` |
+| Z.AI / GLM (Zhipu) | `zai` | `GLM_API_KEY` |
+| Kimi / Moonshot | `kimi-coding` | `KIMI_API_KEY` |
+| Kimi / Moonshot (China) | `kimi-coding-cn` | `KIMI_CN_API_KEY` |
+| MiniMax | `minimax` | `MINIMAX_API_KEY` |
+| MiniMax (China) | `minimax-cn` | `MINIMAX_CN_API_KEY` |
+| Alibaba Cloud (DashScope) | `alibaba` | `DASHSCOPE_API_KEY` |
+| Xiaomi MiMo | `xiaomi` | `XIAOMI_API_KEY` |
+| Tencent TokenHub | `tencent-tokenhub` | `TOKENHUB_API_KEY` |
+| Arcee AI | `arcee` | `ARCEEAI_API_KEY` |
+| GMI Cloud | `gmi` | `GMI_API_KEY` |
+| Kilo Code | `kilocode` | `KILOCODE_API_KEY` |
+| OpenCode Zen | `opencode-zen` | `OPENCODE_ZEN_API_KEY` |
+| OpenCode Go | `opencode-go` | `OPENCODE_GO_API_KEY` |
+| Ollama Cloud | `ollama-cloud` | `OLLAMA_API_KEY` |
+| StepFun Step Plan | `stepfun` | `STEP_API_KEY` |
+| Vercel AI Gateway | `ai-gateway` | `AI_GATEWAY_API_KEY` |
+| AWS Bedrock | `bedrock` | AWS credentials (IAM) |
+| Azure Foundry | `azure-foundry` | `AZURE_AI_FOUNDRY_API_KEY` |
+| Qwen OAuth | `qwen-oauth` | OAuth via `solviora model` |
+
+### Local providers (no API key)
+
+| Provider | Config name | Notes |
+|----------|-------------|-------|
+| Ollama (local) | `ollama` | Pull a model first: `ollama pull llama3` |
+| LM Studio | `lmstudio` | Load a model, server runs at `localhost:1234` |
+
+### OAuth providers
+
+Some providers authenticate via browser OAuth flow. Run `solviora model` and select the provider:
+
+- **Nous Portal** — subscription-based, zero-config
+- **OpenAI Codex** — ChatGPT OAuth, uses Codex models
+- **Google Gemini (OAuth)** — free tier supported, no API key needed
+- **MiniMax (OAuth)** — browser login, no API key needed
+- **Qwen OAuth** — reuses local Qwen CLI login
+
+### Custom endpoint
+
+For any OpenAI-compatible API (vLLM, SGLang, Ollama, proxies):
+
+```yaml
+provider: custom
+base_url: https://your-endpoint.com/v1
+api_key: your-key
+```
 
 ## Configure a provider
 

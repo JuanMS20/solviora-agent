@@ -69,6 +69,42 @@ logging:
 | `memory.provider` | `builtin` | Memory backend |
 | `logging.level` | `INFO` | Log verbosity |
 
+## Directory structure
+
+```
+~/.solviora/
+├── config.yaml     # Settings (model, terminal, toolsets, display, etc.)
+├── .env            # API keys and secrets
+├── auth.json       # OAuth provider credentials
+├── SOUL.md         # Agent personality (slot #1 in system prompt)
+├── memories/       # Persistent memory (MEMORY.md, USER.md)
+├── skills/         # Agent-created skills
+├── cron/           # Scheduled jobs
+├── sessions/       # Conversation archives
+└── logs/           # agent.log, errors.log, gateway.log
+```
+
+## Configuring models
+
+Use `solviora model` to walk through provider and model selection interactively. This is the recommended way to set up your first provider.
+
+```bash
+solviora model
+```
+
+## Environment variable substitution
+
+You can reference environment variables in `config.yaml` using `${VAR_NAME}` syntax:
+
+```yaml
+auxiliary:
+  vision:
+    api_key: ${GOOGLE_API_KEY}
+    base_url: ${CUSTOM_VISION_URL}
+```
+
+Multiple references in a single value work: `url: "${HOST}:${PORT}"`. If a referenced variable is not set, the placeholder is kept verbatim.
+
 ## .env (secrets only)
 
 Store API keys in `~/.solviora/.env`:
@@ -80,19 +116,77 @@ ANTHROPIC_API_KEY=sk-ant-...
 GOOGLE_API_KEY=...
 ```
 
+The `solviora config set` command automatically routes values to the right file — API keys to `.env`, everything else to `config.yaml`.
+
 :::warning
 Never commit `.env` files to version control. Solviora adds `~/.solviora/.env` to `.gitignore` automatically.
 :::
 
 ## Runtime overrides
 
-Override config at the command line:
+Override config at the command line. CLI flags take highest priority:
 
 ```bash
 solviora --model claude-sonnet-4-20250514 --provider anthropic
 solviora --quiet     # Suppress tool output
 solviora --no-tools  # Disable all tools for this session
 ```
+
+## Terminal backends
+
+Solviora supports multiple terminal backends that determine where shell commands execute:
+
+| Backend | Isolation | Use case |
+|---------|-----------|----------|
+| `local` | None — runs on host | Development, personal use |
+| `docker` | Container (cap-drop, no-new-privs) | Safe sandboxing, CI/CD |
+| `ssh` | Network boundary | Remote server, powerful hardware |
+| `modal` | Cloud sandbox (ephemeral) | Cloud compute, evals |
+| `daytona` | Cloud container (persistent) | Managed cloud workspaces |
+| `singularity` | Container (HPC) | Shared clusters |
+
+```yaml
+terminal:
+  backend: local           # local | docker | ssh | modal | daytona | singularity
+  cwd: .                   # Working directory
+  timeout: 180             # Per-command timeout in seconds
+```
+
+## Provider timeouts
+
+Set provider-wide or model-specific timeouts:
+
+```yaml
+providers:
+  openai:
+    request_timeout_seconds: 1800
+    models:
+      gpt-4o:
+        timeout_seconds: 300
+```
+
+## Auxiliary models
+
+Side tasks (vision, summarization, delegation) can use a different model than your main chat:
+
+```yaml
+auxiliary:
+  vision:
+    provider: auto         # auto | openai | anthropic | gemini | custom
+    model: ""               # empty = use provider default
+  summarization:
+    provider: auto
+    model: ""
+```
+
+## Configuration precedence
+
+Settings are resolved in this order (highest priority first):
+
+1. **CLI arguments** — per-invocation override (e.g., `--model`)
+2. **config.yaml** — primary config file for all non-secret settings
+3. **.env** — fallback for env vars; required for secrets
+4. **Built-in defaults** — hardcoded safe defaults
 
 ## Profiles
 

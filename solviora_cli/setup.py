@@ -144,7 +144,7 @@ from hermes_cli.config import (
     get_env_value,
     ensure_hermes_home,
 )
-# display_hermes_home imported lazily at call sites (stale-module safety during hermes update)
+# display_hermes_home imported lazily at call sites (stale-module safety during solviora update)
 
 from hermes_cli.colors import Colors, color
 
@@ -2511,11 +2511,11 @@ def setup_gateway(config: dict):
                             print_error(f"  Start failed: {e}")
                 except Exception as e:
                     print_error(f"  Install failed: {e}")
-                    print_info("  You can try manually: hermes gateway install")
+                    print_info("  You can try manually: solviora gateway install")
             else:
-                print_info("  You can install later: hermes gateway install")
+                print_info("  You can install later: solviora gateway install")
                 if supports_systemd:
-                    print_info("  Or as a boot-time service: sudo hermes gateway install --system")
+                    print_info("  Or as a boot-time service: sudo solviora gateway install --system")
                 print_info("  Or run in foreground:  solviora gateway")
         else:
             from hermes_constants import is_container
@@ -2541,7 +2541,7 @@ def setup_gateway(config: dict):
 def setup_tools(config: dict, first_install: bool = False):
     """Configure tools — delegates to the unified tools_command() in tools_config.py.
 
-    Both `hermes setup tools` and `hermes tools` use the same flow:
+    Both `solviora setup tools` and `solviora tools` use the same flow:
     platform selection → toolset toggles → provider/API key configuration.
 
     Args:
@@ -3183,7 +3183,7 @@ def _run_first_time_quick_setup(config: dict, hermes_home, is_existing: bool):
 
     Applies sensible defaults for TTS (Edge), terminal (local), agent
     settings, and tools — the user can customize later via
-    ``hermes setup <section>``.
+    ``solviora setup <section>``.
     """
     # Step 1: Model & Provider (essential — skips rotation/vision/TTS)
     setup_model_provider(config, quick=True)

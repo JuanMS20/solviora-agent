@@ -1,8 +1,8 @@
 """
-IRC Platform Adapter for Hermes Agent.
+IRC Platform Adapter for Solviora Agent.
 
 A plugin-based gateway adapter that connects to an IRC server and relays
-messages to/from the Hermes agent.  Zero external dependencies — uses
+messages to/from the Solviora agent.  Zero external dependencies — uses
 Python's stdlib asyncio for the IRC protocol.
 
 Configuration in config.yaml::
@@ -196,7 +196,7 @@ class IRCAdapter(BasePlatformAdapter):
         if self.server_password:
             await self._send_raw(f"PASS {self.server_password}")
         await self._send_raw(f"NICK {self.nickname}")
-        await self._send_raw(f"USER {self.nickname} 0 * :Hermes Agent")
+        await self._send_raw(f"USER {self.nickname} 0 * :Solviora Agent")
 
         # Start receive loop
         self._recv_task = asyncio.create_task(self._receive_loop())
@@ -234,7 +234,7 @@ class IRCAdapter(BasePlatformAdapter):
         self._mark_disconnected()
         if self._writer and not self._writer.is_closing():
             try:
-                await self._send_raw("QUIT :Hermes Agent shutting down")
+                await self._send_raw("QUIT :Solviora Agent shutting down")
                 await asyncio.sleep(0.5)
             except Exception:
                 pass
@@ -539,7 +539,7 @@ def validate_config(config) -> bool:
 
 
 def interactive_setup() -> None:
-    """Interactive `hermes gateway setup` flow for the IRC platform.
+    """Interactive `solviora gateway setup` flow for the IRC platform.
 
     Lazy-imports ``hermes_cli.setup`` helpers so the plugin stays importable
     in non-CLI contexts (gateway runtime, tests).
@@ -642,7 +642,7 @@ def interactive_setup() -> None:
 
     print()
     print_success("IRC configuration saved to ~/.hermes/.env")
-    print_info("Restart the gateway for changes to take effect: hermes gateway restart")
+    print_info("Restart the gateway for changes to take effect: solviora gateway restart")
 
 
 def is_connected(config) -> bool:

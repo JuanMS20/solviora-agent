@@ -359,7 +359,7 @@ TOOLSETS = {
         # them down per the platform config. _DEFAULT_OFF_TOOLSETS (moa,
         # homeassistant, rl) are excluded by _get_platform_tools() unless
         # the user explicitly enables them.
-        "description": "Default cron toolset - same core tools as hermes-cli; gated by `hermes tools`",
+        "description": "Default cron toolset - same core tools as solviora-cli; gated by `solviora tools`",
         "tools": _HERMES_CORE_TOOLS,
         "includes": []
     },

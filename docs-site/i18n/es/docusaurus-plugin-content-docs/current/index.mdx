@@ -1,0 +1,58 @@
+---
+slug: /
+title: Documentación
+description: Documentación de Solviora Agent — instala, configura y domina tu agente de IA para terminal.
+displayed_sidebar: docsSidebar
+---
+
+# Documentación de Solviora Agent
+
+Agente de IA para terminal. Una configuración, múltiples proveedores, cero dependencia.
+
+---
+
+## Enlaces rápidos
+
+| | |
+|---|---|
+| 🚀 [Instalación](/docs/installation) | Instala en 60 segundos en Linux, macOS o WSL2 |
+| 📖 [Guía rápida](/docs/quickstart) | Tu primera conversación — de instalación a chatear |
+| ⚙️ [Configuración](/docs/configuration) | Archivo config, proveedores, modelos y opciones |
+| 💻 [CLI básico](/docs/cli-basics) | Domina la interfaz de terminal |
+| 🔧 [Herramientas](/docs/tools) | Herramientas integradas y cómo configurarlas |
+| 📚 [Skills y Plugins](/docs/skills) | Extiende Solviora con skills y plugins |
+| ❓ [FAQ](/docs/faq) | Preguntas frecuentes y soluciones |
+| 🔒 [Seguridad](/docs/security) | Modelo de seguridad, aprobaciones y aislamiento |
+
+## Características principales
+
+- **Terminal nativo** — funciona donde trabajan los desarrolladores. CLI, comandos directos y scripting.
+- **Multi-proveedor** — OpenAI, Anthropic, Google Gemini, DeepSeek, Ollama y más. Cambia con un solo valor de configuración.
+- **Herramientas integradas** — E/S de archivos, ejecución de código, búsqueda web, sesiones de terminal y tareas programadas.
+- **Sistema de skills** — documentos de conocimiento bajo demanda con revelación progresiva.
+- **Sistema de plugins** — herramientas personalizadas, hooks de ciclo de vida y proveedores de memoria.
+- **Gateway de mensajería** — conecta Telegram, Discord, Slack, WhatsApp y más.
+- **Perfiles** — múltiples instancias aisladas con su propia configuración, sesiones y skills.
+
+## Primeros pasos
+
+```bash
+# Instalar
+pip install solviora-agent
+
+# Configurar tu API key
+export OPENAI_API_KEY=sk-...
+
+# Empezar a chatear
+solviora
+```
+
+## ¿Por qué Solviora?
+
+Solviora Agent no es un copilot atado a un IDE ni un wrapper de chat alrededor de una sola API. Es un agente autónomo que se ejecuta en tu máquina, se conecta a cualquier proveedor LLM y se vuelve más útil cuanto más lo usas.
+
+**Tres principios:**
+
+1. **Tu máquina, tus datos** — todo se almacena localmente en `~/.solviora/`
+2. **Sin dependencia** — cambia de proveedor con un solo comando
+3. **Extensible por diseño** — herramientas, skills, plugins y MCP para cualquier flujo de trabajo

@@ -266,17 +266,60 @@ else
 fi
 
 # ============================================================================
-# Environment file
+# Configuration directory — ~/.solviora/
 # ============================================================================
 
-if [ ! -f ".env" ]; then
+echo -e "${CYAN}→${NC} Setting up configuration directory..."
+
+SOLVIORA_HOME="${SOLVIORA_HOME:-$HOME/.solviora}"
+mkdir -p "$SOLVIORA_HOME"/{cron,sessions,logs,pairing,hooks,image_cache,audio_cache,memories,skills}
+
+# Create .env at ~/.solviora/.env (top level, easy to find)
+if [ ! -f "$SOLVIORA_HOME/.env" ]; then
     if [ -f ".env.example" ]; then
-        cp .env.example .env
-        echo -e "${GREEN}✓${NC} Created .env from template"
+        cp .env.example "$SOLVIORA_HOME/.env"
+        echo -e "${GREEN}✓${NC} Created ~/.solviora/.env from template"
+    else
+        touch "$SOLVIORA_HOME/.env"
+        echo -e "${GREEN}✓${NC} Created ~/.solviora/.env"
     fi
 else
-    echo -e "${GREEN}✓${NC} .env exists"
+    echo -e "${GREEN}✓${NC} ~/.solviora/.env already exists, keeping it"
 fi
+
+# Create config.yaml at ~/.solviora/config.yaml (top level, easy to find)
+if [ ! -f "$SOLVIORA_HOME/config.yaml" ]; then
+    if [ -f "cli-config.yaml.example" ]; then
+        cp cli-config.yaml.example "$SOLVIORA_HOME/config.yaml"
+        echo -e "${GREEN}✓${NC} Created ~/.solviora/config.yaml from template"
+    fi
+else
+    echo -e "${GREEN}✓${NC} ~/.solviora/config.yaml already exists, keeping it"
+fi
+
+# Create SOUL.md if it doesn't exist (global persona file)
+if [ ! -f "$SOLVIORA_HOME/SOUL.md" ]; then
+    cat > "$SOLVIORA_HOME/SOUL.md" << 'SOUL_EOF'
+# Solviora Agent Persona
+
+<!--
+This file defines the agent's personality and tone.
+The agent will embody whatever you write here.
+Edit this to customize how Solviora communicates with you.
+
+Examples:
+  - "You are a warm, playful assistant who uses kaomoji occasionally."
+  - "You are a concise technical expert. No fluff, just facts."
+  - "You speak like a friendly coworker who happens to know everything."
+
+This file is loaded fresh each message -- no restart needed.
+Delete the contents (or this file) to use the default personality.
+-->
+SOUL_EOF
+    echo -e "${GREEN}✓${NC} Created ~/.solviora/SOUL.md (edit to customize personality)"
+fi
+
+echo -e "${GREEN}✓${NC} Configuration directory ready: ~/.solviora/"
 
 # ============================================================================
 # PATH setup — symlink solviora into a user-facing bin dir
@@ -295,49 +338,70 @@ if is_termux; then
     export PATH="$COMMAND_LINK_DIR:$PATH"
     echo -e "${GREEN}✓${NC} $COMMAND_LINK_DISPLAY_DIR is already on PATH in Termux"
 else
-    # Determine the appropriate shell config file
-    SHELL_CONFIG=""
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    elif [[ "$SHELL" == *"bash"* ]]; then
-        SHELL_CONFIG="$HOME/.bashrc"
-        [ ! -f "$SHELL_CONFIG" ] && SHELL_CONFIG="$HOME/.bash_profile"
-    else
-        # Fallback to checking existing files
-        if [ -f "$HOME/.zshrc" ]; then
-            SHELL_CONFIG="$HOME/.zshrc"
-        elif [ -f "$HOME/.bashrc" ]; then
-            SHELL_CONFIG="$HOME/.bashrc"
-        elif [ -f "$HOME/.bash_profile" ]; then
-            SHELL_CONFIG="$HOME/.bash_profile"
-        fi
-    fi
+    # Detect the user's actual login shell (not the shell running this script)
+    # and add ~/.local/bin to PATH if it's not already there.
+    SHELL_CONFIGS=()
+    IS_FISH=false
+    LOGIN_SHELL="$(basename "${SHELL:-/bin/bash}")"
+    case "$LOGIN_SHELL" in
+        zsh)
+            [ -f "$HOME/.zshrc" ] && SHELL_CONFIGS+=("$HOME/.zshrc")
+            [ -f "$HOME/.zprofile" ] && SHELL_CONFIGS+=("$HOME/.zprofile")
+            if [ ${#SHELL_CONFIGS[@]} -eq 0 ]; then
+                touch "$HOME/.zshrc"
+                SHELL_CONFIGS+=("$HOME/.zshrc")
+            fi
+            ;;
+        bash)
+            [ -f "$HOME/.bashrc" ] && SHELL_CONFIGS+=("$HOME/.bashrc")
+            [ -f "$HOME/.bash_profile" ] && SHELL_CONFIGS+=("$HOME/.bash_profile")
+            ;;
+        fish)
+            IS_FISH=true
+            FISH_CONFIG="$HOME/.config/fish/config.fish"
+            mkdir -p "$(dirname "$FISH_CONFIG")"
+            touch "$FISH_CONFIG"
+            ;;
+        *)
+            [ -f "$HOME/.bashrc" ] && SHELL_CONFIGS+=("$HOME/.bashrc")
+            [ -f "$HOME/.zshrc" ] && SHELL_CONFIGS+=("$HOME/.zshrc")
+            ;;
+    esac
+    # Also ensure ~/.profile has it (sourced by login shells on
+    # Ubuntu/Debian/WSL even when ~/.bashrc is skipped)
+    [ "$IS_FISH" = "false" ] && [ -f "$HOME/.profile" ] && SHELL_CONFIGS+=("$HOME/.profile")
 
-    if [ -n "$SHELL_CONFIG" ]; then
-        # Touch the file just in case it doesn't exist yet but was selected
-        touch "$SHELL_CONFIG" 2>/dev/null || true
-
-        if ! echo "$PATH" | tr ':' '\n' | grep -q "^$HOME/.local/bin$"; then
-            if ! grep -q '\.local/bin' "$SHELL_CONFIG" 2>/dev/null; then
+    if [ "$IS_FISH" = "false" ]; then
+        for SHELL_CONFIG in "${SHELL_CONFIGS[@]}"; do
+            if ! grep -v '^[[:space:]]*#' "$SHELL_CONFIG" 2>/dev/null | grep -qE 'PATH=.*\.local/bin'; then
                 echo "" >> "$SHELL_CONFIG"
                 echo "# Solviora Agent — ensure ~/.local/bin is on PATH" >> "$SHELL_CONFIG"
                 echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_CONFIG"
                 echo -e "${GREEN}✓${NC} Added ~/.local/bin to PATH in $SHELL_CONFIG"
-            else
-                echo -e "${GREEN}✓${NC} ~/.local/bin already in $SHELL_CONFIG"
             fi
-        else
-            echo -e "${GREEN}✓${NC} ~/.local/bin already on PATH"
+        done
+
+        if [ ${#SHELL_CONFIGS[@]} -eq 0 ]; then
+            echo -e "${YELLOW}⚠${NC} Could not detect shell config file to add ~/.local/bin to PATH"
+            echo -e "     Add manually: export PATH=\"\$HOME/.local/bin:\$PATH\""
+        fi
+    else
+        # fish uses fish_add_path instead of export PATH=...
+        if ! grep -q 'fish_add_path.*\.local/bin' "$FISH_CONFIG" 2>/dev/null; then
+            echo "" >> "$FISH_CONFIG"
+            echo "# Solviora Agent — ensure ~/.local/bin is on PATH" >> "$FISH_CONFIG"
+            echo 'fish_add_path "$HOME/.local/bin"' >> "$FISH_CONFIG"
+            echo -e "${GREEN}✓${NC} Added ~/.local/bin to PATH in $FISH_CONFIG"
         fi
     fi
+
+    export PATH="$COMMAND_LINK_DIR:$PATH"
+    echo -e "${GREEN}✓${NC} solviora command ready"
 fi
 
 # ============================================================================
 # Seed bundled skills into ~/.solviora/skills/
 # ============================================================================
-
-SOLVIORA_SKILLS_DIR="${SOLVIORA_HOME:-${HERMES_HOME:-$HOME/.solviora}}/skills"
-mkdir -p "$SOLVIORA_SKILLS_DIR"
 
 echo ""
 echo "Syncing bundled skills to ~/.solviora/skills/ ..."
@@ -346,7 +410,7 @@ if "$SCRIPT_DIR/venv/bin/python" "$SCRIPT_DIR/tools/skills_sync.py" 2>/dev/null;
 else
     # Fallback: copy if sync script fails (missing deps, etc.)
     if [ -d "$SCRIPT_DIR/skills" ]; then
-        cp -rn "$SCRIPT_DIR/skills/"* "$SOLVIORA_SKILLS_DIR/" 2>/dev/null || true
+        cp -rn "$SCRIPT_DIR/skills/"* "$SOLVIORA_HOME/skills/" 2>/dev/null || true
         echo -e "${GREEN}✓${NC} Skills copied"
     fi
 fi
@@ -369,7 +433,7 @@ if is_termux; then
     echo ""
 else
     echo "  1. Reload your shell:"
-    echo "     source $SHELL_CONFIG"
+    echo "     source ~/.bashrc   # or source ~/.zshrc"
     echo ""
     echo "  2. Run the setup wizard to configure API keys:"
     echo "     solviora setup"

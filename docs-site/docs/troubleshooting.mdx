@@ -6,6 +6,8 @@ description: Common issues and their solutions.
 
 # Troubleshooting
 
+Quick fixes for common issues organized by category. If your problem isn't here, try the [Recovery Toolkit](#recovery-toolkit) at the bottom.
+
 ## Installation issues
 
 ### `command not found: solviora`
@@ -25,6 +27,8 @@ Or reinstall with `--user`:
 ```bash
 pip install --user solviora-agent
 ```
+
+See [Installation](./installation) for detailed setup instructions.
 
 ### `error: externally-managed-environment`
 
@@ -54,6 +58,7 @@ python --version
 - Check that your API key is valid and not expired
 - Verify it's set in `~/.solviora/.env` or as an environment variable
 - Run `solviora doctor` to check config
+- See [Configuration](./configuration) for the `.env` file format
 
 ### Wrong provider for model
 
@@ -69,6 +74,67 @@ You likely have `provider: openai` but are using an Anthropic model.
 solviora --provider anthropic --model claude-sonnet-4-20250514
 ```
 
+See [Providers](./providers) for the full list of supported providers and their env vars.
+
+### Model unavailable or odd fallback behavior
+
+Provider routing or fallback settings are too aggressive.
+
+**Fix:** Keep routing off until the base provider is stable. Run `solviora fallback list` to check current fallback chain, and `solviora fallback clear` to reset it.
+
+### Custom endpoint "works" but returns garbage
+
+Wrong base URL, model name, or the endpoint is not actually OpenAI-compatible.
+
+**Fix:** Verify the endpoint in a separate client first (e.g., `curl`). Then set it in `config.yaml`:
+
+```yaml
+provider: custom
+base_url: https://your-endpoint.com/v1
+```
+
+### Minimum context length error
+
+Solviora requires a model with at least 64K tokens of context.
+
+**Fix:** For local models, set the context size explicitly:
+
+```bash
+# llama.cpp
+--ctx-size 65536
+
+# Ollama
+ollama run --num-ctx 65536 your-model
+```
+
+## Session issues
+
+### `solviora --resume` / `solviora -c` can't find old session
+
+Switched profiles or session never saved.
+
+**Fix:** Check which profile you're using:
+
+```bash
+# List all sessions
+solviora sessions list
+
+# Check active profile
+echo $SOLVIORA_PROFILE
+```
+
+If you switched profiles with `-p`, sessions from the other profile won't be visible. See [CLI Basics](./cli-basics#profiles) for profile management.
+
+### Session history lost after restart
+
+Sessions are stored in `~/.solviora/sessions/` using SQLite. If you use a different `SOLVIORA_HOME` or switched profiles, the new directory won't have the old sessions.
+
+**Fix:** Point `SOLVIORA_HOME` to the original directory:
+
+```bash
+export SOLVIORA_HOME=~/.solviora
+```
+
 ## Performance issues
 
 ### Slow responses
@@ -76,6 +142,8 @@ solviora --provider anthropic --model claude-sonnet-4-20250514
 - Try a faster model (e.g., `gpt-4o-mini` instead of `gpt-4o`)
 - Check your network connection
 - Use a local provider (Ollama, LM Studio) to eliminate API latency
+- Adjust provider timeouts in `config.yaml` (see [Configuration Reference](./configuration-reference#model--provider))
+- Use `/compact` to reduce context size
 
 ### Context window exceeded
 
@@ -83,8 +151,8 @@ The conversation got too long.
 
 **Fix:**
 
-```
-/compact    # Compress context
+```bash
+/compact    # Compress context while preserving recent messages
 /new        # Or start a fresh session
 ```
 
@@ -92,7 +160,8 @@ The conversation got too long.
 
 - Disable unused toolsets to reduce system prompt size
 - Use `/compact` periodically during long sessions
-- Set a lower `max_iterations` if the agent loops too much
+- Set `agent.max_turns` lower in `config.yaml` if the agent loops too much
+- Disable toolsets you don't need: `solviora --disabled-toolsets vision,image_gen,tts`
 
 ## Tool issues
 
@@ -101,33 +170,130 @@ The conversation got too long.
 Check that the required toolset is enabled:
 
 ```bash
-solviora --enabled-toolsets core,web,code
+solviora --enabled-toolsets file,web,code_execution
 ```
+
+See [Tools](./tools#available-toolsets) for the complete toolset list.
 
 ### File not found errors
 
-Verify `terminal.cwd` in your config points to the right directory.
+Verify `terminal.cwd` in your config points to the right directory. The tool operates relative to `terminal.cwd`, not the directory where you launched `solviora`.
+
+**Fix:**
+
+```yaml
+# ~/.solviora/config.yaml
+terminal:
+  cwd: /home/user/projects/my-project
+```
+
+### Terminal commands fail immediately
+
+The terminal tool is reported as disabled or the backend can't connect.
+
+**Fix by backend:**
+
+- **Local**: No special requirements — safest default.
+- **Docker**: Run `docker version` to verify Docker is working. If it fails, switch back: `solviora config set terminal.backend local`.
+- **SSH**: Both `TERMINAL_SSH_HOST` and `TERMINAL_SSH_USER` must be set in `.env`. See [Configuration Reference](./configuration-reference#terminal) for all SSH options.
+- **Modal**: Needs `MODAL_TOKEN_ID` env var or `~/.modal.toml`. Run `solviora doctor` to check.
+- **Daytona**: Needs `DAYTONA_API_KEY` env var.
+
+When in doubt, set `terminal.backend` back to `local` and verify commands run there first.
+
+### `execute_code` sandbox fails
+
+The code execution sandbox requires a working terminal backend. If the terminal backend is down, `execute_code` won't work either.
+
+**Fix:** First verify the terminal backend works (see above), then retry.
 
 ## Messaging gateway issues
 
+### Gateway starts but nobody can message it
+
+Bot token, allowlist, or platform setup is incomplete.
+
+**Fix:**
+
+1. Re-run `solviora gateway setup` to verify platform configuration
+2. Check that `TELEGRAM_BOT_TOKEN` / `DISCORD_BOT_TOKEN` is set in `.env`
+3. Make sure at least one allowlist is configured (see [Security](./security#user-authorization-gateway))
+4. Verify gateway status: `solviora gateway status`
+
 ### Bot not responding
 
-1. Check the bot token is correct
-2. Verify the gateway is running: `solviora gateway --platform telegram`
-3. Check logs: `solviora logs --follow`
+1. Check the bot token is correct in `~/.solviora/.env`
+2. Verify the gateway is running: `solviora gateway status`
+3. Check logs: `tail -f ~/.solviora/logs/gateway.log`
+4. Check if the user is authorized: see [User authorization in Security](./security#user-authorization-gateway)
 
 ### Multiple instances conflict
 
 Use profiles to isolate bots:
 
 ```bash
-solviora -p telegram-bot gateway --platform telegram
+solviora -p telegram-bot gateway run
+solviora -p discord-bot gateway run
 ```
 
-## Getting help
+### `solviora pairing approve` fails
 
-If your issue isn't listed here:
+Pairing codes expire after 1 hour. Rate limiting allows 1 request per user per 10 minutes, max 3 pending codes per platform.
 
-1. Check [FAQ](./faq)
-2. Search [GitHub Issues](https://github.com/solviora/solviora-agent/issues)
-3. Ask on [Discord](https://discord.gg/solviora)
+**Fix:** Ask the user to send a new DM to get a fresh pairing code. Check pending codes:
+
+```bash
+solviora pairing list
+```
+
+See [Security](./security#dm-pairing-system) for pairing system details.
+
+## Configuration issues
+
+### `solviora doctor` flags config problems
+
+Config values are missing or stale.
+
+**Fix:** Run the setup wizard to fix interactively:
+
+```bash
+solviora setup
+```
+
+Or check and migrate specific config options:
+
+```bash
+solviora config check
+solviora config migrate
+```
+
+### Changes to config.yaml not taking effect
+
+Solviora caches config for performance. After editing `config.yaml` manually, restart the session.
+
+**Fix:**
+
+```bash
+/quit
+solviora
+```
+
+## Recovery toolkit
+
+When something feels off, use this order to get back to a known state fast:
+
+```bash
+1. solviora doctor          # Diagnose config and dependency issues
+2. solviora setup           # Re-run setup wizard
+3. solviora model           # Re-select provider and model
+4. solviora sessions list   # Check active sessions
+5. solviora -c              # Resume most recent session
+6. solviora gateway status  # Check gateway if applicable
+```
+
+## Still stuck?
+
+1. Check the [Quickstart](./quickstart) — especially the [Common failure modes](./quickstart#common-failure-modes) section
+2. Browse the [FAQ](./faq) for general questions
+3. Search [GitHub Issues](https://github.com/JuanMS20/solviora-agent/issues)
+4. Ask on [Discord](https://discord.gg/solviora)

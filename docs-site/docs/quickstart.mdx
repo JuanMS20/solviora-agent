@@ -16,8 +16,20 @@ Install Solviora Agent, set your API key, and start your first conversation.
 ## Install
 
 ```bash
-pip install solviora-agent
+curl -fsSL https://raw.githubusercontent.com/JuanMS20/solviora-agent/main/scripts/install.sh | bash
+source ~/.bashrc
 ```
+
+Verify the installation:
+
+```bash
+solviora --version
+```
+
+:::tip
+If you prefer pip or already have Python 3.11+ installed, see the
+[detailed installation guide](./installation) for alternative methods.
+:::
 
 ## Set your API key
 
@@ -45,12 +57,13 @@ See [Configuration](./configuration) for all options.
 solviora
 ```
 
-You'll see the interactive prompt:
+You'll see the welcome banner with your model and provider:
 
 ```
 ╭──────────────────────────────────────╮
 │  Solviora Agent v0.1.0               │
 │  Model: gpt-4o · Provider: openai    │
+│  Tools: 60+ · Skills: 5 loaded      │
 ╰──────────────────────────────────────╯
 
 You › Hello! What can you do?
@@ -58,13 +71,79 @@ You › Hello! What can you do?
 
 ## Verify it works
 
-Type a question and press **Enter**. If you get a response, everything is set up correctly.
+Ask something specific and verifiable:
+
+```
+Show me my current directory and list the files.
+```
+
+What success looks like:
+- The banner shows your chosen model and provider
+- Solviora replies without errors
+- It can use a tool if needed (terminal, file read, web search)
+- The conversation continues for more than one turn
 
 To exit:
 
 ```
 /exit
 ```
+
+## Try key features
+
+### Use the terminal
+
+```
+❯ What's my disk usage? Show the top 5 largest directories.
+```
+
+### Slash commands
+
+Type `/` to see available commands:
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show all available commands |
+| `/tools` | List available tools |
+| `/model` | Switch models interactively |
+| `/save` | Save the conversation |
+| `/new` | Start a fresh session |
+
+### Multi-line input
+
+Press **Alt+Enter** or **Ctrl+J** to add a new line — useful for pasting code.
+
+### Interrupt the agent
+
+If the agent is taking too long, type a new message and press Enter. It interrupts the current task and switches to your new instructions. **Ctrl+C** also works.
+
+## Verify sessions work
+
+Before moving on, make sure session resume works:
+
+```bash
+solviora --resume
+```
+
+You should return to the session you just had. If not, check whether you're in the same profile.
+
+## Common failure modes
+
+| Symptom | Likely cause | Fix |
+|---------|-------------|-----|
+| Solviora opens but gives empty replies | Provider auth or model selection is wrong | Run `solviora setup` again |
+| `solviora --resume` can't find session | Switched profiles or session never saved | Check `solviora sessions list` |
+| Gateway starts but nobody can message it | Bot token or allowlist incomplete | Re-run setup for that platform |
+| Model unavailable | Provider routing too aggressive | Keep routing off until base provider is stable |
+
+## Recovery toolkit
+
+When something feels off:
+
+1. `solviora setup` — re-run the setup wizard
+2. `solviora sessions list` — check active sessions
+3. `solviora --resume` — resume last session
+4. `solviora --no-tools` — start a plain chat to isolate issues
 
 ## Next steps
 

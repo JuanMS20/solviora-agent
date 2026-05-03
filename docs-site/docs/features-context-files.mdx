@@ -1,0 +1,49 @@
+---
+title: Context Files
+description: Project context files that shape every conversation.
+---
+
+# Context Files
+
+Context files provide persistent project-level context that shapes every conversation in a given directory. They are markdown files with structured frontmatter that the agent reads at session start.
+
+## How They Work
+
+When you run Solviora from a project directory, it automatically checks for context files:
+
+1. `AGENTS.md` — project-level agent instructions
+2. `.cursorrules` — coding standards and constraints
+3. `SOUL.md` — agent personality (global, not per-project)
+
+These files are injected into the system prompt, ensuring the agent understands your project conventions, architecture, and preferences from the first message.
+
+## Creating a Context File
+
+```markdown
+# AGENTS.md
+
+## Project Overview
+This is a Python web application using FastAPI.
+
+## Conventions
+- Use type hints everywhere
+- Follow PEP 8
+- Write tests with pytest
+```
+
+## Configuration
+
+```yaml
+# ~/.solviora/config.yaml
+context:
+  auto_load: true                # auto-detect AGENTS.md, .cursorrules
+  extra_files:                   # additional files to always load
+    - ./CONTRIBUTING.md
+    - ./docs/ARCHITECTURE.md
+```
+
+## Tips
+
+- Keep context files focused and concise
+- Update them as project conventions evolve
+- Use `--ignore-rules` to skip context injection for isolated runs

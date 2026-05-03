@@ -288,14 +288,14 @@ _ensure_ssl_certs()
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Resolve Hermes home directory (respects HERMES_HOME override)
-from solviora_constants import get_hermes_home
-from utils import atomic_json_write, atomic_yaml_write, base_url_host_matches, is_truthy_value
+from solviora_constants import get_hermes_home  # noqa: E402  # needs sys.path.insert(0) above
+from utils import atomic_json_write, atomic_yaml_write, base_url_host_matches, is_truthy_value  # noqa: E402
 _hermes_home = get_hermes_home()
 
 # Load environment variables from ~/.hermes/.env first.
 # User-managed env files should override stale shell exports on restart.
-from dotenv import load_dotenv  # backward-compat for tests that monkeypatch this symbol
-from solviora_cli.env_loader import load_hermes_dotenv
+from dotenv import load_dotenv  # noqa: E402  # backward-compat for tests that monkeypatch this symbol
+from solviora_cli.env_loader import load_hermes_dotenv  # noqa: E402
 _env_path = _hermes_home / '.env'
 load_hermes_dotenv(hermes_home=_hermes_home, project_env=Path(__file__).resolve().parents[1] / '.env')
 
@@ -486,13 +486,13 @@ if not _configured_cwd or _configured_cwd in (".", "auto", "cwd"):
     _fallback = os.getenv("MESSAGING_CWD") or str(Path.home())
     os.environ["TERMINAL_CWD"] = _fallback
 
-from gateway.config import (
+from gateway.config import (  # noqa: E402  # needs sys.path + env setup above
     Platform,
     _BUILTIN_PLATFORM_VALUES,
     GatewayConfig,
     load_gateway_config,
 )
-from gateway.session import (
+from gateway.session import (  # noqa: E402
     SessionStore,
     SessionSource,
     SessionContext,
@@ -501,22 +501,22 @@ from gateway.session import (
     build_session_key,
     is_shared_multi_user_session,
 )
-from gateway.delivery import DeliveryRouter
-from gateway.platforms.base import (
+from gateway.delivery import DeliveryRouter  # noqa: E402
+from gateway.platforms.base import (  # noqa: E402
     BasePlatformAdapter,
     EphemeralReply,
     MessageEvent,
     MessageType,
     merge_pending_message_event,
 )
-from gateway.restart import (
+from gateway.restart import (  # noqa: E402
     DEFAULT_GATEWAY_RESTART_DRAIN_TIMEOUT,
     GATEWAY_SERVICE_RESTART_EXIT_CODE,
     parse_restart_drain_timeout,
 )
 
 
-from gateway.whatsapp_identity import (
+from gateway.whatsapp_identity import (  # noqa: E402
     canonical_whatsapp_identifier as _canonical_whatsapp_identifier,  # noqa: F401
     expand_whatsapp_aliases as _expand_whatsapp_auth_aliases,
     normalize_whatsapp_identifier as _normalize_whatsapp_identifier,
@@ -860,7 +860,7 @@ def _format_gateway_process_notification(evt: dict) -> "str | None":
 # Module-level weak reference to the active GatewayRunner instance.
 # Used by tools (e.g. send_message) that need to route through a live
 # adapter for plugin platforms.  Set in GatewayRunner.__init__().
-import weakref as _weakref
+import weakref as _weakref  # noqa: E402
 _gateway_runner_ref: _weakref.ref = lambda: None
 
 
@@ -9989,7 +9989,7 @@ class GatewayRunner:
         # where systemd-run --user fails due to missing D-Bus session).
         # PYTHONUNBUFFERED ensures output is flushed line-by-line so the
         # gateway can stream it to the messenger in near-real-time.
-        hermes_cmd_str = " ".join(shlex.quote(part) for part in hermes_cmd)
+        hermes_cmd_str = " ".join(shlex.quote(part) for part in solviora_cmd)
         update_cmd = (
             f"PYTHONUNBUFFERED=1 {hermes_cmd_str} update --gateway"
             f" > {shlex.quote(str(output_path))} 2>&1; "
@@ -10312,7 +10312,7 @@ class GatewayRunner:
                     if exit_code == 0:
                         msg = "✅ Solviora update finished successfully."
                     else:
-                        msg = "❌ Solviora update failed. Check the gateway logs or run `hermes update` manually for details."
+                        msg = "❌ Solviora update failed. Check the gateway logs or run `solviora update` manually for details."
                 await adapter.send(chat_id, msg, metadata=metadata)
                 logger.info(
                     "Sent post-update notification to %s:%s (exit=%s)",
@@ -13674,7 +13674,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             _signal_initiated_shutdown = True
             logger.info("Received SIGTERM/SIGINT — initiating shutdown")
         # Diagnostic: log all hermes-related processes so we can identify
-        # what triggered the signal (hermes update, hermes gateway restart,
+        # what triggered the signal (hermes update, Solviora gateway restart,
         # a stale detached subprocess, etc.).
         try:
             import subprocess as _sp

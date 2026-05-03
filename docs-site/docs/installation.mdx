@@ -6,34 +6,68 @@ description: How to install Solviora Agent on macOS, Linux, and Windows.
 
 # Installation
 
-Solviora Agent is distributed as a Python package. Install it with `pip` or your preferred package manager.
+## Quick Install (Linux, macOS, WSL2)
 
-## Requirements
+Get Solviora Agent up and running with the one-line installer. The
+only prerequisite is **Git**. Everything else is handled
+automatically — Python, Node.js, ripgrep, ffmpeg, and all dependencies.
 
-| Requirement | Minimum |
-|-------------|---------|
-| Python | 3.11 or newer |
-| pip | Latest recommended |
-| OS | macOS, Linux, Windows (WSL recommended) |
+```bash
+curl -fsSL https://raw.githubusercontent.com/JuanMS20/solviora-agent/main/scripts/install.sh | bash
+```
 
-## Install with pip
+After it finishes, reload your shell and start chatting:
+
+```bash
+source ~/.bashrc
+solviora setup
+solviora
+```
+
+:::tip Android / Termux
+The installer also works on Android via Termux — it detects the platform
+automatically and switches to a tested Android flow with `pkg` for system
+dependencies. See the dedicated guide for details.
+:::
+
+:::info Windows
+Native Windows is not supported. Install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
+and run the install command above from your WSL2 terminal.
+:::
+
+### What the installer does
+
+The installer handles everything:
+
+- Installs **uv** (fast Python package manager)
+- Provisions **Python 3.11** via uv (no sudo needed)
+- Clones the Solviora repo to `~/.solviora/solviora-agent/`
+- Creates a Python virtual environment and installs all dependencies
+- Symlinks the `solviora` command into `~/.local/bin/`
+- Adds `~/.local/bin` to your shell's `PATH`
+- Syncs bundled skills
+- (Optional) Installs Node.js, ripgrep, ffmpeg if missing
+
+### Install layout
+
+| Mode | Code | Command | Data/Config |
+|------|------|---------|-------------|
+| Per-user | `~/.solviora/solviora-agent/` | `~/.local/bin/solviora` | `~/.solviora/` |
+| Root (Linux) | `/usr/local/lib/solviora-agent/` | `/usr/local/bin/solviora` | `/root/.solviora/` |
+| Termux | `~/.solviora/solviora-agent/` | `$PREFIX/bin/solviora` | `~/.solviora/` |
+
+## Install with pip (alternative)
 
 ```bash
 pip install solviora-agent
 ```
 
-This installs the `solviora` CLI command and all core dependencies.
-
-## Verify the installation
+For development, clone the repo and install from source:
 
 ```bash
-solviora --version
-```
-
-Expected output:
-
-```
-solviora-agent 0.1.0
+git clone https://github.com/JuanMS20/solviora-agent.git
+cd solviora-agent
+pip install -e ".[dev]"
 ```
 
 ## Optional dependencies
@@ -57,7 +91,7 @@ pip install "solviora-agent[messaging,dev]"
 ## Install from source
 
 ```bash
-git clone https://github.com/solviora/solviora-agent.git
+git clone https://github.com/JuanMS20/solviora-agent.git
 cd solviora-agent
 pip install -e ".[dev]"
 ```
@@ -92,6 +126,10 @@ python --version
 ```
 
 If your system Python is older, use [pyenv](https://github.com/pyenv/pyenv) or [conda](https://docs.conda.io/) to install a newer version.
+
+:::tip Windows / WSL users
+If you're installing on Windows via WSL2, see the [WSL Smoke Test](./wsl-smoke-test) for step-by-step verification.
+:::
 
 ## Next step
 

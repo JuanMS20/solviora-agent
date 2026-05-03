@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solviora — AI agent for developers</title>
+  <meta name="description" content="An autonomous agent that lives on your infrastructure, persists what it learns, and extends through tools, skills, and MCP." />
+  <link rel="stylesheet" href="design-tokens.css" />
+  <style>
+    /* ── Navigation ───────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      background: rgba(var(--solv-canvas-rgb), 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--solv-shadow-border);
+      height: var(--solv-nav-height);
+    }
+    .nav-inner {
+      max-width: var(--solv-content-max);
+      margin: 0 auto;
+      padding: 0 var(--solv-space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+    .nav-logo {
+      font-family: var(--solv-font-display);
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--solv-ink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo:hover { color: var(--solv-ink); text-decoration: none; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--solv-body);
+      transition: color var(--solv-transition-fast);
+      text-decoration: none;
+    }
+    .nav-links a:hover { color: var(--solv-ink); }
+    .nav-links a.active { color: var(--solv-primary); }
+    .theme-btn {
+      background: none;
+      border: 1px solid var(--solv-hairline);
+      border-radius: var(--solv-radius-none);
+      padding: 0.375rem;
+      cursor: pointer;
+      color: var(--solv-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color var(--solv-transition-fast);
+    }
+    .theme-btn:hover { color: var(--solv-ink); }
+    .theme-btn svg { width: 1rem; height: 1rem; }
+    .sun-icon { display: none; }
+    html.dark .sun-icon { display: block; }
+    html.dark .moon-icon { display: none; }
+    .moon-icon { display: block; }
+
+    /* ── Hero ─────────────────────────────────────────── */
+    .hero {
+      padding: 8rem 0 5rem;
+      text-align: center;
+    }
+    .hero .container { max-width: var(--solv-content-narrow); }
+    .hero h1 {
+      font-size: var(--solv-text-hero);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.0036em;
+      text-transform: uppercase;
+    }
+    .hero p {
+      font-size: var(--solv-text-body-lg);
+      line-height: 1.7;
+      max-width: 42rem;
+      margin: 1.5rem auto 2.5rem;
+      color: var(--solv-body);
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--solv-radius-pill);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: var(--solv-primary-light);
+      color: var(--solv-primary);
+      margin-bottom: 2rem;
+      font-family: var(--solv-font-body);
+    }
+
+    /* ── Install block ────────────────────────────────── */
+    .install-block { max-width: 36rem; margin: 0 auto 1rem; }
+    .install-step {
+      background: var(--solv-surface);
+      border-radius: var(--solv-radius-sm);
+      box-shadow: var(--solv-shadow-card);
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+      text-align: left;
+    }
+    .install-step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .install-step-label {
+      font-size: var(--solv-text-label);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--solv-muted);
+      font-family: var(--solv-font-body);
+    }
+    .install-copy-btn {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--solv-primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--solv-font-body);
+    }
+    .install-copy-btn:hover { color: var(--solv-primary-hover); }
+    .install-step code {
+      font-size: var(--solv-text-code-block);
+      word-break: break-all;
+      background: none;
+      padding: 0;
+      color: var(--solv-ink);
+    }
+    .windows-note { font-size: 0.75rem; color: var(--solv-muted); margin-top: 0.75rem; }
+
+    /* ── Terminal window ──────────────────────────────── */
+    .terminal-window {
+      background: #111;
+      border-radius: var(--solv-radius-sm);
+      box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.06);
+      overflow: hidden;
+      max-width: 48rem;
+      margin: 0 auto;
+    }
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: #1a1a1a;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .terminal-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 50%;
+    }
+    .terminal-dot:nth-child(1) { background: #ff5f56; }
+    .terminal-dot:nth-child(2) { background: #ffbd2e; }
+    .terminal-dot:nth-child(3) { background: #27c93f; }
+    .terminal-title {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.3);
+      font-family: var(--solv-font-code);
+      margin-left: 1rem;
+    }
+    .terminal-body {
+      padding: 1.5rem;
+      font-family: var(--solv-font-code);
+      font-size: var(--solv-text-code-block);
+      line-height: 1.7;
+      color: rgba(255,255,255,0.7);
+      min-height: 12rem;
+    }
+    .terminal-prompt { color: var(--solv-primary); }
+    .terminal-cursor {
+      background: var(--solv-primary);
+      width: 0.5em;
+      height: 1em;
+      display: inline-block;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .terminal-output { color: rgba(255,255,255,0.85); }
+    .terminal-output-dim { color: rgba(255,255,255,0.45); }
+
+    /* ── Capability grid ──────────────────────────────── */
+    .capability-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .capability-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .capability {
+      padding: var(--solv-space-6);
+      border-radius: var(--solv-radius-sm);
+      background: var(--solv-surface);
+      box-shadow: var(--solv-shadow-card);
+    }
+    .capability h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.125rem;
+    }
+    .capability p {
+      font-size: 0.9375rem;
+      margin: 0;
+      line-height: 1.6;
+      color: var(--solv-body);
+    }
+
+    /* ── Architecture layers ──────────────────────────── */
+    .arch-layers {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    @media (min-width: 640px) {
+      .arch-layers { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    .arch-layer {
+      padding: var(--solv-space-6);
+      border-radius: var(--solv-radius-sm);
+      background: var(--solv-surface);
+      box-shadow: var(--solv-shadow-card);
+    }
+    .arch-layer h3 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--solv-muted);
+      margin-bottom: 0.75rem;
+      font-family: var(--solv-font-body);
+    }
+    .arch-layer ul {
+      list-style: none;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--solv-body);
+    }
+    .arch-layer li {
+      margin-bottom: 0.5rem;
+      padding-left: 1.25rem;
+      position: relative;
+    }
+    .arch-layer li::before {
+      content: '\2014';
+      position: absolute;
+      left: 0;
+      color: var(--solv-muted);
+    }
+
+    /* ── CTA ──────────────────────────────────────────── */
+    .cta-section { text-align: center; }
+    .cta-section p {
+      font-size: 1.125rem;
+      max-width: 32rem;
+      margin: 1rem auto 2rem;
+    }
+    .cta-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    /* ── Footer ───────────────────────────────────────── */
+    footer {
+      padding: var(--solv-space-16) 0;
+      border-top: 1px solid var(--solv-hairline);
+      background: #111111;
+    }
+    html.dark footer {
+      background: #080808;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 640px) {
+      .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    }
+    footer h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1rem;
+      font-family: var(--solv-font-body);
+    }
+    footer ul { list-style: none; }
+    footer li { margin-bottom: 0.5rem; }
+    footer a {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+    }
+    footer a:hover { color: rgba(255,255,255,0.9); }
+    footer p { color: rgba(255,255,255,0.5); }
+    .footer-meta {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Section descriptions ─────────────────────────── */
+    .section-desc {
+      font-size: 1.125rem;
+      max-width: 36rem;
+      margin-bottom: 2.5rem;
+      color: var(--solv-body);
+    }
+    .section-title {
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 640px) {
+      .hero { padding: 6rem 0 3rem; }
+      .section { padding: 3rem 0; }
+      .nav-links a:not(:last-child) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">Solviora</a>
+      <div class="nav-links">
+        <a href="/docs/">Documentation</a>
+        <a href="https://github.com/JuanMS20/solviora-agent">GitHub</a>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle dark mode">
+          <svg class="sun-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <svg class="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+  <section class="hero">
+    <div class="container">
+      <span class="open-source-badge">Open source · MIT</span>
+      <h1>An agent infrastructure<br/>for developers.</h1>
+      <p>Solviora is an autonomous agent that runs on your own infrastructure &mdash; your server, a cloud VM, or a container. It connects to any LLM provider, persists what it learns across sessions, and extends through tools, skills, and MCP servers. Not a copilot. Not a chatbot wrapper. An agent you control.</p>
+      <div class="install-block">
+        <div class="install-step">
+          <div class="install-step-header">
+            <span class="install-step-label">1. Install</span>
+            <button class="install-copy-btn" data-copy="curl -fsSL https://raw.githubusercontent.com/JuanMS20/solviora-agent/main/scripts/install.sh | bash">Copy</button>
+          </div>
+          <code>curl -fsSL https://raw.githubusercontent.com/JuanMS20/solviora-agent/main/scripts/install.sh | bash</code>
+        </div>
+        <div class="install-step">
+          <div class="install-step-header">
+            <span class="install-step-label">2. Configure</span>
+            <button class="install-copy-btn" data-copy="solviora setup">Copy</button>
+          </div>
+          <code>solviora setup</code>
+        </div>
+        <p class="windows-note">Requires <a href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL2</a> on Windows.</p>
+      </div>
+    </div>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="terminal-window">
+        <div class="terminal-bar">
+          <span class="terminal-dot"></span>
+          <span class="terminal-dot"></span>
+          <span class="terminal-dot"></span>
+          <span class="terminal-title">solviora chat</span>
+        </div>
+        <div class="terminal-body">
+          <span class="terminal-prompt">$</span> solviora chat --model openai/gpt-4o<br/>
+          <span class="terminal-output-dim">Using provider: openai · model: gpt-4o</span><br/>
+          <span class="terminal-output-dim">Session started. Type /help for commands.</span><br/><br/>
+          <span class="terminal-prompt">></span> what's the memory usage on this server?<br/><br/>
+          <span class="terminal-output">Let me check...</span><br/><br/>
+          <span class="terminal-prompt">$</span> free -h<br/>
+          <span class="terminal-output">              total     used     free   shared  buff/cache  available</span><br/>
+          <span class="terminal-output">Mem:           31G     8.2G     18G     1.1G       4.5G        21G</span><br/><br/>
+          <span class="terminal-output">You're using about 8.2 GB out of 31 GB total.</span><br/>
+          <span class="terminal-output">No immediate concern. Would you like me to</span><br/>
+          <span class="terminal-output">investigate what's using the most?</span><br/>
+          <span class="terminal-cursor"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <h2 style="margin-bottom:0.5rem">Capabilities</h2>
+      <p style="font-size:1.125rem; max-width:36rem; margin-bottom:2.5rem">A focused set of primitives. Not a platform. Not an ecosystem. A tool that does what you ask.</p>
+      <div class="capability-grid">
+        <div class="capability"><h3>Persistent memory</h3><p>The agent stores what it learns across conversations. FTS5 recall, automatic summarization, and periodic persistence nudges. Optional pluggable backends.</p></div>
+        <div class="capability"><h3>Multi-platform gateway</h3><p>CLI, Telegram, Discord, Slack, WhatsApp, Signal, Email &mdash; one gateway routes messages to the agent. Start on one, pick up on another.</p></div>
+        <div class="capability"><h3>Scheduled automations</h3><p>Natural-language cron for reports, backups, and briefings. Runs through the gateway, delivers to any connected platform.</p></div>
+        <div class="capability"><h3>Subagent delegation</h3><p>Spawn isolated agents for parallel workstreams. Each has its own conversation, terminal, and tools. No context-cost interference.</p></div>
+        <div class="capability"><h3>Sandboxed execution</h3><p>Six terminal backends: local, Docker, SSH, Daytona, Singularity, Modal. Container hardening and namespace isolation.</p></div>
+        <div class="capability"><h3>Web and browser</h3><p>Web search, browser automation with vision, image generation, text-to-speech. Works through any configured provider or dedicated API keys.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <h2 style="margin-bottom:0.5rem">How it works</h2>
+      <p style="font-size:1.125rem; max-width:36rem; margin-bottom:2.5rem">Three layers. The agent, the infrastructure it runs on, and the extensions it uses.</p>
+      <div class="arch-layers">
+        <div class="arch-layer">
+          <h3>Agent core</h3><ul><li>Provider-agnostic LLM routing</li><li>Tool-calling loop</li><li>Memory and skill management</li><li>Subagent orchestration</li><li>Session persistence</li></ul>
+        </div>
+        <div class="arch-layer">
+          <h3>Infrastructure</h3><ul><li>6 terminal backends</li><li>Messaging gateway (15+ platforms)</li><li>Built-in cron scheduler</li><li>Plugin system</li><li>Profile isolation</li></ul>
+        </div>
+        <div class="arch-layer">
+          <h3>Extensions</h3><ul><li>68+ built-in tools (toolsets)</li><li>MCP server integration</li><li>Skill packages (agentskills.io)</li><li>Memory provider plugins</li><li>ACL + approval rules</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section cta-section">
+    <div class="container">
+      <h2>Install and run in under two minutes.</h2>
+      <p>One command. No accounts. No cloud sign-up. Your infrastructure, your agent.</p>
+      <div class="cta-buttons">
+        <a href="/docs/installation" class="btn btn-primary">Install Solviora</a>
+        <a href="/docs/quickstart" class="btn btn-secondary">Quickstart guide</a>
+        <a href="/docs/" class="btn btn-secondary">Documentation</a>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div><h4>Solviora Agent</h4><p style="font-size:0.875rem; margin:0">An autonomous agent infrastructure for developers. Open source (MIT).</p></div>
+        <div><h4>Documentation</h4><ul><li><a href="/docs/installation">Installation</a></li><li><a href="/docs/quickstart">Quickstart</a></li><li><a href="/docs/cli-basics">CLI guide</a></li><li><a href="/docs/">Docs home</a></li></ul></div>
+        <div><h4>Community</h4><ul><li><a href="https://github.com/JuanMS20/solviora-agent">GitHub</a></li><li><a href="https://github.com/JuanMS20/solviora-agent/discussions">Discussions</a></li></ul></div>
+        <div><h4>Info</h4><ul><li><a href="/docs/about">About</a></li><li><a href="/docs/faq">FAQ</a></li></ul></div>
+      </div>
+      <div class="footer-meta">v0.1.0 · MIT License · 2026</div>
+    </div>
+  </footer>
+  <script>
+    const html = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem('solviora-theme');
+    if (saved) html.classList.toggle('dark', saved === 'dark');
+    else html.classList.toggle('dark', window.matchMedia('(prefers-color-scheme: dark)').matches);
+    toggle.addEventListener('click', () => { html.classList.toggle('dark'); localStorage.setItem('solviora-theme', html.classList.contains('dark') ? 'dark' : 'light'); });
+    document.querySelectorAll('.install-copy-btn').forEach(btn => { btn.addEventListener('click', () => { const text = btn.getAttribute('data-copy'); if (text) { navigator.clipboard.writeText(text); const orig = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = orig; }, 2000); } }); });
+  </script>
+</body>
+</html>

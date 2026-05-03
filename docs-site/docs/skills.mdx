@@ -10,7 +10,21 @@ Skills and plugins let you extend Solviora Agent without modifying the core code
 
 ## Skills
 
-Skills are prompt-based extensions that add domain expertise to the agent. They're loaded as additional context when relevant to the conversation.
+Skills are on-demand knowledge documents that the agent can load when needed. They follow a progressive disclosure pattern to minimize token usage and are compatible with the open SKILL.md standard.
+
+All skills live in `~/.solviora/skills/`. Bundled skills ship with the agent, hub-installed skills come from online registries, and agent-created skills are generated automatically from experience.
+
+### Progressive disclosure
+
+Skills use a token-efficient three-level loading pattern:
+
+| Level | Call | What the agent sees |
+|-------|------|--------------------|
+| 0 | `skills_list()` | Skill name, description, and category (~3K tokens total) |
+| 1 | `skill_view(name)` | Full SKILL.md content for one skill |
+| 2 | `skill_view(name, path)` | Specific reference file within a skill |
+
+The agent only loads full skill content when it actually needs it. This keeps the system prompt small and API costs low.
 
 ### Built-in skills
 
@@ -24,12 +38,23 @@ Solviora ships skills organized by category:
 | MLOps | Model training, experiment tracking |
 | Productivity | Email drafting, summarization |
 
-### Installing optional skills
+### Installing skills from the hub
 
 ```bash
-solviora skills install official/devops/docker-basics
-solviora skills install official/security/owasp-top10
+# Browse available skills
+solviora skills browse
+
+# Search for a skill
+solviora skills search kubernetes
+
+# Preview before installing
+solviora skills inspect official/devops/k8s
+
+# Install
+solviora skills install official/devops/k8s
 ```
+
+The skills hub supports multiple sources: official optional skills, skills.sh directory, well-known endpoints, direct GitHub repos, and direct URLs.
 
 ### Managing skills
 
@@ -38,20 +63,86 @@ solviora skills install official/security/owasp-top10
 solviora skills list
 
 # Remove a skill
-solviora skills remove docker-basics
+solviora skills remove k8s
+
+# Update hub skills
+solviora skills update
+
+# Check for upstream changes
+solviora skills check
 ```
+
+### Agent-managed skills
+
+The agent can create, update, and delete its own skills via the `skill_manage` tool. This is the agent's procedural memory — when it figures out a non-trivial workflow, it saves the approach as a skill for future reuse.
+
+Triggers for automatic skill creation:
+- After completing a complex task (5+ tool calls) successfully
+- When it found a working path after errors or dead ends
+- When the user corrected its approach
+- When it discovered a non-trivial workflow
 
 ### Using skills in conversation
 
-Skills activate automatically when relevant. You can also invoke them explicitly:
+Skills activate automatically when the conversation is relevant. You can also invoke them explicitly via slash commands:
 
 ```
 You › /docker-basics How do I multi-stage build?
+You › /plan design a rollout for migrating our auth provider
 ```
+
+### SKILL.md format
+
+```yaml
+---
+name: my-skill
+description: Brief description of what this skill does
+version: 1.0.0
+platforms: [macos, linux]     # Optional — OS restrictions
+metadata:
+  solviora:
+    tags: [python, automation]
+    category: devops
+    config:                     # Optional — config.yaml settings
+      - key: myplugin.path
+        description: Path to data directory
+        default: "~/myplugin-data"
+---
+
+# Skill Title
+
+## When to Use
+Trigger conditions for this skill.
+
+## Procedure
+1. Step one
+2. Step two
+
+## Pitfalls
+- Known failure modes and fixes
+
+## Verification
+How to confirm it worked.
+```
+
+Skills also support conditional activation — they can show or hide themselves based on which tools are available in the current session. For example, a DuckDuckGo search skill only appears when no paid web search tool is configured.
+
+### External skill directories
+
+You can point Solviora at additional skill directories outside `~/.solviora/skills/` — for example, a shared `~/.agents/skills/` used by multiple AI tools:
+
+```yaml
+skills:
+  external_dirs:
+    - ~/.agents/skills
+    - ${SKILLS_REPO}/skills
+```
+
+External directories are read-only. When the agent creates or edits a skill, it always writes to `~/.solviora/skills/`. If the same skill name exists locally and externally, the local version wins.
 
 ## Plugins
 
-Plugins add new capabilities — custom tools, lifecycle hooks, memory providers, and CLI commands.
+Plugins add new capabilities — custom tools, lifecycle hooks, memory providers, and CLI commands. Solviora discovers plugins from three locations: `~/.solviora/plugins/` (user), `.solviora/plugins/` (project), and pip-installed entry points.
 
 ### Plugin types
 
@@ -61,6 +152,8 @@ Plugins add new capabilities — custom tools, lifecycle hooks, memory providers
 | **Memory providers** | Alternative memory backends (Honcho, Mem0, etc.) |
 | **Context engines** | Custom context retrieval strategies |
 | **CLI commands** | New `solviora <command>` subcommands |
+
+Memory providers and context engines are single-select — only one of each can be active at a time, configured via `solviora plugins` or `config.yaml`.
 
 ### Installing plugins
 
@@ -91,9 +184,16 @@ def register(ctx):
 
     # Register a lifecycle hook
     ctx.register_hook("post_tool_call", my_hook)
+
+    # Register a CLI subcommand
+    ctx.register_cli_command(subparser)
 ```
 
-See the [plugin development guide](https://github.com/solviora/solviora-agent/tree/main/plugins) for full documentation.
+Plugins can also register lifecycle hooks: `pre_tool_call`, `post_tool_call`, `pre_llm_call`, `post_llm_call`, `on_session_start`, `on_session_end`.
+
+### Built-in plugins
+
+Solviora ships a few built-in plugins that run automatically via lifecycle hooks, such as disk-cleanup and similar maintenance tasks.
 
 ## Skill vs Plugin — when to use which?
 

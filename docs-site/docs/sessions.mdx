@@ -1,0 +1,168 @@
+---
+slug: /sessions
+title: Sessions
+description: How Solviora stores, resumes, searches, and manages conversation sessions.
+---
+
+# Sessions
+
+Every conversation in Solviora is a **session** — an auto-saved record of messages, tool calls, and model responses. Sessions persist across restarts and are fully searchable.
+
+## How sessions are stored
+
+Solviora uses a SQLite database (`state.db`) located in your home directory:
+
+```
+~/.solviora/state.db       # default profile
+```
+
+The database uses WAL mode for concurrent reads and jitter-based retry for write contention. Full-text search (FTS5) indexes session titles and message content, including trigram support for CJK languages.
+
+Key session fields:
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique session identifier (UUID) |
+| `source` | How the session started (`cli`, `gateway`, `tui`, etc.) |
+| `model` | Model used for the session |
+| `title` | Auto-generated or manually set title |
+| `started_at` | Creation timestamp (UTC) |
+| `ended_at` | End timestamp (UTC), null if active |
+| `end_reason` | Why the session ended (`user_exit`, `new`, `interrupt`, etc.) |
+| `message_count` | Number of messages in the session |
+| `parent_session_id` | Links to parent for compression chains |
+
+## Automatic session management
+
+You don't need to do anything to create sessions. Solviora automatically:
+
+- **Creates** a session when you start a conversation.
+- **Saves** every message (user, assistant, tool) as it happens.
+- **Ends** the session when you exit, type `/new`, or start a new conversation.
+- **Titles** the session based on the first user message (you can override this).
+
+## Resuming sessions
+
+Resume your last session:
+
+```bash
+solviora --resume
+solviora -r
+```
+
+Resume a specific session by its ID or search term:
+
+```bash
+solviora --resume "fix auth bug"
+solviora --resume abc12345
+```
+
+Inside an interactive session, use the `/resume` command:
+
+```
+/resume                  # pick from recent sessions
+/resume "fix auth"       # search for a session
+```
+
+The session picker shows title, date, model, and message count. Select one to continue exactly where you left off.
+
+## Session commands (interactive)
+
+These slash commands manage sessions from the prompt:
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `/new` | | End current session and start fresh |
+| `/clear` | | Clear the current conversation (keeps session) |
+| `/history` | `/h` | Show session history with titles and dates |
+| `/save` | | Save session to a file |
+| `/retry` | | Retry the last assistant response |
+| `/undo` | | Remove the last exchange |
+| `/title <name>` | | Set the session title |
+| `/branch` | | Branch the current session into a new one |
+| `/compress` | | Compress session to free context window |
+| `/rollback` | | Roll back to a previous point |
+| `/snapshot` | | Save a snapshot of the current state |
+| `/resume` | | Resume a past session |
+
+## Searching sessions
+
+Use `/history` to browse recent sessions, or the `--resume` flag with a search term:
+
+```bash
+# CLI flag — search and resume
+solviora --resume "docker compose"
+
+# Interactive — browse history
+/history
+```
+
+The search uses SQLite FTS5, which supports:
+
+- **Prefix matching** — `docker*` matches `docker` and `dockerize`.
+- **Phrase matching** — `"fix auth"` matches that exact phrase.
+- **CJK support** — trigram tokenizer handles Chinese, Japanese, and Korean text.
+
+## Session branching and compression
+
+### Branching
+
+`/branch` creates a new session that copies the current conversation history. The original session remains untouched. Useful when you want to explore a different approach without losing context.
+
+### Compression
+
+`/compress` summarizes the conversation so far and replaces the full history with a shorter summary. This frees context window space for long sessions. The original session is linked via `parent_session_id` so you can always trace back.
+
+Compression chains: if you compress multiple times, each new session links to its parent, forming a chain. Session listing and search traverse these chains transparently.
+
+## Exporting and pruning
+
+### Export a session
+
+```
+/save
+```
+
+Exports the current session as a JSON file to `~/.solviora/sessions/`.
+
+### Prune old sessions
+
+Sessions accumulate over time. Clean up with:
+
+```bash
+solviora sessions prune --days 90
+```
+
+This removes sessions older than 90 days that have already ended. Active sessions are never pruned.
+
+## Sessions and profiles
+
+Each [profile](./profiles) has its own `state.db`. Sessions are fully isolated between profiles — a session created in the `work` profile is invisible from the `personal` profile.
+
+```bash
+solviora -p work --resume       # resume in work profile
+solviora -p personal --resume   # resume in personal profile
+```
+
+## Session lifecycle
+
+```
+Start → Active → (auto-save every message) → End
+                     ↓                         ↑
+                  /branch                  /new, exit
+                     ↓
+                New session (linked)
+```
+
+Sessions end when you:
+
+- Type `/new` or `/exit`.
+- Press `Ctrl+C` twice.
+- Close the terminal (Solviora detects the disconnect and ends the session).
+
+## Related
+
+- [CLI Basics](./cli-basics) — basic session usage in the interactive prompt
+- [Profiles](./profiles) — how profiles isolate session databases
+- [TUI](./tui) — session management in the terminal UI
+- [Configuration Reference](./configuration-reference) — session-related config keys

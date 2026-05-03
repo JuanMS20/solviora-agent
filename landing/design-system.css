@@ -1,0 +1,92 @@
+/* ═══════════════════════════════════════════════════════════
+   Solviora Design System — Direction: Hoshi One Editorial
+   ═══════════════════════════════════════════════════════════
+
+   Source of truth: DESIGN.md in project root.
+   Canonical tokens: landing/design-tokens.css + docs-site/src/css/custom.css
+
+   THIS FILE IS DEPRECATED — kept for reference only.
+   See DESIGN.md (root) for complete design documentation.
+   ═══════════════════════════════════════════════════════════ */
+
+/* This file has been superseded by:
+   - DESIGN.md               → design decisions & rules
+   - landing/design-tokens.css → canonical CSS variables (landing)
+   - docs-site/src/css/custom.css → duplicated tokens (docs-site)
+   
+   No Inter-as-only solution. Display headings get DM Sans
+   for editorial tension. Negative tracking on H1-H3.
+   ────────────────────────────────────────────────────────── */
+
+/*
+  Display: DM Sans
+    - H1: 700 weight, -0.03em tracking, 3.5rem-4.5rem
+    - H2: 600 weight, -0.02em tracking, 2rem-2.5rem
+    - H3: 600 weight, -0.01em tracking, 1.5rem
+  
+  Body: Inter
+    - 400/500 weight, 1rem-1.125rem
+    - Line height: 1.6-1.7
+  
+  Code: JetBrains Mono
+    - 0.875em inline, 0.8125em blocks
+    - Line height: 1.6
+*/
+
+/* ── 3. Layout & Spacing ───────────────────────────────────
+   Generous vertical rhythm. Sections: 80-120px padding.
+   Max-width: 1200px (landing) / 1400px (docs).
+   Grid: 2-col or variable, never 3 identical cards if avoidable.
+   ────────────────────────────────────────────────────────── */
+
+/*
+  Section spacing: 6rem-8rem vertical
+  Card padding: 1.5rem-2rem
+  Content max-width: 72rem (1152px)
+  Grid gap: 1.5rem-2rem
+*/
+
+/* ── 4. Shadows (Vercel-style border-as-shadow) ────────────
+   Never use soft-drop-shadow-on-white. Use hard 1px border
+   at 6% opacity that acts as a hairline.
+   ────────────────────────────────────────────────────────── */
+
+/*
+  --solv-shadow-border: rgba(0,0,0,0.06) 0px 0px 0px 1px;
+  --solv-shadow-card: border + rgba(0,0,0,0.03) 0px 2px 4px;
+  --solv-shadow-elevated: border + 2px + rgba(0,0,0,0.02) 0px 8px 16px -4px;
+*/
+
+/* ── 5. Radius ─────────────────────────────────────────────
+   Modest. 8px for buttons, 12px for cards.
+   16px max for terminal windows.
+   ────────────────────────────────────────────────────────── */
+
+/*
+  --ifm-global-radius: 8px;
+  --ifm-button-border-radius: 8px;
+  --ifm-card-border-radius: 12px;
+*/
+
+/* ── 6. Component Design ───────────────────────────────────
+   Navbar: transparent with backdrop-blur, hairline bottom
+   Hero: centered headline + sub + install block, NO gradient bg
+   Cards: border-only, no icon circles, content-driven
+   Terminal window: title bar + dark body
+   Footer: minimal, left-aligned, small text
+   Buttons: ink-on-canvas (primary), border-only (secondary)
+   ────────────────────────────────────────────────────────── */
+
+/* ── 7. Anti-patterns checklist ────────────────────────────
+   ✗ Generic AI purple/blue gradients
+   ✗ Neon glow
+   ✗ "The future of AI" claims
+   ✗ 3 identical feature columns with icon circles
+   ✗ Badge overload
+   ✗ Blob backgrounds
+   ✗ Overly rounded buttons (>12px)
+   ✗ Excessive drop shadows
+   ✗ Icon-in-circle SVG decorations
+   ✗ "AI-powered" as a badge
+   ✗ Blue/violet accent (unless minimal)
+   ────────────────────────────────────────────────────────── */

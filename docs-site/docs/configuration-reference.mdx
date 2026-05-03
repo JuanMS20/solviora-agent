@@ -6,7 +6,7 @@ description: Complete reference for config.yaml and .env settings.
 
 # Configuration Reference
 
-All settings for `~/.solviora/config.yaml` and `~/.solviora/.env`.
+All settings for `~/.solviora/config.yaml` and `~/.solviora/.env`. Settings are documented from the codebase defaults.
 
 ## config.yaml
 
@@ -14,39 +14,106 @@ All settings for `~/.solviora/config.yaml` and `~/.solviora/.env`.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `model` | string | `gpt-4o` | Default LLM model |
-| `provider` | string | `openai` | Default provider |
-| `fallback_model` | string | — | Model used when primary is unavailable |
-| `base_url` | string | — | Custom API base URL |
-| `api_mode` | string | `chat_completions` | API mode (`chat_completions`, `codex_responses`) |
-| `max_iterations` | number | `90` | Max tool-calling iterations per conversation |
+| `model` | string | `""` | Default LLM model ID |
+| `provider` | string | `""` | Default provider (auto-detected if empty) |
+| `providers` | object | `{}` | Per-provider settings (base URLs, timeouts, model lists). Each key is a provider ID. |
+| `fallback_providers` | array | `[]` | Ordered list of fallback providers tried when primary fails |
+| `credential_pool_strategies` | object | `{}` | Strategies for rotating credentials across keys |
+| `base_url` | string | — | Custom API base URL (shortcut for single-provider setups) |
+| `api_mode` | string | `chat_completions` | API transport mode (`chat_completions`, `codex_responses`, `anthropic`) |
+
+### Agent
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `agent.max_turns` | number | `90` | Max tool-calling iterations per conversation turn |
+| `agent.gateway_timeout` | number | `1800` | Gateway agent inactivity timeout (seconds) |
+| `agent.restart_drain_timeout` | number | `60` | Graceful drain timeout for gateway restart (seconds) |
+| `agent.api_max_retries` | number | `3` | Max app-level retry attempts for API errors |
+| `agent.service_tier` | string | `""` | Service tier for OpenAI etc. |
+| `agent.tool_use_enforcement` | string/bool | `auto` | Tool-use guidance injection (`auto`, `true`, `false`, or model name list) |
+| `agent.gateway_timeout_warning` | number | `900` | Warning threshold before timeout (seconds) |
+| `agent.gateway_notify_interval` | number | `180` | "Still working" notification interval (seconds) |
+| `agent.gateway_auto_continue_freshness` | number | `3600` | Auto-continue note freshness window (seconds) |
+| `agent.image_input_mode` | string | `auto` | Image presentation mode (`auto`, `native`, `text`) |
+
+### Terminal
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `terminal.backend` | string | `local` | Terminal backend (`local`, `docker`, `ssh`, `modal`, `daytona`, `singularity`, `vercel_sandbox`) |
+| `terminal.cwd` | string | `.` | Default working directory |
+| `terminal.timeout` | number | `180` | Per-command timeout (seconds) |
+| `terminal.env_passthrough` | array | `[]` | Env var names to forward to sandboxed execution |
+| `terminal.persistent_shell` | bool | `true` | Keep a long-lived bash shell across commands |
+| `terminal.docker_image` | string | `nikolaik/python-nodejs:python3.11-nodejs20` | Docker container image |
+| `terminal.docker_forward_env` | array | `[]` | Env vars to forward into Docker containers |
+| `terminal.docker_env` | object | `{}` | Explicit env var key=value pairs for Docker |
+| `terminal.docker_volumes` | array | `[]` | Host directory mounts (`host:container` syntax) |
+| `terminal.docker_mount_cwd_to_workspace` | bool | `false` | Mount host cwd into `/workspace` |
+| `terminal.docker_run_as_host_user` | bool | `false` | Run container as host user's uid:gid |
+| `terminal.singularity_image` | string | — | Singularity container image |
+| `terminal.modal_image` | string | — | Modal container image |
+| `terminal.daytona_image` | string | — | Daytona container image |
+| `terminal.vercel_runtime` | string | `node24` | Vercel Sandbox runtime (`node24`, `node22`, `python3.13`) |
+| `terminal.container_cpu` | number | `1` | CPU cores for container backends |
+| `terminal.container_memory` | number | `5120` | Memory limit in MB |
+| `terminal.container_disk` | number | `51200` | Disk limit in MB |
+| `terminal.container_persistent` | bool | `true` | Persist filesystem across sessions |
+
+### Browser
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `browser.inactivity_timeout` | number | `120` | Browser inactivity timeout (seconds) |
+| `browser.command_timeout` | number | `30` | Per-command timeout (seconds) |
+| `browser.record_sessions` | bool | `false` | Auto-record sessions as WebM |
+| `browser.allow_private_urls` | bool | `false` | Allow navigating to private IPs |
+| `browser.auto_local_for_private_urls` | bool | `true` | Use local Chromium for LAN/private URLs |
+| `browser.cdp_url` | string | `""` | Persistent CDP endpoint |
+| `browser.dialog_policy` | string | `must_respond` | Dialog handling policy |
+| `browser.camofox.managed_persistence` | bool | `false` | Use persistent Firefox profile |
+
+### Checkpoints
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `checkpoints.enabled` | bool | `true` | Enable filesystem snapshots before destructive ops |
+| `checkpoints.max_snapshots` | number | `50` | Max checkpoints per directory |
+| `checkpoints.auto_prune` | bool | `false` | Auto-delete stale checkpoints at startup |
+| `checkpoints.retention_days` | number | `7` | Stale checkpoint retention |
+| `checkpoints.delete_orphans` | bool | `true` | Delete checkpoints for removed directories |
+
+### Compression
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `compression.enabled` | bool | `true` | Enable context compression |
+| `compression.threshold` | number | `0.50` | Compress when context exceeds this ratio |
+| `compression.target_ratio` | number | `0.20` | Fraction of threshold to preserve as recent tail |
+| `compression.protect_last_n` | number | `20` | Minimum recent messages to keep uncompressed |
+| `compression.hygiene_hard_message_limit` | number | `400` | Force-compress at this message count |
 
 ### Display
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `display.skin` | string | `default` | CLI theme (`default`, `ares`, `mono`, `slate`) |
-| `display.tool_progress` | boolean | `true` | Show tool execution progress |
-| `display.background_process_notifications` | string | `all` | Background process verbosity (`all`, `result`, `error`, `off`) |
-
-### Terminal
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `terminal.cwd` | string | `~` | Default working directory for tool execution |
+| `display.tool_progress` | bool | `true` | Show tool execution progress |
+| `display.background_process_notifications` | string | `all` | Verbosity (`all`, `result`, `error`, `off`) |
 
 ### Memory
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `memory.provider` | string | `builtin` | Memory backend (`builtin`, `honcho`, `mem0`, `supermemory`) |
+| `memory.provider` | string | `builtin` | Memory backend (`builtin`, `honcho`, `mem0`, `supermemory`, `byterover`, `hindsight`, `holographic`, `openviking`, `retaindb`) |
 
 ### Toolsets
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `enabled_toolsets` | string[] | `["core"]` | Toolsets enabled by default |
-| `disabled_toolsets` | string[] | `[]` | Toolsets explicitly disabled |
+| `toolsets` | array | `["hermes-cli"]` | Toolsets enabled by default |
+| `agent.disabled_toolsets` | array | `[]` | Toolsets explicitly disabled |
 
 ### Logging
 
@@ -54,30 +121,110 @@ All settings for `~/.solviora/config.yaml` and `~/.solviora/.env`.
 |-----|------|---------|-------------|
 | `logging.level` | string | `INFO` | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
 
+### Prompt Caching (Anthropic)
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `prompt_caching.cache_ttl` | string | `5m` | Cache TTL (`5m` or `1h`) |
+
 ### Skills
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `skills.config.<key>` | any | — | Skill-specific settings |
+| `skills.config.<key>` | any | — | Skill-specific settings (declared in SKILL.md frontmatter) |
+| `skills.external_dirs` | array | — | Additional skill directories to scan (`~` and `${VAR}` supported) |
+
+### Bedrock
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `bedrock.region` | string | `""` | AWS region for Bedrock |
+| `bedrock.discovery.enabled` | bool | `true` | Auto-discover models |
+| `bedrock.guardrail.guardrail_identifier` | string | `""` | Bedrock Guardrail ID |
+
+### Auxiliary models
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `auxiliary.vision.provider` | string | `auto` | Provider for vision side-tasks |
+| `auxiliary.vision.model` | string | `""` | Model override for vision |
+| `auxiliary.web_extract.provider` | string | `auto` | Provider for web extraction |
+| `auxiliary.compression.provider` | string | `auto` | Provider for context compression |
+| `auxiliary.session_search.provider` | string | `auto` | Provider for session search |
+| `auxiliary.approval.provider` | string | `auto` | Provider for smart approval (fast/cheap model recommended) |
+| `auxiliary.curator.provider` | string | `auto` | Provider for skill curator |
+| _(All auxiliary tasks)_ | — | — | Each supports `provider`, `model`, `base_url`, `api_key`, `timeout`, `extra_body` |
+
+### Tool output limits
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `tool_output.max_bytes` | number | `50000` | Terminal output cap in chars |
+| `tool_output.max_lines` | number | `2000` | read_file pagination cap |
+| `tool_output.max_line_length` | number | `2000` | Per-line cap in chars |
+
+### Tool loop guardrails
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `tool_loop_guardrails.warnings_enabled` | bool | `true` | Nudge on repeated failures |
+| `tool_loop_guardrails.hard_stop_enabled` | bool | `false` | Force-stop on repeated failures |
+
+### Approvals
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `approvals.mode` | string | `manual` | Approval mode (`manual`, `smart`, `off`) |
+| `approvals.timeout` | number | `60` | Approval prompt timeout (seconds) |
+
+### Voice
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `voice.record_key` | string | `ctrl+b` | Key to start/stop recording |
+| `voice.max_recording_seconds` | number | `120` | Maximum recording length |
+| `voice.auto_tts` | bool | `false` | Auto-enable TTS when voice mode starts |
+| `voice.beep_enabled` | bool | `true` | Play record start/stop beeps |
+| `voice.silence_threshold` | number | `200` | RMS level for silence detection |
+| `voice.silence_duration` | number | `3.0` | Seconds of silence before auto-stop |
+| `stt.provider` | string | `local` | STT provider (`local`, `groq`, `openai`) |
+| `stt.local.model` | string | `base` | Local Whisper model size |
+| `tts.provider` | string | `edge` | TTS provider (`edge`, `elevenlabs`, `openai`, `neutts`, `minimax`) |
+
+:::tip See also
+For a guided walkthrough, see the [Configuration guide](./configuration). For provider setup details, see [Providers](./providers).
+:::
 
 ## .env variables
 
 Only store secrets (API keys, tokens, passwords) in `.env`. All other settings go in `config.yaml`.
 
+Key env vars by category:
+
 | Variable | Category | Description |
 |----------|----------|-------------|
 | `OPENAI_API_KEY` | Provider | OpenAI API key |
 | `ANTHROPIC_API_KEY` | Provider | Anthropic API key |
-| `GOOGLE_API_KEY` | Provider | Google Gemini API key |
+| `GOOGLE_API_KEY` | Provider | Google AI Studio Gemini API key |
 | `DEEPSEEK_API_KEY` | Provider | DeepSeek API key |
-| `GROQ_API_KEY` | Provider | Groq API key |
-| `MISTRAL_API_KEY` | Provider | Mistral API key |
 | `OPENROUTER_API_KEY` | Provider | OpenRouter API key |
-| `AZURE_API_KEY` | Provider | Azure OpenAI API key |
-| `HF_API_KEY` | Provider | Hugging Face API key |
+| `HF_TOKEN` | Provider | Hugging Face token |
+| `XAI_API_KEY` | Provider | xAI (Grok) API key |
+| `NVIDIA_API_KEY` | Provider | NVIDIA NIM API key |
+| `GLM_API_KEY` | Provider | Z.AI / GLM API key |
+| `KIMI_API_KEY` | Provider | Kimi / Moonshot API key |
+| `MINIMAX_API_KEY` | Provider | MiniMax API key |
+| `DASHSCOPE_API_KEY` | Provider | Alibaba Cloud DashScope API key |
+| `XIAOMI_API_KEY` | Provider | Xiaomi MiMo API key |
+| `TOKENHUB_API_KEY` | Provider | Tencent TokenHub API key |
+| `ARCEEAI_API_KEY` | Provider | Arcee AI API key |
+| `KILOCODE_API_KEY` | Provider | Kilo Code API key |
+| `GITHUB_TOKEN` / `GH_TOKEN` | Provider | GitHub Copilot token |
 | `EXA_API_KEY` | Tool | Exa search API key |
 | `FIRECRAWL_API_KEY` | Tool | Firecrawl API key |
-| `TELEGRAM_BOT_TOKEN` | Messaging | Telegram bot token |
+| `TERMINAL_SSH_HOST` | Tool | SSH backend host |
+| `TERMINAL_SSH_USER` | Tool | SSH backend user |
+| `SOLVIORA_HOME` | Runtime | Config directory override (default: `~/.solviora/`) |
 | `DISCORD_BOT_TOKEN` | Messaging | Discord bot token |
 | `SLACK_BOT_TOKEN` | Messaging | Slack bot token |
 

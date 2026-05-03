@@ -1,0 +1,46 @@
+---
+title: Plugins
+description: Extend Solviora with custom tools, lifecycle hooks, and memory providers.
+---
+
+# Plugins
+
+The plugin system allows extending Solviora with custom capabilities without modifying core code. Plugins can add tools, register lifecycle hooks, and provide alternative memory backends.
+
+## Plugin Types
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| Memory providers | Alternative storage backends | Honcho, Mem0, Supermemory, Byterover |
+| Context engines | Custom context building | Retrieval-augmented generation pipelines |
+| General plugins | Tools, hooks, CLI commands | Dashboard, disk cleanup, Google Meet |
+
+## Installing Plugins
+
+Plugins can be installed from:
+
+- `~/.solviora/plugins/` — user-installed plugins
+- `./.hermes/plugins/` — project-local plugins
+- `pip install` — packages exposing entry points
+
+## Memory Providers
+
+Solviora supports pluggable memory backends beyond the built-in FTS5 storage:
+
+```bash
+solviora setup
+# Select memory provider during setup
+```
+
+Available providers: Honcho, Mem0, Supermemory, Byterover, Hindsight, Holographic, OpenViking, RetainDB.
+
+## Writing a Plugin
+
+Plugins expose a `register(ctx)` function that can:
+
+- Register `pre_tool_call`, `post_tool_call` lifecycle hooks
+- Register `on_session_start`, `on_session_end` lifecycle hooks
+- Add new tools via `ctx.register_tool()`
+- Add CLI subcommands
+
+See the developer guide for the plugin API documentation.

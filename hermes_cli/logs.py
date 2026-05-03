@@ -1,4 +1,4 @@
-"""``hermes logs`` — view and filter Hermes log files.
+"""``solviora logs`` — view and filter Hermes log files.
 
 Supports tailing, following, session filtering, level filtering,
 component filtering, and relative time ranges.  All log files live
@@ -6,15 +6,15 @@ under ``~/.hermes/logs/``.
 
 Usage examples::
 
-    hermes logs                    # last 50 lines of agent.log
-    hermes logs -f                 # follow agent.log in real time
-    hermes logs errors             # last 50 lines of errors.log
-    hermes logs gateway -n 100    # last 100 lines of gateway.log
-    hermes logs --level WARNING    # only WARNING+ lines
-    hermes logs --session abc123   # filter by session ID substring
-    hermes logs --component tools  # only tool-related lines
-    hermes logs --since 1h         # lines from the last hour
-    hermes logs --since 30m -f     # follow, starting 30 min ago
+    solviora logs                    # last 50 lines of agent.log
+    solviora logs -f                 # follow agent.log in real time
+    solviora logs errors             # last 50 lines of errors.log
+    solviora logs gateway -n 100    # last 100 lines of gateway.log
+    solviora logs --level WARNING    # only WARNING+ lines
+    solviora logs --session abc123   # filter by session ID substring
+    solviora logs --component tools  # only tool-related lines
+    solviora logs --since 1h         # lines from the last hour
+    solviora logs --since 30m -f     # follow, starting 30 min ago
 """
 
 import re
@@ -172,7 +172,7 @@ def tail_log(
     log_path = get_hermes_home() / "logs" / filename
     if not log_path.exists():
         print(f"Log file not found: {log_path}")
-        print(f"(Logs are created when Hermes runs — try 'hermes chat' first)")
+        print(f"(Logs are created when Solviora runs — try 'solviora chat' first)")
         sys.exit(1)
 
     # Parse --since into a datetime cutoff
@@ -387,4 +387,4 @@ def list_logs() -> None:
             found = True
 
     if not found:
-        print("  (no log files yet — run 'hermes chat' to generate logs)")
+        print("  (no log files yet — run 'solviora chat' to generate logs)")

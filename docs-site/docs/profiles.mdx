@@ -1,0 +1,164 @@
+---
+slug: /profiles
+title: Profiles
+description: Run multiple isolated Solviora instances with independent configs, sessions, and skills.
+---
+
+# Profiles
+
+Profiles let you run multiple fully isolated Solviora instances on the same machine. Each profile has its own `config.yaml`, `.env`, sessions, skills, memories, gateway state, and logs.
+
+## Why profiles
+
+Use profiles when you need to:
+
+- **Separate work and personal** — different API keys, models, and skills.
+- **Test safely** — experiment with config changes without affecting your daily driver.
+- **Run parallel agents** — each profile has its own gateway, cron, and session database.
+- **Isolate projects** — different `terminal.cwd` defaults, tool configs, and memory.
+
+## How profiles work
+
+Each named profile lives under `~/.solviora/profiles/<name>/`. The default profile is `~/.solviora` itself — no migration needed.
+
+```
+~/.solviora/                    # default profile (backward compatible)
+  config.yaml
+  .env
+  state.db
+  sessions/
+  skills/
+  logs/
+
+~/.solviora/profiles/work/      # named profile "work"
+  config.yaml
+  .env
+  state.db
+  sessions/
+  skills/
+  logs/
+```
+
+When a profile is active, every path lookup (`get_hermes_home()`, `get_config_path()`, etc.) resolves to the profile directory. Data never crosses profiles.
+
+## Managing profiles
+
+### Create a profile
+
+```bash
+solviora profile create work
+```
+
+This creates `~/.solviora/profiles/work/` with a fresh config, empty skill set, and no API keys.
+
+### Clone an existing profile
+
+```bash
+solviora profile create work --clone        # copy config, .env, SOUL.md, memories
+solviora profile create work --clone-all    # full copy (sessions, skills, caches)
+```
+
+`--clone` copies identity files (config, `.env`, `SOUL.md`, `memories/`). `--clone-all` copies everything except runtime state (gateway PID, process list).
+
+### Switch to a profile
+
+Two ways:
+
+```bash
+# 1. Per-invocation flag
+solviora -p work
+solviora --profile work
+
+# 2. Sticky default (persists across invocations)
+solviora profile use work
+```
+
+After `profile use`, running `solviora` without `-p` automatically uses the `work` profile. Clear the sticky default with:
+
+```bash
+solviora profile use default
+```
+
+### List profiles
+
+```bash
+solviora profile list
+```
+
+### Delete a profile
+
+```bash
+solviora profile delete work
+```
+
+Removes the profile directory, its wrapper alias, and any registered system service.
+
+### Check the active profile
+
+Inside an interactive session:
+
+```
+/profile
+```
+
+Shows the profile name and its home directory.
+
+## Profile name rules
+
+- Lowercase alphanumeric, hyphens, underscores.
+- Must start with a letter or digit.
+- Max 64 characters.
+- Reserved names (`hermes`, `default`, `test`, `tmp`, `root`, `sudo`) are blocked.
+- Solviora subcommands (`chat`, `gateway`, `setup`, etc.) cannot be used as profile names.
+
+## How profiles interact with config
+
+Each profile reads its own `config.yaml` and `.env`. See [Configuration](./configuration) for the file structure.
+
+When you run `solviora -p work`, the profile override is applied **before** any module imports. This means:
+
+- `SOLVIORA_HOME` (or `HERMES_HOME`) is set to the profile directory.
+- All paths — config, state database, sessions, skills, logs — resolve inside the profile.
+- The setup wizard runs against the profile's config if it doesn't exist yet.
+
+## Environment variable resolution
+
+Solviora prefers `SOLVIORA_HOME` over the legacy `HERMES_HOME`:
+
+| Variable | Priority |
+|----------|----------|
+| `SOLVIORA_HOME` | Highest (preferred) |
+| `HERMES_HOME` | Fallback (legacy, emits deprecation warning) |
+| `~/.solviora` | Default when neither is set |
+
+The `-p` / `--profile` flag overrides both by computing the profile path and setting the env var internally.
+
+## Subprocess isolation
+
+Named profiles can create a `home/` subdirectory inside the profile root. When present, Solviora sets `HOME` to that directory for subprocesses (git, ssh, npm, etc.). This prevents system tool configs from bleeding across profiles.
+
+This is automatic — no config needed. Just create `~/.solviora/profiles/<name>/home/` if you want subprocess isolation.
+
+## What each profile owns
+
+| Component | Location | Isolated? |
+|-----------|----------|-----------|
+| `config.yaml` | Profile root | Yes |
+| `.env` (API keys) | Profile root | Yes |
+| Session database | `state.db` in profile root | Yes |
+| Sessions dir | `sessions/` in profile root | Yes |
+| Skills | `skills/` in profile root | Yes |
+| Optional skills | `optional-skills/` in profile root | Yes |
+| Memories | `memories/` in profile root | Yes |
+| Logs | `logs/` in profile root | Yes |
+| Gateway state | `gateway.pid`, `gateway_state.json` | Yes |
+| Cron jobs | `cron/` in profile root | Yes |
+| Input history | `.hermes_history` in profile root | Yes |
+| Skins | `skins/` in profile root | Yes |
+
+## Related
+
+- [Configuration](./configuration) — config.yaml and .env structure
+- [Sessions](./sessions) — session storage and resume
+- [Security](./security) — approval workflows per profile
+- [CLI Commands](./cli-commands) — `/profile` command reference

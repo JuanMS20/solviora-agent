@@ -1,84 +1,97 @@
 # Solviora Agent
 
-**Terminal-native AI agent that gets real work done.**
+**Agente de IA nativo de terminal que hace el trabajo real.**
 
-Search the web, write and run code, read and write files, research, automate — and deliver results. All from your terminal, no browser needed.
+Busca en la web, escribe y ejecuta código, lee y escribe archivos, investiga, automatiza — y entrega resultados. Todo desde tu terminal, sin necesidad de navegador.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
 [![Docs](https://img.shields.io/badge/docs-solviora.dev-2BA8A0)](https://docs.solviora.dev)
+[![Website](https://img.shields.io/badge/sitio-solviora.dev-8B5CF6)](https://solvioraagent.netlify.app)
 
-> **Attribution:** Solviora Agent is built on [Hermes Agent](https://github.com/NousResearch/hermes-agent) by [Nous Research](https://nousresearch.com), used under the [MIT License](LICENSE).
+> **Atribución:** Solviora Agent está construido sobre [Hermes Agent](https://github.com/NousResearch/hermes-agent) de [Nous Research](https://nousresearch.com), usado bajo la [Licencia MIT](LICENSE).
 
 ---
 
-## Quick Start
+## Inicio rápido
+
+### Instalación en un solo paso (recomendada)
+
+Funciona en Linux, macOS y WSL2:
 
 ```bash
-# Install from source
+curl -fsSL https://raw.githubusercontent.com/JuanMS20/solviora-agent/main/scripts/install.sh | bash
+source ~/.bashrc
+solviora setup
+solviora
+```
+
+### Instalar desde fuente
+
+```bash
 git clone https://github.com/JuanMS20/solviora-agent.git
 cd solviora-agent
 ./setup-solviora.sh
 ```
 
-Configure your provider and start:
+Configura tu proveedor y empieza:
 
 ```bash
-solviora setup          # 3-step setup: provider → model → go
-solviora "search for the latest AI frameworks and compare features"
+solviora setup          # Configuración en 3 pasos: proveedor → modelo → ¡listo!
+solviora
 ```
 
-Your first result in minutes. No browser, no IDE, no friction.
+Tu primer resultado en minutos. Sin navegador, sin IDE, sin fricción.
 
-## What it does
+## Qué hace
 
-- **Web research** — search, extract, summarize any topic
-- **Code** — write, execute, debug in any language
-- **Files** — read, write, patch, search across your project
-- **Memory** — persistent memory across sessions
-- **Automation** — delegate subtasks, schedule cron jobs
-- **Skills** — install specialized skill packs for your workflow
+- **Investigación web** — busca, extrae y resume cualquier tema
+- **Código** — escribe, ejecuta y depura en cualquier lenguaje
+- **Archivos** — lee, escribe, parchea y busca en tu proyecto
+- **Memoria** — memoria persistente entre sesiones
+- **Automatización** — delega subtareas, programa cron jobs
+- **Skills** — instala paquetes de habilidades especializadas para tu flujo de trabajo
 
-## Connect remotely (optional)
+## Conectarse remotamente (opcional)
 
-Solviora works fully in your terminal. If you need remote access:
+Solviora funciona completamente en tu terminal. Si necesitas acceso remoto:
 
 ```bash
-solviora setup gateway  # Connect Telegram, webhook, or API server
+solviora setup gateway  # Conecta Telegram, webhook o servidor API
 ```
 
-Gateways are optional extensions — not required for any core feature.
+Las pasarelas son extensiones opcionales — no se requieren para ninguna función principal.
 
-## CLI Commands
+## Comandos CLI
 
 ```
-solviora "your task"     # Run a task directly
-solviora                 # Interactive CLI session
-solviora model           # Choose LLM provider and model
-solviora tools           # Configure enabled tools
-solviora setup           # Run setup wizard
-solviora setup gateway   # Configure remote access
-solviora status          # Show system status
-solviora doctor          # Diagnose issues
+solviora "tu tarea"     # Ejecuta una tarea directamente
+solviora                 # Sesión CLI interactiva
+solviora model           # Elige proveedor LLM y modelo
+solviora tools           # Configura herramientas habilitadas
+solviora setup           # Ejecuta el asistente de configuración
+solviora setup gateway   # Configura acceso remoto
+solviora status          # Muestra el estado del sistema
+solviora doctor          # Diagnostica problemas
 ```
 
-## Configuration
+## Configuración
 
-- Config file: `~/.solviora/config.yaml`
-- API keys: `~/.solviora/.env`
-- Sessions: `~/.solviora/sessions/`
+- Archivo de configuración: `~/.solviora/config.yaml`
+- Claves API: `~/.solviora/.env`
+- Sesiones: `~/.solviora/sessions/`
 - Skills: `~/.solviora/skills/`
 
-## Documentation
+## Documentación
 
-Visit [docs.solviora.dev](https://docs.solviora.dev) for the full documentation:
+Visita [docs.solviora.dev](https://docs.solviora.dev) para la documentación completa:
 
-- [Quickstart](https://docs.solviora.dev/docs/quickstart)
-- [Installation Guide](https://docs.solviora.dev/docs/installation)
-- [CLI Reference](https://docs.solviora.dev/docs/cli-commands)
-- [Providers](https://docs.solviora.dev/docs/providers)
+- [Inicio rápido](https://docs.solviora.dev/docs/quickstart)
+- [Guía de instalación](https://docs.solviora.dev/docs/installation)
+- [Referencia CLI](https://docs.solviora.dev/docs/cli-commands)
+- [Proveedores](https://docs.solviora.dev/docs/providers)
 
-### Run docs locally
+### Ejecutar docs localmente
 
 ```bash
 cd docs-site
@@ -86,13 +99,13 @@ npm install
 npm run start
 ```
 
-## Contributing
+## Contribuir
 
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+¡Las contribuciones son bienvenidas! Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para las pautas.
 
-## License
+## Licencia
 
-MIT — see [LICENSE](LICENSE).
+MIT — consulta [LICENSE](LICENSE).
 
-This project includes code originally developed by Nous Research (Hermes Agent), also under the MIT License. See [NOTICE](NOTICE) for details.
+Este proyecto incluye código desarrollado originalmente por Nous Research (Hermes Agent), también bajo la Licencia MIT. Consulta [NOTICE](NOTICE) para más detalles.
 

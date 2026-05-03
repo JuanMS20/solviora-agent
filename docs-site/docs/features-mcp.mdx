@@ -1,0 +1,45 @@
+---
+title: MCP Integration
+description: Connect Solviora to MCP servers and extend its capabilities.
+---
+
+# MCP Integration
+
+The Model Context Protocol (MCP) lets Solviora connect to external servers that provide additional tools and capabilities. This enables safe, sandboxed extension of the agent's tool set.
+
+## How It Works
+
+MCP servers expose tools through a standardized protocol. Solviora discovers available tools at connection time and makes them available to the agent alongside built-in tools.
+
+## Configuration
+
+```yaml
+# ~/.solviora/config.yaml
+mcp_servers:
+  - name: my-server
+    command: python
+    args: ["-m", "mcp_server"]
+    tools: ["*"]           # allow all tools from this server
+    disabled_tools: []     # exclude specific tools
+```
+
+## CLI Management
+
+```bash
+# List configured MCP servers
+solviora mcp list
+
+# Add a server
+solviora mcp add <name> --command <cmd> [--args ...]
+
+# Remove a server
+solviora mcp remove <name>
+```
+
+## Usage Patterns
+
+- **Data enrichment** — connect to a database MCP server for live queries
+- **API integration** — expose internal APIs as MCP tools
+- **Custom compute** — offload computation to specialized servers
+
+Detailed usage patterns and tutorials coming soon in the MCP guide.

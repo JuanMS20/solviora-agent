@@ -1,4 +1,6 @@
-/* Inter — 400/500/600 (Vercel/Cursor weight range) */
+/* Oswald — display / headings (400–700) */
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap");
+/* Inter — body text (400/500/600) */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 /* JetBrains Mono — 400/500 for code surfaces */
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap");

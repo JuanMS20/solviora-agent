@@ -1,56 +1,78 @@
 /**
- * Solviora Agent — Vercel × Cursor hybrid design system
+ * Solviora Design System — Docs-Site Implementation
  *
- * Light canvas:  Warm cream (#f7f7f4) — Cursor editorial warmth
- * Ink:           Warm near-black (#26251e) — not pure black
- * Accent:        Solviora teal (#2BA8A0) — used scarcely like Cursor Orange
- * Depth:         Shadow-as-border (Vercel) — no traditional borders
- * Typography:    Inter with negative tracking — magazine editorial voice
- * Code:          JetBrains Mono on every code surface
+ * Source of truth: DESIGN.md in project root.
+ * Tokens MUST remain in sync with landing/design-tokens.css.
+ *
+ * Identity: Hoshi One inspired — editorial red accent (#D81A1D),
+ *   Oswald display, Inter body, sharp corners, premium sobriety.
+ *
+ * Light canvas:  #F3F1ED warm editorial cream
+ * Ink:           #111111 (near-black, not pure black)
+ * Accent:        #D81A1D editorial red — used scarcely
+ * Depth:         Border-as-shadow (Vercel method)
+ * Typography:    Oswald (headings) + Inter (body) + JetBrains Mono (code)
+ * Radius:        0px buttons, 2px cards, 2px code blocks
  */
 
 @import url("./fonts.css");
 
-/* ── Design tokens ───────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Design Tokens — Light Mode
+   ═══════════════════════════════════════════════════════════ */
 
 :root {
-  /* Brand */
-  --solv-accent: #2BA8A0;
-  --solv-accent-hover: #249590;
-  --solv-accent-light: rgba(43, 168, 160, 0.08);
+  /* ── Fonts ────────────────────────────────────────────── */
+  --solv-font-display: 'Oswald', system-ui, -apple-system, sans-serif;
+  --solv-font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --solv-font-code: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 
-  /* Surfaces */
-  --solv-canvas: #f7f7f4;
-  --solv-canvas-soft: #fafaf7;
-  --solv-surface: #ffffff;
-  --solv-surface-dim: #efeee8;
+  /* ── Palette ──────────────────────────────────────────── */
+  --solv-canvas: #F3F1ED;
+  --solv-canvas-soft: #F7F5F2;
+  --solv-canvas-rgb: 243, 241, 237;
 
-  /* Text */
-  --solv-ink: #26251e;
-  --solv-body: #5a5852;
-  --solv-muted: #807d72;
-  --solv-muted-soft: #a09c92;
+  --solv-surface: #FFFFFF;
+  --solv-surface-dim: #E8E5E0;
 
-  /* Hairlines */
-  --solv-hairline: #e6e5e0;
-  --solv-hairline-soft: #efeee8;
-  --solv-hairline-strong: #cfcdc4;
+  --solv-ink: #111111;
+  --solv-body: #5A5852;
+  --solv-muted: #8A8780;
+  --solv-muted-soft: #B0ADA5;
 
-  /* Shadows (Vercel-style layered) */
-  --solv-shadow-border: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
-  --solv-shadow-card: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0.03) 0px 2px 4px;
-  --solv-shadow-elevated: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0.03) 0px 2px 4px,
-    rgba(0, 0, 0, 0.02) 0px 8px 16px -4px;
-  --solv-shadow-inner-ring: var(--solv-canvas-soft) 0px 0px 0px 1px;
+  --solv-primary: #D81A1D;
+  --solv-primary-hover: #B01517;
+  --solv-primary-light: rgba(216, 26, 29, 0.08);
 
-  /* Semantic overrides for Infima (light mode) */
-  --ifm-color-primary: #2BA8A0;
-  --ifm-color-primary-dark: #249590;
-  --ifm-color-primary-darker: #1F8580;
-  --ifm-color-primary-light: #3CC0B8;
-  --ifm-color-primary-lighter: #56D4CC;
+  --solv-tertiary: #E9A514;
+
+  --solv-hairline: #D4D1CB;
+  --solv-hairline-strong: #B8B4AC;
+  --solv-hairline-soft: #E2DFDA;
+
+  /* ── Shadows (border-only, Vercel method) ─────────────── */
+  --solv-shadow-border: 0px 0px 0px 1px var(--solv-hairline);
+  --solv-shadow-card: 0px 0px 0px 1px var(--solv-hairline);
+  --solv-shadow-elevated: 0px 0px 0px 1px var(--solv-hairline-strong);
+  --solv-shadow-inner-ring: inset 0px 0px 0px 1px var(--solv-hairline-soft);
+
+  /* ── Radii ────────────────────────────────────────────── */
+  --solv-radius-none: 0px;
+  --solv-radius-sm: 2px;
+  --solv-radius-pill: 9999px;
+
+  /* ── Transitions ──────────────────────────────────────── */
+  --solv-transition-fast: 150ms ease;
+  --solv-transition-base: 200ms ease;
+
+  /* ── Semantic overrides (Infima) ──────────────────────── */
+
+  /* Accent color mapping */
+  --ifm-color-primary: #D81A1D;
+  --ifm-color-primary-dark: #C0171A;
+  --ifm-color-primary-darker: #A81416;
+  --ifm-color-primary-light: #E03535;
+  --ifm-color-primary-lighter: #E85050;
   --ifm-color-primary-contrast-background: var(--solv-canvas);
   --ifm-color-primary-contrast-foreground: var(--solv-ink);
 
@@ -65,76 +87,82 @@
 
   --ifm-border-color: var(--solv-hairline);
 
-  --ifm-footer-background-color: var(--solv-ink);
-  --ifm-footer-color: var(--solv-muted);
+  --ifm-footer-background-color: #111111;
+  --ifm-footer-color: rgba(255, 255, 255, 0.6);
+  --ifm-footer-link-color: rgba(255, 255, 255, 0.6);
+  --ifm-footer-title-color: rgba(255, 255, 255, 0.4);
 
   /* Typography */
-  --ifm-font-family-base: "Inter", system-ui, -apple-system, "Segoe UI",
-    "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --ifm-font-family-monospace: "JetBrains Mono", "Fira Code", "Cascadia Code",
-    Consolas, monospace;
+  --ifm-font-family-base: var(--solv-font-body);
+  --ifm-font-family-monospace: var(--solv-font-code);
+  --ifm-heading-font-family: var(--solv-font-display);
   --ifm-heading-font-weight: 600;
-  --ifm-font-size-base: 16px;
+  --ifm-font-size-base: 19px;
 
-  /* Radius — Vercel/Cursor hybrid */
-  --ifm-global-radius: 8px;
-  --ifm-button-border-radius: 8px;
-  --ifm-card-border-radius: 12px;
+  /* Radius — Hoshi One: sharp buttons, subtle cards */
+  --ifm-global-radius: var(--solv-radius-sm);
+  --ifm-button-border-radius: var(--solv-radius-none);
+  --ifm-card-border-radius: var(--solv-radius-sm);
 
   /* Navbar */
-  --ifm-navbar-background-color: rgba(247, 247, 244, 0.85);
+  --ifm-navbar-background-color: rgba(243, 241, 237, 0.85);
   --ifm-navbar-shadow: var(--solv-shadow-border);
+  --ifm-navbar-height: 3.5rem;
 
   /* Sidebar */
   --ifm-menu-color: var(--solv-body);
-  --ifm-menu-color-active: var(--solv-accent);
+  --ifm-menu-color-active: var(--solv-primary);
+  --ifm-menu-color-background-active: transparent;
+  --ifm-menu-color-background-hover: transparent;
+
+  /* Table of contents */
+  --ifm-toc-link-color: var(--solv-muted);
 
   /* Pagination */
-  --ifm-pagination-nav-active-color: var(--solv-accent);
+  --ifm-pagination-nav-active-color: var(--solv-primary);
+
+  /* Code blocks */
+  --docusaurus-highlighted-code-line-bg: var(--solv-primary-light);
 }
 
-/* ── Dark mode — warm dark (Warp-inspired) ──────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Design Tokens — Dark Mode
+   ═══════════════════════════════════════════════════════════ */
 
 html[data-theme="dark"] {
-  /* Brand */
-  --solv-accent: #3CC0B8;
-  --solv-accent-hover: #56D4CC;
-  --solv-accent-light: rgba(60, 192, 184, 0.1);
+  --solv-canvas: #0D0D0D;
+  --solv-canvas-soft: #141414;
+  --solv-canvas-rgb: 13, 13, 13;
 
-  /* Surfaces */
-  --solv-canvas: #1a1917;
-  --solv-canvas-soft: #1f1e1b;
-  --solv-surface: #26251e;
-  --solv-surface-dim: #2e2d27;
+  --solv-surface: #1A1A1A;
+  --solv-surface-dim: #222222;
 
-  /* Text */
-  --solv-ink: #faf9f6;
-  --solv-body: #a09c92;
-  --solv-muted: #807d72;
-  --solv-muted-soft: #5a5852;
+  --solv-ink: #F0EFE8;
+  --solv-body: #A8A69E;
+  --solv-muted: #706E68;
+  --solv-muted-soft: #585650;
 
-  /* Hairlines */
+  --solv-primary: #E03535;
+  --solv-primary-hover: #D81A1D;
+  --solv-primary-light: rgba(224, 53, 53, 0.12);
+
+  --solv-tertiary: #F0B830;
+
   --solv-hairline: rgba(255, 255, 255, 0.08);
+  --solv-hairline-strong: rgba(255, 255, 255, 0.15);
   --solv-hairline-soft: rgba(255, 255, 255, 0.04);
-  --solv-hairline-strong: rgba(255, 255, 255, 0.12);
 
-  /* Shadows */
-  --solv-shadow-border: rgba(0, 0, 0, 0.3) 0px 0px 0px 1px;
-  --solv-shadow-card: rgba(0, 0, 0, 0.3) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0.2) 0px 2px 4px;
-  --solv-shadow-elevated: rgba(0, 0, 0, 0.3) 0px 0px 0px 1px,
-    rgba(0, 0, 0, 0.2) 0px 2px 4px,
-    rgba(0, 0, 0, 0.15) 0px 8px 16px -4px;
-  --solv-shadow-inner-ring: var(--solv-canvas-soft) 0px 0px 0px 1px;
+  --solv-shadow-border: 0px 0px 0px 1px var(--solv-hairline);
+  --solv-shadow-card: 0px 0px 0px 1px var(--solv-hairline);
+  --solv-shadow-elevated: 0px 0px 0px 1px var(--solv-hairline-strong);
+  --solv-shadow-inner-ring: inset 0px 0px 0px 1px var(--solv-hairline-soft);
 
-  /* Semantic overrides */
-  --ifm-color-primary: #3CC0B8;
-  --ifm-color-primary-dark: #2BA8A0;
-  --ifm-color-primary-darker: #249590;
-  --ifm-color-primary-light: #56D4CC;
-  --ifm-color-primary-lighter: #70E0DA;
-  --ifm-color-primary-contrast-background: var(--solv-canvas);
-  --ifm-color-primary-contrast-foreground: var(--solv-ink);
+  /* Infima semantic overrides */
+  --ifm-color-primary: #E03535;
+  --ifm-color-primary-dark: #D81A1D;
+  --ifm-color-primary-darker: #C0171A;
+  --ifm-color-primary-light: #E85050;
+  --ifm-color-primary-lighter: #F07070;
 
   --ifm-background-color: var(--solv-canvas);
   --ifm-background-surface-color: var(--solv-surface);
@@ -147,21 +175,27 @@ html[data-theme="dark"] {
 
   --ifm-border-color: var(--solv-hairline);
 
-  --ifm-footer-background-color: #111110;
-  --ifm-footer-color: var(--solv-muted);
+  --ifm-footer-background-color: #080808;
+  --ifm-footer-color: var(--solv-body);
+  --ifm-footer-link-color: var(--solv-body);
+  --ifm-footer-title-color: var(--solv-muted);
 
-  --ifm-navbar-background-color: rgba(26, 25, 23, 0.85);
+  --ifm-navbar-background-color: rgba(13, 13, 13, 0.85);
   --ifm-navbar-shadow: var(--solv-shadow-border);
 
   --ifm-menu-color: var(--solv-body);
-  --ifm-menu-color-active: var(--solv-accent);
-
-  --ifm-pagination-nav-active-color: var(--solv-accent);
+  --ifm-menu-color-active: var(--solv-primary);
 
   --ifm-toc-link-color: var(--solv-muted);
+
+  --ifm-pagination-nav-active-color: var(--solv-primary);
+
+  --docusaurus-highlighted-code-line-bg: var(--solv-primary-light);
 }
 
-/* ── Global resets ──────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Global Resets
+   ═══════════════════════════════════════════════════════════ */
 
 html {
   scroll-behavior: smooth;
@@ -173,61 +207,76 @@ body {
   font-family: var(--ifm-font-family-base);
 }
 
-/* ── Headings — magazine editorial (weight 600, negative tracking) ── */
+/* ═══════════════════════════════════════════════════════════
+   Typography — Oswald headings + Inter body
+   ═══════════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: var(--ifm-heading-font-weight);
+  color: var(--ifm-heading-color);
+}
 
 h1 {
-  font-family: var(--ifm-font-family-base);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  color: var(--solv-ink);
+  letter-spacing: -0.003em;
 }
 
 h2 {
-  font-family: var(--ifm-font-family-base);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--solv-ink);
+  letter-spacing: -0.002em;
 }
 
 h3, h4, h5, h6 {
-  font-family: var(--ifm-font-family-base);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--solv-ink);
+  letter-spacing: -0.001em;
 }
 
-/* ── Code blocks — JetBrains Mono on every code surface ── */
+/* ═══════════════════════════════════════════════════════════
+   Code Blocks
+   ═══════════════════════════════════════════════════════════ */
 
 code {
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.875em;
+  font-size: 0.9375em;
+  background: var(--solv-surface-dim);
+  padding: 0.125em 0.375em;
+  border-radius: var(--solv-radius-sm);
+  color: var(--solv-ink);
+  border: none;
 }
 
 pre code {
-  font-size: 0.8125em;
-  line-height: 1.6;
+  font-size: 0.9375em;
+  line-height: 1.7;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
 
 pre {
-  border-radius: var(--ifm-card-border-radius) !important;
+  border-radius: var(--solv-radius-sm) !important;
   box-shadow: var(--solv-shadow-card), var(--solv-shadow-inner-ring);
   border: none !important;
+  background: var(--solv-surface) !important;
+  padding: 1.25rem 1.5rem;
 }
 
-/* ── Links ──────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Links
+   ═══════════════════════════════════════════════════════════ */
 
 a {
-  color: var(--solv-accent);
+  color: var(--solv-primary);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: color var(--solv-transition-fast);
 }
 
 a:hover {
-  color: var(--solv-accent-hover);
+  color: var(--solv-primary-hover);
   text-decoration: underline;
 }
 
-/* ── Navbar ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Navbar
+   ═══════════════════════════════════════════════════════════ */
 
 .navbar {
   backdrop-filter: blur(12px);
@@ -235,17 +284,25 @@ a:hover {
   border-bottom: none;
 }
 
+.navbar__brand {
+  font-family: var(--solv-font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 .navbar__title {
-  font-weight: 600;
+  font-family: var(--solv-font-display);
+  font-weight: 700;
+  font-size: 1.375rem;
   letter-spacing: -0.02em;
   color: var(--solv-ink);
 }
 
 .navbar__link {
   color: var(--solv-body);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
-  transition: color 0.15s ease;
+  transition: color var(--solv-transition-fast);
 }
 
 .navbar__link:hover {
@@ -254,23 +311,29 @@ a:hover {
 }
 
 .navbar__link--active {
-  color: var(--solv-ink);
+  color: var(--solv-primary);
+}
+
+.navbar-sidebar__brand {
+  font-family: var(--solv-font-display);
 }
 
 .navbar__item--languages {
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
-/* ── Buttons ────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Buttons — 0px radius, editorial sharp
+   ═══════════════════════════════════════════════════════════ */
 
 .button--primary {
   background: var(--solv-ink);
   color: var(--solv-canvas);
   border: none;
   font-weight: 500;
-  letter-spacing: 0;
-  border-radius: var(--ifm-button-border-radius);
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  border-radius: var(--solv-radius-none);
+  transition: opacity var(--solv-transition-fast),
+              transform var(--solv-transition-fast);
 }
 
 .button--primary:hover {
@@ -282,78 +345,113 @@ a:hover {
 
 .button--secondary,
 .button--outline {
-  background: var(--solv-surface);
-  color: var(--solv-ink);
-  border: none;
-  box-shadow: var(--solv-shadow-border);
+  background: transparent;
+  color: var(--solv-body);
+  border: 1px solid var(--solv-hairline);
   font-weight: 500;
-  border-radius: var(--ifm-button-border-radius);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  border-radius: var(--solv-radius-none);
+  transition: border-color var(--solv-transition-fast),
+              color var(--solv-transition-fast),
+              transform var(--solv-transition-fast);
 }
 
 .button--secondary:hover,
 .button--outline:hover {
   color: var(--solv-ink);
-  box-shadow: var(--solv-shadow-elevated);
+  border-color: var(--solv-hairline-strong);
   text-decoration: none;
 }
 
-/* ── Sidebar ────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Sidebar
+   ═══════════════════════════════════════════════════════════ */
+
+.menu__link {
+  font-size: 1rem;
+  font-weight: 400;
+  border-radius: var(--solv-radius-none);
+  transition: color var(--solv-transition-fast);
+}
 
 .menu__link--active {
   font-weight: 600;
-  color: var(--solv-accent);
+  color: var(--solv-primary);
 }
 
-/* ── Footer ─────────────────────────────────────────────── */
+.menu__link:hover {
+  color: var(--solv-ink);
+}
+
+.menu__list-item-collapsible:hover {
+  background: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Footer — Always dark, editorial
+   ═══════════════════════════════════════════════════════════ */
 
 .footer {
   border-top: none;
 }
 
 .footer__title {
-  color: var(--solv-ink);
+  font-size: 0.9375rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
-  font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  font-family: var(--solv-font-body);
 }
 
 .footer__link-item {
-  color: var(--solv-muted);
-  font-size: 0.875rem;
+  font-size: 1.0625rem;
+  transition: color var(--solv-transition-fast);
 }
 
 .footer__link-item:hover {
-  color: var(--solv-ink);
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/* ── Announcement bar ───────────────────────────────────── */
+.footer__copyright {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Announcement Bar
+   ═══════════════════════════════════════════════════════════ */
 
 div[class*="announcementBar"] {
   font-weight: 500;
-  font-size: 0.8125rem;
-  background: var(--solv-accent) !important;
-  color: var(--solv-canvas) !important;
+  font-size: 1rem;
+  background: var(--solv-primary) !important;
+  color: #FFFFFF !important;
 }
 
 div[class*="announcementBar"] a {
-  color: var(--solv-canvas);
+  color: #FFFFFF;
   text-decoration: underline;
   font-weight: 600;
 }
 
-/* ── Admonitions ────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Admonitions — 2px radius, left accent border
+   ═══════════════════════════════════════════════════════════ */
 
 .admonition {
-  border-radius: var(--ifm-card-border-radius);
+  border-radius: var(--solv-radius-sm);
   box-shadow: var(--solv-shadow-card);
   border: none !important;
 }
 
+.admonition-heading h5 {
+  font-family: var(--solv-font-display);
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+}
+
 .admonition-note {
-  border-left: 3px solid var(--solv-accent) !important;
+  border-left: 3px solid var(--solv-primary) !important;
 }
 
 .admonition-tip {
@@ -368,27 +466,38 @@ div[class*="announcementBar"] a {
   border-left: 3px solid #cf2d56 !important;
 }
 
-/* ── Table of contents ──────────────────────────────────── */
+.admonition-icon {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Table of Contents
+   ═══════════════════════════════════════════════════════════ */
 
 .table-of-contents__link--active {
-  color: var(--solv-accent);
+  color: var(--solv-primary);
   font-weight: 600;
 }
 
 .table-of-contents__link {
   color: var(--solv-muted);
+  font-size: 1rem;
 }
 
 .table-of-contents__link:hover {
   color: var(--solv-body);
 }
 
-/* ── Pagination nav ─────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Pagination
+   ═══════════════════════════════════════════════════════════ */
 
 .pagination-nav__link {
   border: none;
   box-shadow: var(--solv-shadow-card);
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  border-radius: var(--solv-radius-sm);
+  transition: box-shadow var(--solv-transition-fast),
+              transform var(--solv-transition-fast);
 }
 
 .pagination-nav__link:hover {
@@ -396,56 +505,128 @@ div[class*="announcementBar"] a {
   transform: translateY(-1px);
 }
 
-/* ── Search ─────────────────────────────────────────────── */
+.pagination-nav__label {
+  font-family: var(--solv-font-display);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Search (DocSearch)
+   ═══════════════════════════════════════════════════════════ */
 
 .DocSearch-Button {
-  border-radius: var(--ifm-button-border-radius) !important;
+  border-radius: var(--solv-radius-none) !important;
   box-shadow: var(--solv-shadow-border) !important;
   border: none !important;
   background: var(--solv-surface) !important;
-  transition: box-shadow 0.15s ease;
+  transition: box-shadow var(--solv-transition-fast);
 }
 
 .DocSearch-Button:hover {
   box-shadow: var(--solv-shadow-card) !important;
 }
 
-/* ── Custom utilities ───────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Custom Utilities
+   ═══════════════════════════════════════════════════════════ */
 
 .solviora-card {
   background: var(--solv-surface);
   border: none;
-  border-radius: var(--ifm-card-border-radius);
+  border-radius: var(--solv-radius-sm);
   padding: 1.5rem;
   box-shadow: var(--solv-shadow-card), var(--solv-shadow-inner-ring);
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  transition: box-shadow var(--solv-transition-fast),
+              transform var(--solv-transition-fast);
 }
 
 .solviora-card:hover {
   box-shadow: var(--solv-shadow-elevated);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .solviora-badge {
   display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--solv-radius-pill);
   font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  background: var(--solv-accent-light);
-  color: var(--solv-accent);
+  background: var(--solv-primary-light);
+  color: var(--solv-primary);
+  font-family: var(--solv-font-body);
 }
 
-/* ── Theme SVG inline images ────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Images in Markdown
+   ═══════════════════════════════════════════════════════════ */
 
 .theme-doc-markdown img {
-  border-radius: var(--ifm-card-border-radius);
+  border-radius: var(--solv-radius-sm);
   box-shadow: var(--solv-shadow-card);
 }
 
-/* ── Scrollbar (subtle) ─────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   Tables
+   ═══════════════════════════════════════════════════════════ */
+
+table {
+  border-radius: var(--solv-radius-sm);
+  box-shadow: var(--solv-shadow-card);
+  border-collapse: collapse;
+}
+
+table thead {
+  background: var(--solv-surface);
+}
+
+table th {
+  font-family: var(--solv-font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--solv-hairline);
+}
+
+table td {
+  border-color: var(--solv-hairline-soft);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Blockquotes
+   ═══════════════════════════════════════════════════════════ */
+
+blockquote {
+  border-left-color: var(--solv-primary);
+  background: var(--solv-surface);
+  border-radius: var(--solv-radius-sm);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--solv-shadow-card);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Tabs
+   ═══════════════════════════════════════════════════════════ */
+
+.tabs {
+  border-bottom: 1px solid var(--solv-hairline);
+}
+
+.tabs__item {
+  border-radius: var(--solv-radius-none) var(--solv-radius-none) 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color var(--solv-transition-fast);
+}
+
+.tabs__item--active {
+  color: var(--solv-primary);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Scrollbar
+   ═══════════════════════════════════════════════════════════ */
 
 ::-webkit-scrollbar {
   width: 8px;

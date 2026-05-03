@@ -1,7 +1,7 @@
 """
-Doctor command for hermes CLI.
+Doctor command for Solviora CLI.
 
-Diagnoses issues with Hermes Agent setup.
+Diagnoses issues with Solviora Agent setup.
 """
 
 import os
@@ -16,9 +16,9 @@ from hermes_constants import display_hermes_home
 
 PROJECT_ROOT = get_project_root()
 HERMES_HOME = get_hermes_home()
-_DHH = display_hermes_home()  # user-facing display path (e.g. ~/.hermes or ~/.hermes/profiles/coder)
+_DHH = display_hermes_home()  # user-facing display path (e.g. ~/.solviora or ~/.solviora/profiles/coder)
 
-# Load environment variables from ~/.hermes/.env so API key checks work
+# Load environment variables from the config dir .env so API key checks work
 from dotenv import load_dotenv
 _env_path = get_env_path()
 if _env_path.exists():
@@ -98,7 +98,7 @@ def _termux_browser_setup_steps(node_installed: bool) -> list[str]:
 
 
 def _has_provider_env_config(content: str) -> bool:
-    """Return True when ~/.hermes/.env contains provider auth/base URL settings."""
+    """Return True when ~/.solviora/.env contains provider auth/base URL settings."""
     return any(key in content for key in _PROVIDER_ENV_HINTS)
 
 
@@ -180,7 +180,7 @@ def run_doctor(args):
     should_fix = getattr(args, 'fix', False)
 
     # Doctor runs from the interactive CLI, so CLI-gated tool availability
-    # checks (like cronjob management) should see the same context as `hermes`.
+    # checks (like cronjob management) should see the same context as `solviora`.
     os.environ.setdefault("HERMES_INTERACTIVE", "1")
     
     issues = []
@@ -189,7 +189,7 @@ def run_doctor(args):
     
     print()
     print(color("┌─────────────────────────────────────────────────────────┐", Colors.CYAN))
-    print(color("│                 🩺 Hermes Doctor                        │", Colors.CYAN))
+    print(color("│                 🩺 Solviora Doctor                      │", Colors.CYAN))
     print(color("└─────────────────────────────────────────────────────────┘", Colors.CYAN))
     
     # =========================================================================
@@ -258,7 +258,7 @@ def run_doctor(args):
     print()
     print(color("◆ Configuration Files", Colors.CYAN, Colors.BOLD))
     
-    # Check ~/.hermes/.env (primary location for user config)
+    # Check ~/.solviora/.env (primary location for user config)
     env_path = HERMES_HOME / '.env'
     if env_path.exists():
         check_ok(f"{_DHH}/.env file exists")
@@ -269,7 +269,7 @@ def run_doctor(args):
             check_ok("API key or custom endpoint configured")
         else:
             check_warn(f"No API key found in {_DHH}/.env")
-            issues.append("Run 'hermes setup' to configure API keys")
+            issues.append("Run 'solviora setup' to configure API keys")
     else:
         # Also check project root as fallback
         fallback_env = PROJECT_ROOT / '.env'
@@ -281,13 +281,13 @@ def run_doctor(args):
                 env_path.parent.mkdir(parents=True, exist_ok=True)
                 env_path.touch()
                 check_ok(f"Created empty {_DHH}/.env")
-                check_info("Run 'hermes setup' to configure API keys")
+                check_info("Run 'solviora setup' to configure API keys")
                 fixed_count += 1
             else:
-                check_info("Run 'hermes setup' to create one")
-                issues.append("Run 'hermes setup' to create .env")
+                check_info("Run 'solviora setup' to create one")
+                issues.append("Run 'solviora setup' to create .env")
     
-    # Check ~/.hermes/config.yaml (primary) or project cli-config.yaml (fallback)
+    # Check ~/.solviora/config.yaml (primary) or project cli-config.yaml (fallback)
     config_path = HERMES_HOME / 'config.yaml'
     if config_path.exists():
         check_ok(f"{_DHH}/config.yaml exists")
@@ -384,7 +384,7 @@ def run_doctor(args):
                     issues.append(
                         f"model.provider '{provider_raw}' is unknown. "
                         f"Valid providers: {known_list}. "
-                        f"Fix: run 'hermes config set model.provider <valid_provider>'"
+                        f"Fix: run 'solviora config set model.provider <valid_provider>'"
                     )
 
             # Warn if model is set to a provider-prefixed name on a provider that doesn't use them
@@ -435,12 +435,12 @@ def run_doctor(args):
                         if not configured:
                             check_fail(
                                 f"model.provider '{runtime_provider}' is set but no API key is configured",
-                                "(check ~/.hermes/.env or run 'hermes setup')",
+                                "(check ~/.hermes/.env or run 'solviora setup')",
                             )
                             issues.append(
                                 f"No credentials found for provider '{runtime_provider}'. "
-                                f"Run 'hermes setup' or set the provider's API key in {_DHH}/.env, "
-                                f"or switch providers with 'hermes config set model.provider <name>'"
+                                f"Run 'solviora setup' or set the provider's API key in {_DHH}/.env, "
+                                f"or switch providers with 'solviora config set model.provider <name>'"
                             )
                 except Exception:
                     pass
@@ -482,9 +482,9 @@ def run_doctor(args):
                         fixed_count += 1
                     except Exception as mig_err:
                         check_warn(f"Auto-migration failed: {mig_err}")
-                        issues.append("Run 'hermes setup' to migrate config")
+                        issues.append("Run 'solviora setup' to migrate config")
                 else:
-                    issues.append("Run 'hermes doctor --fix' or 'hermes setup' to migrate config")
+                    issues.append("Run 'solviora doctor --fix' or 'solviora setup' to migrate config")
             else:
                 check_ok(f"Config version up to date (v{current_ver})")
         except Exception:
@@ -513,7 +513,7 @@ def run_doctor(args):
                     check_ok("Migrated stale root-level keys into model section")
                     fixed_count += 1
                 else:
-                    issues.append("Stale root-level provider/base_url in config.yaml — run 'hermes doctor --fix'")
+                    issues.append("Stale root-level provider/base_url in config.yaml — run 'solviora doctor --fix'")
         except Exception:
             pass
 
@@ -590,10 +590,10 @@ def run_doctor(args):
     if _safe_which("codex"):
         check_ok("codex CLI")
     else:
-        # Native OAuth uses Hermes' own device-code flow — the Codex CLI is
+        # Native OAuth uses Solviora's own device-code flow — the Codex CLI is
         # only needed if you want to import existing tokens from
         # ~/.codex/auth.json.  Downgrade to info so users running
-        # `hermes auth openai-codex` aren't told they're missing something.
+        # `solviora auth openai-codex` aren't told they're missing something.
         check_info(
             "codex CLI not installed "
             "(optional — only required to import tokens from an existing Codex CLI login)"
@@ -641,13 +641,13 @@ def run_doctor(args):
         else:
             check_info(f"{_DHH}/SOUL.md exists but is empty — edit it to customize personality")
     else:
-        check_warn(f"{_DHH}/SOUL.md not found", "(create it to give Hermes a custom personality)")
+        check_warn(f"{_DHH}/SOUL.md not found", "(create it to give Solviora a custom personality)")
         if should_fix:
             soul_path.parent.mkdir(parents=True, exist_ok=True)
             soul_path.write_text(
-                "# Hermes Agent Persona\n\n"
-                "<!-- Edit this file to customize how Hermes communicates. -->\n\n"
-                "You are Hermes, a helpful AI assistant.\n",
+                "# Solviora Agent Persona\n\n"
+                "<!-- Edit this file to customize how Solviora communicates. -->\n\n"
+                "You are Solviora, a helpful AI assistant.\n",
                 encoding="utf-8",
             )
             check_ok(f"Created {_DHH}/SOUL.md with basic template")
@@ -710,7 +710,7 @@ def run_doctor(args):
                     check_ok(f"WAL checkpoint performed ({wal_size // 1024}K → {new_size // 1024}K)")
                     fixed_count += 1
                 else:
-                    issues.append("Large WAL file — run 'hermes doctor --fix' to checkpoint")
+                    issues.append("Large WAL file — run 'solviora doctor --fix' to checkpoint")
             elif wal_size > 10 * 1024 * 1024:  # 10 MB
                 check_info(f"WAL file is {wal_size // (1024*1024)} MB (normal for active sessions)")
         except Exception:
@@ -719,18 +719,24 @@ def run_doctor(args):
     _check_gateway_service_linger(issues)
 
     # =========================================================================
-    # Check: Command installation (hermes bin symlink)
+    # Check: Command installation (solviora/hermes bin symlink)
     # =========================================================================
     if sys.platform != "win32":
         print()
         print(color("◆ Command Installation", Colors.CYAN, Colors.BOLD))
 
-        # Determine the venv entry point location
+        # Determine the venv entry point location — search for solviora first,
+        # then fall back to hermes for backward compatibility.
         _venv_bin = None
+        _venv_bin_name = None
         for _venv_name in ("venv", ".venv"):
-            _candidate = PROJECT_ROOT / _venv_name / "bin" / "hermes"
-            if _candidate.exists():
-                _venv_bin = _candidate
+            for _bin_name in ("solviora", "hermes"):
+                _candidate = PROJECT_ROOT / _venv_name / "bin" / _bin_name
+                if _candidate.exists():
+                    _venv_bin = _candidate
+                    _venv_bin_name = _bin_name
+                    break
+            if _venv_bin:
                 break
 
         # Determine the expected command link directory (mirrors install.sh logic)
@@ -742,12 +748,18 @@ def run_doctor(args):
         else:
             _cmd_link_dir = Path.home() / ".local" / "bin"
             _cmd_link_display = "~/.local/bin"
-        _cmd_link = _cmd_link_dir / "hermes"
+
+        # Check for solviora symlink first, then hermes as fallback
+        _cmd_link_solviora = _cmd_link_dir / "solviora"
+        _cmd_link_hermes = _cmd_link_dir / "hermes"
+        _cmd_link = _cmd_link_solviora if _cmd_link_solviora.exists() else _cmd_link_hermes
+        _primary_name = "solviora"
+        _fallback_name = "hermes"
 
         if _venv_bin is None:
             check_warn(
                 "Venv entry point not found",
-                "(hermes not in venv/bin/ or .venv/bin/ — reinstall with pip install -e '.[all]')"
+                "(solviora/hermes not in venv/bin/ — reinstall with pip install -e '.[all]')"
             )
             manual_issues.append(
                 f"Reinstall entry point: cd {PROJECT_ROOT} && source venv/bin/activate && pip install -e '.[all]'"
@@ -755,48 +767,68 @@ def run_doctor(args):
         else:
             check_ok(f"Venv entry point exists ({_venv_bin.relative_to(PROJECT_ROOT)})")
 
-            # Check the symlink at the command link location
-            if _cmd_link.is_symlink():
-                _target = _cmd_link.resolve()
+            # Check for solviora symlink first
+            if _cmd_link_solviora.is_symlink():
+                _target = _cmd_link_solviora.resolve()
                 _expected = _venv_bin.resolve()
                 if _target == _expected:
-                    check_ok(f"{_cmd_link_display}/hermes → correct target")
+                    check_ok(f"{_cmd_link_display}/solviora → correct target")
                 else:
                     check_warn(
-                        f"{_cmd_link_display}/hermes points to wrong target",
+                        f"{_cmd_link_display}/solviora points to wrong target",
                         f"(→ {_target}, expected → {_expected})"
                     )
                     if should_fix:
-                        _cmd_link.unlink()
-                        _cmd_link.symlink_to(_venv_bin)
-                        check_ok(f"Fixed symlink: {_cmd_link_display}/hermes → {_venv_bin}")
+                        _cmd_link_solviora.unlink()
+                        _cmd_link_solviora.symlink_to(_venv_bin)
+                        check_ok(f"Fixed symlink: {_cmd_link_display}/solviora → {_venv_bin}")
                         fixed_count += 1
                     else:
-                        issues.append(f"Broken symlink at {_cmd_link_display}/hermes — run 'hermes doctor --fix'")
-            elif _cmd_link.exists():
-                # It's a regular file, not a symlink — possibly a wrapper script
-                check_ok(f"{_cmd_link_display}/hermes exists (non-symlink)")
+                        issues.append(f"Broken symlink at {_cmd_link_display}/solviora — run 'solviora doctor --fix'")
+            elif _cmd_link_solviora.exists():
+                check_ok(f"{_cmd_link_display}/solviora exists (non-symlink)")
             else:
-                check_fail(
-                    f"{_cmd_link_display}/hermes not found",
-                    "(hermes command may not work outside the venv)"
-                )
-                if should_fix:
-                    _cmd_link_dir.mkdir(parents=True, exist_ok=True)
-                    _cmd_link.symlink_to(_venv_bin)
-                    check_ok(f"Created symlink: {_cmd_link_display}/hermes → {_venv_bin}")
-                    fixed_count += 1
-
-                    # Check if the link dir is on PATH
-                    _path_dirs = os.environ.get("PATH", "").split(os.pathsep)
-                    if str(_cmd_link_dir) not in _path_dirs:
+                # No solviora symlink — check for hermes as compat fallback
+                if _cmd_link_hermes.is_symlink():
+                    _target = _cmd_link_hermes.resolve()
+                    _expected = _venv_bin.resolve()
+                    if _target == _expected:
+                        check_ok(f"{_cmd_link_display}/hermes → correct target (compat alias)")
+                        check_info("Tip: run 'solviora doctor --fix' to create the primary solviora symlink too")
+                    else:
                         check_warn(
-                            f"{_cmd_link_display} is not on your PATH",
-                            "(add it to your shell config: export PATH=\"$HOME/.local/bin:$PATH\")"
+                            f"{_cmd_link_display}/hermes points to wrong target",
+                            f"(→ {_target}, expected → {_expected})"
                         )
-                        manual_issues.append(f"Add {_cmd_link_display} to your PATH")
+                        if should_fix:
+                            _cmd_link_hermes.unlink()
+                            _cmd_link_hermes.symlink_to(_venv_bin)
+                            check_ok(f"Fixed symlink: {_cmd_link_display}/hermes → {_venv_bin}")
+                            fixed_count += 1
+                elif _cmd_link_hermes.exists():
+                    check_ok(f"{_cmd_link_display}/hermes exists (non-symlink, compat alias)")
                 else:
-                    issues.append(f"Missing {_cmd_link_display}/hermes symlink — run 'hermes doctor --fix'")
+                    # Neither exists — try creating solviora
+                    check_fail(
+                        f"{_cmd_link_display}/solviora not found",
+                        "(solviora command may not work outside the venv)"
+                    )
+                    if should_fix:
+                        _cmd_link_dir.mkdir(parents=True, exist_ok=True)
+                        _cmd_link_solviora.symlink_to(_venv_bin)
+                        check_ok(f"Created symlink: {_cmd_link_display}/solviora → {_venv_bin}")
+                        fixed_count += 1
+
+                        # Check if the link dir is on PATH
+                        _path_dirs = os.environ.get("PATH", "").split(os.pathsep)
+                        if str(_cmd_link_dir) not in _path_dirs:
+                            check_warn(
+                                f"{_cmd_link_display} is not on your PATH",
+                                "(add it to your shell config: export PATH=\"$HOME/.local/bin:$PATH\")"
+                            )
+                            manual_issues.append(f"Add {_cmd_link_display} to your PATH")
+                    else:
+                        issues.append(f"Missing {_cmd_link_display}/solviora symlink — run 'solviora doctor --fix'")
 
     # =========================================================================
     # Check: External tools
@@ -902,8 +934,8 @@ def run_doctor(args):
         if importlib.util.find_spec("vercel") is not None:
             check_ok("vercel SDK", "(installed)")
         else:
-            check_fail("vercel SDK not installed", "(pip install 'hermes-agent[vercel]')")
-            issues.append("Install the Vercel optional dependency: pip install 'hermes-agent[vercel]'")
+            check_fail("vercel SDK not installed", "(pip install 'solviora-agent[vercel]')")
+            issues.append("Install the Vercel optional dependency: pip install 'solviora-agent[vercel]'")
 
         auth_status = describe_vercel_auth()
         if auth_status.ok:
@@ -1011,7 +1043,7 @@ def run_doctor(args):
                 print(f"\r  {color('✗', Colors.RED)} OpenRouter API {color('(out of credits — payment required)', Colors.DIM)}")
                 issues.append(
                     "OpenRouter account has insufficient credits. "
-                    "Fix: run 'hermes config set model.provider <provider>' to switch providers, "
+                    "Fix: run 'solviora config set model.provider <provider>' to switch providers, "
                     "or fund your OpenRouter account at https://openrouter.ai/settings/credits"
                 )
             elif response.status_code == 429:
@@ -1228,7 +1260,7 @@ def run_doctor(args):
         # Count disabled tools with API key requirements
         api_disabled = [u for u in unavailable if (u.get("missing_vars") or u.get("env_vars"))]
         if api_disabled:
-            issues.append("Run 'hermes setup' to configure missing API keys for full tool access")
+            issues.append("Run 'solviora setup' to configure missing API keys for full tool access")
     except Exception as e:
         check_warn("Could not check tool availability", f"({e})")
     
@@ -1255,7 +1287,7 @@ def run_doctor(args):
         if q_count > 0:
             check_warn(f"{q_count} skill(s) in quarantine", "(pending review)")
     else:
-        check_warn("Skills Hub directory not initialized", "(run: hermes skills list)")
+        check_warn("Skills Hub directory not initialized", "(run: solviora skills list)")
 
     from hermes_cli.config import get_env_value
     github_token = get_env_value("GITHUB_TOKEN") or get_env_value("GH_TOKEN")
@@ -1290,12 +1322,12 @@ def run_doctor(args):
             _honcho_cfg_path = resolve_config_path()
 
             if not _honcho_cfg_path.exists():
-                check_warn("Honcho config not found", "run: hermes memory setup")
+                check_warn("Honcho config not found", "run: solviora memory setup")
             elif not hcfg.enabled:
                 check_info(f"Honcho disabled (set enabled: true in {_honcho_cfg_path} to activate)")
             elif not (hcfg.api_key or hcfg.base_url):
-                check_fail("Honcho API key or base URL not set", "run: hermes memory setup")
-                issues.append("No Honcho API key — run 'hermes memory setup'")
+                check_fail("Honcho API key or base URL not set", "run: solviora memory setup")
+                issues.append("No Honcho API key — run 'solviora memory setup'")
             else:
                 from plugins.memory.honcho.client import get_honcho_client, reset_honcho_client
                 reset_honcho_client()
@@ -1322,7 +1354,7 @@ def run_doctor(args):
                 check_ok("Mem0 API key configured")
                 check_info(f"user_id={mem0_cfg.get('user_id', '?')}  agent_id={mem0_cfg.get('agent_id', '?')}")
             else:
-                check_fail("Mem0 API key not set", "(set MEM0_API_KEY in .env or run hermes memory setup)")
+                check_fail("Mem0 API key not set", "(set MEM0_API_KEY in .env or run solviora memory setup)")
                 issues.append("Mem0 is set as memory provider but API key is missing")
         except ImportError:
             check_fail("Mem0 plugin not loadable", "pip install mem0ai")
@@ -1337,9 +1369,9 @@ def run_doctor(args):
             if _provider and _provider.is_available():
                 check_ok(f"{_active_memory_provider} provider active")
             elif _provider:
-                check_warn(f"{_active_memory_provider} configured but not available", "run: hermes memory status")
+                check_warn(f"{_active_memory_provider} configured but not available", "run: solviora memory status")
             else:
-                check_warn(f"{_active_memory_provider} plugin not found", "run: hermes memory setup")
+                check_warn(f"{_active_memory_provider} plugin not found", "run: solviora memory setup")
         except Exception as _e:
             check_warn(f"{_active_memory_provider} check failed", str(_e))
 
@@ -1415,7 +1447,7 @@ def run_doctor(args):
             print(f"  {i}. {issue}")
         print()
         if not should_fix:
-            print(color("  Tip: run 'hermes doctor --fix' to auto-fix what's possible.", Colors.DIM))
+            print(color("  Tip: run 'solviora doctor --fix' to auto-fix what's possible.", Colors.DIM))
     else:
         print(color("─" * 60, Colors.GREEN))
         print(color("  All checks passed! 🎉", Colors.GREEN, Colors.BOLD))

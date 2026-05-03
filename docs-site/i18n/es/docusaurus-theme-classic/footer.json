@@ -25,12 +25,9 @@
   },
   "link.item.label.GitHub": {
     "message": "GitHub",
-    "description": "The label of footer link with label=GitHub linking to https://github.com/solviora/solviora-agent"
+    "description": "The label of footer link with label=GitHub linking to https://github.com/JuanMS20/solviora-agent"
   },
-  "link.item.label.Discord": {
-    "message": "Discord",
-    "description": "The label of footer link with label=Discord linking to https://discord.gg/solviora"
-  },
+
   "link.item.label.About": {
     "message": "Acerca de",
     "description": "The label of footer link with label=About linking to /docs/about"
