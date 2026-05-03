@@ -1,0 +1,138 @@
+---
+slug: /cli-commands
+title: CLI Commands Reference
+description: Full list of solviora CLI commands, flags, and subcommands.
+---
+
+# CLI Commands Reference
+
+## `solviora`
+
+Start the interactive agent session.
+
+```bash
+solviora [options] [prompt]
+```
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `--model <name>` | Model to use (e.g. `gpt-4o`, `claude-sonnet-4-20250514`) |
+| `--provider <name>` | Provider (e.g. `openai`, `anthropic`, `ollama`) |
+| `--base-url <url>` | Custom API base URL |
+| `--api-key <key>` | API key (overrides env var) |
+| `-p, --profile <name>` | Use a named profile |
+| `--resume` | Resume last session |
+| `--quiet` | Suppress tool output |
+| `--no-tools` | Disable all tools for this session |
+| `--enabled-toolsets <list>` | Comma-separated toolsets to enable |
+| `--disabled-toolsets <list>` | Comma-separated toolsets to disable |
+| `--max-iterations <n>` | Max tool-calling iterations (default: 90) |
+| `--save-trajectories` | Save conversation trajectories |
+| `--tui` | Launch the TUI (terminal UI) instead of classic CLI |
+| `--version` | Print version and exit |
+| `-h, --help` | Show help message |
+
+### Examples
+
+```bash
+# One-shot prompt
+solviora "Explain Docker multi-stage builds"
+
+# Specific model and provider
+solviora --model claude-sonnet-4-20250514 --provider anthropic
+
+# Resume a session
+solviora --resume
+
+# Quiet mode — only final response
+solviora --quiet "Summarize this file"
+```
+
+## `solviora setup`
+
+Run the first-time setup wizard.
+
+```bash
+solviora setup
+```
+
+Walks through: provider selection → API key entry → tool selection → config generation.
+
+## `solviora gateway`
+
+Start the messaging gateway for Telegram, Discord, Slack, etc.
+
+```bash
+solviora gateway [options]
+```
+
+See the [Gateway documentation](https://github.com/solviora/solviora-agent/tree/main/gateway) for platform-specific setup.
+
+## `solviora cron`
+
+Manage scheduled jobs.
+
+```bash
+solviora cron list
+solviora cron add --schedule "0 9 * * *" --prompt "Daily standup summary"
+solviora cron remove <job-id>
+```
+
+## `solviora doctor`
+
+Run diagnostics to verify your setup.
+
+```bash
+solviora doctor
+```
+
+Checks: Python version, config file, API keys, tool availability.
+
+## `solviora skills`
+
+Manage skills.
+
+```bash
+solviora skills list
+solviora skills install <skill-path>
+solviora skills remove <skill-name>
+```
+
+## `solviora logs`
+
+View agent logs.
+
+```bash
+solviora logs [--follow] [--level LEVEL] [--session SESSION_ID]
+```
+
+## `solviora --tui`
+
+Launch the full TUI (terminal UI) experience.
+
+```bash
+solviora --tui
+```
+
+An Ink-based React TUI with rich formatting, session picker, and approval prompts.
+
+## Interactive slash commands
+
+These commands work inside an active session:
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show available commands |
+| `/model <name>` | Switch model |
+| `/provider <name>` | Switch provider |
+| `/tools` | List active tools |
+| `/skills` | List loaded skills |
+| `/history` | Show conversation history |
+| `/compact` | Compress context |
+| `/save` | Save session |
+| `/new` | Start new session |
+| `/resume` | Resume a past session |
+| `/skin <name>` | Switch CLI theme |
+| `/exit` | Exit Solviora |

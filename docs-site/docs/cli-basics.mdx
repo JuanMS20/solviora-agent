@@ -1,0 +1,96 @@
+---
+slug: /cli-basics
+title: CLI Basics
+description: Learn how to use the Solviora Agent interactive CLI.
+---
+
+# CLI Basics
+
+The Solviora CLI is an interactive terminal interface for chatting with AI models, running tools, and managing your agent session.
+
+## Starting the CLI
+
+```bash
+solviora
+```
+
+This opens the interactive prompt with your default model and provider.
+
+## Passing a one-shot prompt
+
+```bash
+solviora "Explain async/await in Python"
+```
+
+Solviora processes the prompt and exits. Useful for scripting and piping.
+
+## Specifying the model
+
+```bash
+solviora --model gpt-4o
+solviora --model claude-sonnet-4-20250514
+solviora --model gemini-2.5-pro
+```
+
+## Interactive commands
+
+Inside the interactive prompt, use slash commands:
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show all available commands |
+| `/model <name>` | Switch model mid-session |
+| `/tools` | List active tools |
+| `/skills` | List loaded skills |
+| `/history` | Show conversation history |
+| `/save` | Save current session |
+| `/new` | Start a new session |
+| `/compact` | Compress context to stay within limits |
+| `/exit` | Exit Solviora |
+
+## Sessions
+
+Solviora saves your conversation history automatically. Resume a previous session:
+
+```bash
+solviora --resume
+```
+
+Or pick a session interactively:
+
+```bash
+solviora --resume
+# Shows a list of past sessions to choose from
+```
+
+## Environment variables
+
+| Variable | Purpose |
+|----------|---------|
+| `SOLVIORA_HOME` | Config directory (default: `~/.solviora`) |
+| `OPENAI_API_KEY` | OpenAI API key |
+| `ANTHROPIC_API_KEY` | Anthropic API key |
+| `GOOGLE_API_KEY` | Google Gemini API key |
+
+:::note
+Solviora also reads `HERMES_HOME` for backward compatibility with migrated installations.
+:::
+
+## Configuration file
+
+Your main config lives at `~/.solviora/config.yaml`. See [Configuration](./configuration) for all options.
+
+## Profiles
+
+Run multiple isolated instances with different configurations:
+
+```bash
+solviora -p work     # Uses ~/.solviora/profiles/work/
+solviora -p personal # Uses ~/.solviora/profiles/personal/
+```
+
+Each profile has its own config, API keys, sessions, and skills.
+
+## Next step
+
+→ [Configuration](./configuration) — customize your default model, tools, and behavior.

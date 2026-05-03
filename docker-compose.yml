@@ -1,12 +1,16 @@
 #
-# docker-compose.yml for Hermes Agent
+# docker-compose.yml for Solviora Agent
 #
 # Usage:
-#   HERMES_UID=$(id -u) HERMES_GID=$(id -g) docker compose up -d
+#   SOLVIORA_UID=$(id -u) SOLVIORA_GID=$(id -g) docker compose up -d
 #
-# Set HERMES_UID / HERMES_GID to the host user that owns ~/.hermes so
-# files created inside the container stay readable/writable on the host.
-# The entrypoint remaps the internal `hermes` user to these values via
+# Legacy env vars (HERMES_UID / HERMES_GID) are still supported as
+# fallback for existing deployments.
+#
+# Set SOLVIORA_UID / SOLVIORA_GID to the host user that owns ~/.solviora
+# (or ~/.hermes for legacy configs) so files created inside the container
+# stay readable/writable on the host.
+# The entrypoint remaps the internal `solviora` user to these values via
 # usermod/groupmod + gosu.
 #
 # Security notes:
@@ -21,15 +25,18 @@
 services:
   gateway:
     build: .
-    image: hermes-agent
-    container_name: hermes
+    image: solviora-agent
+    container_name: solviora
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ~/.hermes:/opt/data
+      - ~/.solviora:/opt/data
     environment:
-      - HERMES_UID=${HERMES_UID:-10000}
-      - HERMES_GID=${HERMES_GID:-10000}
+      - SOLVIORA_UID=${SOLVIORA_UID:-${HERMES_UID:-10000}}
+      - SOLVIORA_GID=${SOLVIORA_GID:-${HERMES_GID:-10000}}
+      # Backward compat: set legacy HERMES_* so the old entrypoint path works
+      - HERMES_UID=${SOLVIORA_UID:-${HERMES_UID:-10000}}
+      - HERMES_GID=${SOLVIORA_GID:-${HERMES_GID:-10000}}
       # To expose the OpenAI-compatible API server beyond localhost,
       # uncomment BOTH lines (API_SERVER_KEY is mandatory for auth):
       # - API_SERVER_HOST=0.0.0.0
@@ -44,16 +51,18 @@ services:
     command: ["gateway", "run"]
 
   dashboard:
-    image: hermes-agent
-    container_name: hermes-dashboard
+    image: solviora-agent
+    container_name: solviora-dashboard
     restart: unless-stopped
     network_mode: host
     depends_on:
       - gateway
     volumes:
-      - ~/.hermes:/opt/data
+      - ~/.solviora:/opt/data
     environment:
-      - HERMES_UID=${HERMES_UID:-10000}
-      - HERMES_GID=${HERMES_GID:-10000}
+      - SOLVIORA_UID=${SOLVIORA_UID:-${HERMES_UID:-10000}}
+      - SOLVIORA_GID=${SOLVIORA_GID:-${HERMES_GID:-10000}}
+      - HERMES_UID=${SOLVIORA_UID:-${HERMES_UID:-10000}}
+      - HERMES_GID=${SOLVIORA_GID:-${HERMES_GID:-10000}}
     # Localhost-only. For remote access, tunnel via `ssh -L 9119:localhost:9119`.
     command: ["dashboard", "--host", "127.0.0.1", "--no-open"]

@@ -1,0 +1,86 @@
+---
+slug: /tools
+title: Herramientas
+description: Las herramientas integradas de Solviora Agent amplían lo que el agente puede hacer.
+---
+
+# Herramientas
+
+Las herramientas son las capacidades de acción de Solviora. Cada herramienta es una función Python que el agente puede invocar durante una conversación.
+
+## Cómo funcionan
+
+1. El usuario envía un mensaje.
+2. El modelo LLM decide si necesita una herramienta (por ejemplo, leer un archivo, buscar en la web).
+3. Solviora ejecuta la herramienta y devuelve el resultado al modelo.
+4. El modelo usa el resultado para generar una respuesta final.
+
+Todo esto sucede de forma transparente — solo ves la respuesta final.
+
+## Toolsets
+
+Las herramientas están organizadas en toolsets. Habilita o deshabilita toolsets completos en tu configuración:
+
+```yaml
+enabled_toolsets:
+  - core
+  - web
+  - code
+```
+
+| Toolset | Incluye |
+|---------|---------|
+| **core** | Gestión de archivos, directorios, lectura/escritura |
+| **web** | Búsqueda web, scraping, navegación con headless browser |
+| **code** | Ejecución de código en sandbox, shells de Python/Node |
+| **terminal** | Ejecución de comandos de shell con gestión de procesos |
+| **memory** | Lectura/escritura de notas de memoria del agente |
+| **cron** | Programación y gestión de tareas recurrentes |
+| **image** | Generación y procesamiento de imágenes |
+
+## Herramientas destacadas
+
+### Archivos y código
+
+- **`read_file`** — Leer archivos del sistema de archivos local.
+- **`write_file`** — Crear o sobrescribir archivos.
+- **`execute_code`** — Ejecutar código Python o JavaScript en un sandbox.
+
+### Web
+
+- **`web_search`** — Buscar en la web y obtener resultados estructurados.
+- **`web_scrape`** — Extraer contenido de una URL.
+
+### Sistema
+
+- **`terminal`** — Ejecutar comandos de shell con timeout y captura de salida.
+- **`list_directory`** — Listar archivos y directorios.
+
+### Memoria
+
+- **`save_memory`** — Guardar notas para sesiones futuras.
+- **`recall_memory`** — Recuperar notas guardadas previamente.
+
+## Seguridad
+
+Las herramientas se ejecutan en tu máquina local con tus permisos de usuario. Solviora incluye protecciones:
+
+- **Aprobación humana** — Configura la aprobación antes de ejecutar comandos potencialmente peligrosos.
+- **Restricciones de ruta** — Limita qué directorios pueden acceder las herramientas de archivos.
+- **Timeouts** — Todas las herramientas tienen timeouts configurables.
+
+```yaml
+safety:
+  confirm_before_execute: true
+  restricted_paths:
+    - /etc
+    - ~/.ssh
+```
+
+## Extender con plugins
+
+Puedes agregar herramientas personalizadas a través de plugins. Consulta [Skills y Plugins](./skills) para más información.
+
+## Siguiente paso
+
+→ [Referencia de herramientas](./tools-reference) — tabla completa de parámetros de cada herramienta.

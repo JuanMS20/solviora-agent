@@ -1,0 +1,101 @@
+---
+slug: /configuration-reference
+title: Configuration Reference
+description: Complete reference for config.yaml and .env settings.
+---
+
+# Configuration Reference
+
+All settings for `~/.solviora/config.yaml` and `~/.solviora/.env`.
+
+## config.yaml
+
+### Model & Provider
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `model` | string | `gpt-4o` | Default LLM model |
+| `provider` | string | `openai` | Default provider |
+| `fallback_model` | string | — | Model used when primary is unavailable |
+| `base_url` | string | — | Custom API base URL |
+| `api_mode` | string | `chat_completions` | API mode (`chat_completions`, `codex_responses`) |
+| `max_iterations` | number | `90` | Max tool-calling iterations per conversation |
+
+### Display
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `display.skin` | string | `default` | CLI theme (`default`, `ares`, `mono`, `slate`) |
+| `display.tool_progress` | boolean | `true` | Show tool execution progress |
+| `display.background_process_notifications` | string | `all` | Background process verbosity (`all`, `result`, `error`, `off`) |
+
+### Terminal
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `terminal.cwd` | string | `~` | Default working directory for tool execution |
+
+### Memory
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `memory.provider` | string | `builtin` | Memory backend (`builtin`, `honcho`, `mem0`, `supermemory`) |
+
+### Toolsets
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `enabled_toolsets` | string[] | `["core"]` | Toolsets enabled by default |
+| `disabled_toolsets` | string[] | `[]` | Toolsets explicitly disabled |
+
+### Logging
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `logging.level` | string | `INFO` | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+
+### Skills
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `skills.config.<key>` | any | — | Skill-specific settings |
+
+## .env variables
+
+Only store secrets (API keys, tokens, passwords) in `.env`. All other settings go in `config.yaml`.
+
+| Variable | Category | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | Provider | OpenAI API key |
+| `ANTHROPIC_API_KEY` | Provider | Anthropic API key |
+| `GOOGLE_API_KEY` | Provider | Google Gemini API key |
+| `DEEPSEEK_API_KEY` | Provider | DeepSeek API key |
+| `GROQ_API_KEY` | Provider | Groq API key |
+| `MISTRAL_API_KEY` | Provider | Mistral API key |
+| `OPENROUTER_API_KEY` | Provider | OpenRouter API key |
+| `AZURE_API_KEY` | Provider | Azure OpenAI API key |
+| `HF_API_KEY` | Provider | Hugging Face API key |
+| `EXA_API_KEY` | Tool | Exa search API key |
+| `FIRECRAWL_API_KEY` | Tool | Firecrawl API key |
+| `TELEGRAM_BOT_TOKEN` | Messaging | Telegram bot token |
+| `DISCORD_BOT_TOKEN` | Messaging | Discord bot token |
+| `SLACK_BOT_TOKEN` | Messaging | Slack bot token |
+
+:::warning
+Non-secret settings (timeouts, thresholds, feature flags) belong in `config.yaml`, not `.env`.
+:::
+
+## Environment variables (runtime)
+
+| Variable | Description |
+|----------|-------------|
+| `SOLVIORA_HOME` | Config directory (default: `~/.solviora`) |
+| `HERMES_HOME` | Legacy alias for `SOLVIORA_HOME` |
+
+## Profiles
+
+Each profile at `~/.solviora/profiles/<name>/` has its own `config.yaml` and `.env`. Select with `-p`:
+
+```bash
+solviora -p work
+```

@@ -1,0 +1,95 @@
+---
+slug: /examples
+title: Examples
+description: Common usage patterns and recipes for Solviora Agent.
+---
+
+# Examples
+
+Practical patterns for common tasks.
+
+## One-shot commands
+
+```bash
+# Summarize a file
+solviora "Read README.md and give me a 3-bullet summary"
+
+# Generate a PR description
+solviora "Look at my recent git commits and draft a PR description"
+
+# Convert formats
+solviora "Read data.csv and convert it to JSON"
+```
+
+## Code assistance
+
+```bash
+# Add type hints
+solviora "Read src/utils.py and add type hints to all public functions"
+
+# Write tests
+solviora "Read src/calculator.py and write pytest tests for every function"
+
+# Refactor
+solviora "Read src/main.py and extract the database logic into a separate module"
+```
+
+## Research
+
+```bash
+# Web research
+solviora "Search for the latest best practices for FastAPI authentication in 2025"
+
+# Documentation lookup
+solviora "Find the Pydantic v2 docs on custom validators and summarize the pattern"
+```
+
+## File management
+
+```bash
+# Batch rename
+solviora "Rename all .jpeg files in ./images to .jpg"
+
+# Find and fix
+solviora "Find all TODO comments in the src/ directory and list them by file"
+```
+
+## DevOps
+
+```bash
+# Docker help
+solviora "Create a Dockerfile for a Python FastAPI app with multi-stage build"
+
+# CI/CD
+solviora "Write a GitHub Actions workflow for testing and deploying this project"
+```
+
+## Scheduled tasks
+
+```bash
+# Daily summary
+solviora cron add --schedule "0 9 * * *" --prompt "Summarize recent git commits"
+
+# Weekly report
+solviora cron add --schedule "0 17 * * 5" --prompt "Generate a weekly progress report"
+```
+
+## Messaging gateway
+
+```bash
+# Start Telegram bot
+solviora gateway --platform telegram
+
+# Start Discord bot
+solviora gateway --platform discord
+```
+
+## Profiles
+
+```bash
+# Work profile with OpenAI
+solviora -p work
+
+# Personal profile with local Ollama
+solviora -p personal --provider ollama --model llama3
+```

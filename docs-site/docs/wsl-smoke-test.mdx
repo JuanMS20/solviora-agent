@@ -1,0 +1,134 @@
+---
+sidebar_position: 6
+slug: /wsl-smoke-test
+title: WSL Smoke Test
+description: Step-by-step commands to verify Solviora Agent works correctly in WSL (Ubuntu).
+---
+
+# WSL Smoke Test
+
+Step-by-step verification that Solviora Agent installs and runs correctly under **WSL 2 (Ubuntu)**.
+
+> **Tip:** Click the copy button (📋) on any code block to copy it to your clipboard.
+
+---
+
+## Step 0 — Open WSL
+
+```bash
+wsl
+```
+
+Verify you're in Ubuntu. Your prompt should look like `user@machine:~$`.
+
+---
+
+## Step 1 — Check Python & pip
+
+```bash
+python3 --version && pip3 --version
+```
+
+**Expected:**
+
+<ul>
+<li>Python 3.11+ (<code>Python 3.12.3</code> or newer)</li>
+<li>pip 24.0+</li>
+</ul>
+
+:::warning Python too old?
+Install a newer version:
+```bash
+sudo apt update && sudo apt install python3.12 python3.12-venv python3-pip -y
+```
+:::
+
+---
+
+## Step 2 — Create venv & editable install
+
+```bash
+cd /mnt/c/Users/ASUS/Downloads/Solviora_Agent
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+**Expected:** `Successfully installed solviora-agent ...` with no errors.
+
+:::note
+The `.venv` is created inside the repo. Activate it every time you open a new WSL session:
+```bash
+cd /mnt/c/Users/ASUS/Downloads/Solviora_Agent
+source .venv/bin/activate
+```
+:::
+
+---
+
+## Step 3 — Verify CLI loads
+
+```bash
+solviora --help
+```
+
+**Expected:** Help text with available commands and options.
+
+If this fails with `command not found`, make sure the venv is activated:
+```bash
+source .venv/bin/activate
+```
+
+---
+
+## Step 4 — Run doctor
+
+```bash
+solviora doctor
+```
+
+**Expected:** Health check results showing config status, available tools, and provider connectivity.
+
+---
+
+## Step 5 — Quick chat test (optional)
+
+```bash
+solviora chat
+```
+
+This opens the interactive REPL. Type a message and press Enter. Type `/exit` to quit.
+
+:::info
+This requires at least one provider API key configured in `~/.solviora/.env` or `~/.hermes/.env`.
+:::
+
+---
+
+## Debug commands
+
+If something fails, run these and share the output:
+
+```bash
+# Check which python is active
+which python3 && python3 --version
+
+# Check pip packages
+pip show solviora-agent 2>/dev/null || echo "NOT INSTALLED"
+
+# Check entry points
+which solviora 2>/dev/null || echo "NOT ON PATH"
+```
+
+---
+
+## Checklist
+
+| Step | Command | Status |
+|------|---------|--------|
+| 0 | `wsl` | ⬜ |
+| 1 | `python3 --version && pip3 --version` | ⬜ |
+| 2 | `pip install -e .` | ⬜ |
+| 3 | `solviora --help` | ⬜ |
+| 4 | `solviora doctor` | ⬜ |
+| 5 | `solviora chat` | ⬜ (optional) |

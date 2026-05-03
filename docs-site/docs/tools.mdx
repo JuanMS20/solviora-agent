@@ -1,0 +1,114 @@
+---
+slug: /tools
+title: Tools
+description: Built-in tools that let Solviora Agent execute code, search the web, manage files, and more.
+---
+
+# Tools
+
+Tools are what turn a chat model into an autonomous agent. Solviora ships a curated toolbox — each tool handles a specific capability like running code, searching the web, or managing files.
+
+## How tools work
+
+When you ask Solviora a question that requires external action (e.g., "read this file" or "search for X"), the agent:
+
+1. Decides which tool to use
+2. Calls it with the right arguments
+3. Feeds the result back into the conversation
+4. Continues reasoning
+
+This happens automatically — you just ask naturally.
+
+## Toolsets
+
+Tools are organized into **toolsets** — logical groups you can enable or disable:
+
+| Toolset | Description |
+|---------|-------------|
+| `core` | File I/O, shell execution, environment management |
+| `web` | Web search, scraping, page fetching |
+| `code` | Code execution in sandboxed environments |
+| `memory` | Long-term memory read/write |
+| `terminal` | Terminal session management (local, Docker, SSH) |
+| `cron` | Scheduled jobs and recurring tasks |
+| `image` | Image generation and analysis |
+
+## Enable or disable toolsets
+
+### In config.yaml
+
+```yaml
+enabled_toolsets:
+  - core
+  - web
+  - code
+
+disabled_toolsets:
+  - image
+```
+
+### At runtime
+
+```bash
+solviora --enabled-toolsets core,web
+solviora --disabled-toolsets image
+```
+
+## Notable tools
+
+Here are some of the most commonly used tools:
+
+### `execute_code`
+
+Run Python, JavaScript, or shell commands in a sandboxed environment.
+
+```
+You › Run a Python script that calculates fibonacci(50)
+```
+
+### `web_search`
+
+Search the web using Exa or Firecrawl.
+
+```
+You › Search for the latest Python 3.13 release notes
+```
+
+### `read_file` / `write_file`
+
+Read and write files on your filesystem.
+
+```
+You › Read src/main.py and add type hints
+```
+
+### `terminal`
+
+Open a persistent terminal session for multi-step workflows.
+
+```
+You › Create a new git branch, make changes, and run the tests
+```
+
+### `memory_save` / `memory_recall`
+
+Store and retrieve long-term memories across sessions.
+
+```
+You › Remember that I prefer dark mode in all my projects
+```
+
+## Safety
+
+- Tools operate within your `terminal.cwd` directory by default
+- File operations are restricted to allowed paths
+- Shell commands require approval based on your safety settings
+- Use `--no-tools` to run without any tools
+
+## Extending with plugins
+
+You can add custom tools via the plugin system. See [Skills & Plugins](./skills) for details.
+
+## Next step
+
+→ [Skills](./skills) — extend Solviora with community and custom skills.

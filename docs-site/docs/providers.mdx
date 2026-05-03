@@ -1,0 +1,109 @@
+---
+slug: /providers
+title: Providers
+description: Connect Solviora Agent to OpenAI, Anthropic, Google Gemini, and more.
+---
+
+# Providers
+
+Solviora Agent is provider-agnostic. Switch between LLM providers by changing a single config value or command-line flag.
+
+## Supported providers
+
+| Provider | Config name | Required env var |
+|----------|-------------|------------------|
+| OpenAI | `openai` | `OPENAI_API_KEY` |
+| Anthropic | `anthropic` | `ANTHROPIC_API_KEY` |
+| Google Gemini | `gemini` | `GOOGLE_API_KEY` |
+| DeepSeek | `deepseek` | `DEEPSEEK_API_KEY` |
+| Groq | `groq` | `GROQ_API_KEY` |
+| Mistral | `mistral` | `MISTRAL_API_KEY` |
+| Ollama (local) | `ollama` | None |
+| LM Studio (local) | `lmstudio` | None |
+| OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
+| Azure OpenAI | `azure` | `AZURE_API_KEY` |
+| AWS Bedrock | `bedrock` | AWS credentials |
+| Google Vertex AI | `vertex` | Google Cloud credentials |
+| Hugging Face | `huggingface` | `HF_API_KEY` |
+
+## Configure a provider
+
+### Option 1: Setup wizard
+
+```bash
+solviora setup
+```
+
+### Option 2: config.yaml
+
+```yaml
+provider: anthropic
+model: claude-sonnet-4-20250514
+```
+
+### Option 3: Command line
+
+```bash
+solviora --provider anthropic --model claude-sonnet-4-20250514
+```
+
+### Option 4: Environment variable
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+solviora --provider anthropic
+```
+
+## Local providers (no API key)
+
+### Ollama
+
+1. [Install Ollama](https://ollama.com/download)
+2. Pull a model: `ollama pull llama3`
+3. Run Solviora:
+
+```bash
+solviora --provider ollama --model llama3
+```
+
+### LM Studio
+
+1. [Install LM Studio](https://lmstudio.ai/)
+2. Load a model in LM Studio
+3. Run Solviora:
+
+```bash
+solviora --provider lmstudio --model local-model
+```
+
+## Fallback model
+
+Configure a fallback for when the primary model is unavailable:
+
+```yaml
+model: gpt-4o
+fallback_model: gpt-4o-mini
+```
+
+## Multiple providers
+
+Solviora supports credential pools — use multiple API keys for the same provider to distribute load:
+
+```yaml
+credential_pool:
+  - api_key: sk-...
+  - api_key: sk-...
+```
+
+## Custom base URL
+
+For compatible providers or proxies:
+
+```yaml
+provider: openai
+base_url: https://my-proxy.example.com/v1
+```
+
+## Next step
+
+→ [Tools](./tools) — explore built-in tools for code execution, search, and more.

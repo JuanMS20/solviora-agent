@@ -1,0 +1,108 @@
+---
+slug: /skills
+title: Skills y Plugins
+description: Extiende Solviora Agent con skills y plugins personalizados.
+---
+
+# Skills y Plugins
+
+Solviora Agent se puede extender de dos formas: **skills** (plantillas de prompt preempaquetadas) y **plugins** (extensiones con código Python personalizado).
+
+## Skills
+
+Los skills son archivos Markdown que inyectan instrucciones especializadas en la conversación. No requieren código.
+
+### Instalar un skill
+
+```bash
+solviora skills install official/devops/docker-deploy
+```
+
+### Listar skills disponibles
+
+```bash
+solviora skills list
+```
+
+### Usar un skill
+
+Los skills instalados se activan con comandos slash dentro de una sesión:
+
+```
+/docker-deploy construye y despliega la imagen para staging
+```
+
+### Skills oficiales
+
+Los skills oficiales cubren categorías como:
+
+- **DevOps** — CI/CD, Docker, Kubernetes
+- **Investigación** — Análisis web, resúmenes
+- **Productividad** — Gestión de notas, automatización
+- **Seguridad** — Auditorías, análisis de código
+- **Desarrollo web** — Frontend, backend, APIs
+
+### Skills vs Plugins
+
+| Aspecto | Skills | Plugins |
+|---------|--------|---------|
+| Qué son | Plantillas de prompt | Código Python |
+| Extienden | Comportamiento del prompt | Herramientas y hooks |
+| Instalación | `solviora skills install` | Paquete Python |
+| Requieren código | No | Sí |
+| Riesgo | Bajo (solo texto) | Medio (ejecuta código) |
+
+## Plugins
+
+Los plugins agregan herramientas personalizadas y hooks de ciclo de vida. Se almacenan en `~/.solviora/plugins/`.
+
+### Escribir un plugin
+
+Crea un archivo `register.py` en tu directorio de plugin:
+
+```python
+# ~/.solviora/plugins/mi_plugin/register.py
+
+def register(ctx):
+    """Punto de entrada del plugin."""
+
+    # Registrar una herramienta personalizada
+    ctx.register_tool(
+        name="mi_herramienta",
+        description="Hace algo útil",
+        handler=mi_handler,
+    )
+
+    # Registrar un hook de ciclo de vida
+    ctx.register_hook("post_tool_call", mi_callback)
+```
+
+### Hooks disponibles
+
+| Hook | Cuándo se ejecuta |
+|------|-------------------|
+| `pre_tool_call` | Antes de que se ejecute una herramienta |
+| `post_tool_call` | Después de que se ejecuta una herramienta |
+| `pre_llm_call` | Antes de llamar al modelo LLM |
+| `post_llm_call` | Después de recibir respuesta del modelo |
+| `on_session_start` | Al iniciar una sesión |
+| `on_session_end` | Al cerrar una sesión |
+
+### Estructura de un plugin
+
+```
+~/.solviora/plugins/mi_plugin/
+├── register.py       # Punto de entrada requerido
+├── tools.py          # Implementación de herramientas (opcional)
+└── hooks.py          # Callbacks de hooks (opcional)
+```
+
+## Reglas importantes
+
+- **Los plugins NO deben modificar archivos del núcleo** (`run_agent.py`, `cli.py`, etc.).
+- Si necesitas una nueva capacidad, expándela a través de la superficie de plugins (hooks, `ctx.register_tool`).
+- Los skills deben estar en Markdown y pueden incluir bloques de código como ejemplos.
+
+## Siguiente paso
+
+→ [Referencia de CLI](./cli-commands) — todos los comandos y flags de Solviora.

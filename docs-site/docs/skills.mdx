@@ -1,0 +1,110 @@
+---
+slug: /skills
+title: Skills & Plugins
+description: Extend Solviora Agent with community skills and custom plugins.
+---
+
+# Skills & Plugins
+
+Skills and plugins let you extend Solviora Agent without modifying the core codebase.
+
+## Skills
+
+Skills are prompt-based extensions that add domain expertise to the agent. They're loaded as additional context when relevant to the conversation.
+
+### Built-in skills
+
+Solviora ships skills organized by category:
+
+| Category | Examples |
+|----------|---------|
+| Code review | PR review, linting guidance |
+| DevOps | Docker, CI/CD, deployment patterns |
+| Research | Web research, documentation lookup |
+| MLOps | Model training, experiment tracking |
+| Productivity | Email drafting, summarization |
+
+### Installing optional skills
+
+```bash
+solviora skills install official/devops/docker-basics
+solviora skills install official/security/owasp-top10
+```
+
+### Managing skills
+
+```bash
+# List installed skills
+solviora skills list
+
+# Remove a skill
+solviora skills remove docker-basics
+```
+
+### Using skills in conversation
+
+Skills activate automatically when relevant. You can also invoke them explicitly:
+
+```
+You › /docker-basics How do I multi-stage build?
+```
+
+## Plugins
+
+Plugins add new capabilities — custom tools, lifecycle hooks, memory providers, and CLI commands.
+
+### Plugin types
+
+| Type | Purpose |
+|------|---------|
+| **Tool plugins** | Add new tools to the agent |
+| **Memory providers** | Alternative memory backends (Honcho, Mem0, etc.) |
+| **Context engines** | Custom context retrieval strategies |
+| **CLI commands** | New `solviora <command>` subcommands |
+
+### Installing plugins
+
+```bash
+# From pip
+pip install solviora-plugin-example
+
+# From local directory
+cp -r my-plugin/ ~/.solviora/plugins/
+```
+
+### Writing a plugin
+
+Plugins expose a `register(ctx)` function:
+
+```python
+# ~/.solviora/plugins/my_plugin/plugin.py
+
+def register(ctx):
+    """Called when the plugin is loaded."""
+
+    # Register a custom tool
+    ctx.register_tool(
+        name="my_tool",
+        schema={...},
+        handler=my_handler,
+    )
+
+    # Register a lifecycle hook
+    ctx.register_hook("post_tool_call", my_hook)
+```
+
+See the [plugin development guide](https://github.com/solviora/solviora-agent/tree/main/plugins) for full documentation.
+
+## Skill vs Plugin — when to use which?
+
+| Scenario | Use |
+|----------|-----|
+| Add domain knowledge (prompts) | Skill |
+| Add a new capability (code) | Plugin |
+| Change memory backend | Plugin (memory provider) |
+| Add CLI subcommand | Plugin |
+| Quick project-specific instructions | Skill |
+
+## Next step
+
+→ [CLI Commands Reference](./cli-commands) — full list of CLI commands and flags.

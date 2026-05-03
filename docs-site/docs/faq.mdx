@@ -1,0 +1,94 @@
+---
+slug: /faq
+title: FAQ
+description: Frequently asked questions about Solviora Agent.
+---
+
+# FAQ
+
+## General
+
+### What is Solviora Agent?
+
+Solviora Agent is a terminal-first AI agent that connects to multiple LLM providers (OpenAI, Anthropic, Google, etc.) and uses built-in tools to execute tasks autonomously. It runs in your terminal and can also connect to messaging platforms like Telegram and Discord.
+
+### Is it free?
+
+The agent itself is open source (MIT license). You pay for the LLM API calls you make. You can also use free local providers like Ollama or LM Studio.
+
+### How is it different from ChatGPT / Claude?
+
+Solviora runs locally in your terminal and has direct access to your filesystem, shell, and tools. It can read files, execute code, search the web, and manage scheduled tasks — all from a single conversation.
+
+### Is it related to Hermes Agent?
+
+Yes. Solviora Agent is a fork of Hermes Agent with its own identity, branding, and configuration paths (`~/.solviora/` instead of `~/.hermes/`). It maintains backward compatibility with `HERMES_HOME` for migrated installations.
+
+## Setup
+
+### Which provider should I use?
+
+Start with whichever provider you already have an API key for. OpenAI and Anthropic are the most tested. For free usage, try Ollama with local models.
+
+### Can I use multiple providers at once?
+
+Yes. Use profiles to set up different providers:
+
+```bash
+solviora -p openai    # Uses OpenAI config
+solviora -p claude    # Uses Anthropic config
+```
+
+### Does it work on Windows?
+
+Yes, though WSL (Windows Subsystem for Linux) is recommended for the best experience. Some terminal features work better in a POSIX environment.
+
+## Privacy & Security
+
+### Where is my data stored?
+
+All data stays on your machine in `~/.solviora/`:
+- Conversations: `~/.solviora/sessions/`
+- Config: `~/.solviora/config.yaml`
+- API keys: `~/.solviora/.env`
+- Logs: `~/.solviora/logs/`
+
+### Are my API keys sent anywhere?
+
+API keys are only sent to the respective provider's API endpoint. They are never logged, transmitted to third parties, or stored outside `~/.solviora/.env`.
+
+### Can the agent access any file?
+
+The agent operates within your configured `terminal.cwd` directory by default. You can restrict this further in config.
+
+## Features
+
+### Can I use it without tools?
+
+Yes. Run with `--no-tools` for a plain chat mode:
+
+```bash
+solviora --no-tools
+```
+
+### Can I schedule recurring tasks?
+
+Yes, with the cron system:
+
+```bash
+solviora cron add --schedule "0 9 * * *" --prompt "Daily standup summary"
+```
+
+### Does it support voice?
+
+Yes, via Edge TTS (free, built-in) or ElevenLabs (premium, requires API key).
+
+### Can I use it from Telegram/Discord?
+
+Yes, via the messaging gateway:
+
+```bash
+solviora gateway --platform telegram
+```
+
+See [CLI Commands](./cli-commands#solviora-gateway) for details.

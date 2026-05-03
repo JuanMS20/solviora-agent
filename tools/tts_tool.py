@@ -1512,7 +1512,10 @@ def _generate_kittentts(text: str, output_path: str, tts_config: Dict[str, Any])
     audio = model.generate(text, voice=voice, speed=speed, clean_text=clean_text)
 
     # Save as WAV
-    import soundfile as sf
+    try:
+        import soundfile as sf
+    except ImportError:
+        return json.dumps({"success": False, "error": "soundfile is required for NeutTS output. Install with: pip install soundfile"})
     wav_path = output_path
     if not output_path.endswith(".wav"):
         wav_path = output_path.rsplit(".", 1)[0] + ".wav"

@@ -1,0 +1,138 @@
+---
+slug: /tools-reference
+title: Referencia de herramientas
+description: Parámetros y detalles de cada herramienta integrada de Solviora Agent.
+---
+
+# Referencia de herramientas
+
+Las herramientas se organizan por toolset. Cada herramienta acepta parámetros JSON que el modelo LLM completa automáticamente.
+
+## Core
+
+### `read_file`
+
+Lee un archivo del sistema de archivos local.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `path` | string | Sí | Ruta absoluta al archivo |
+| `start_line` | int | No | Línea de inicio (1-indexed) |
+| `end_line` | int | No | Línea final (inclusive) |
+
+### `write_file`
+
+Crea o sobrescribe un archivo.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `path` | string | Sí | Ruta absoluta al archivo |
+| `content` | string | Sí | Contenido a escribir |
+
+### `list_directory`
+
+Lista el contenido de un directorio.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `path` | string | Sí | Ruta absoluta al directorio |
+
+## Web
+
+### `web_search`
+
+Busca en la web y devuelve resultados estructurados.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `query` | string | Sí | Término de búsqueda |
+| `max_results` | int | No | Máximo de resultados (predeterminado: 10) |
+
+### `web_scrape`
+
+Extrae el contenido de una URL.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `url` | string | Sí | URL a extraer |
+| `selector` | string | No | Selector CSS para secciones específicas |
+
+## Terminal
+
+### `terminal`
+
+Ejecuta un comando de shell.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `command` | string | Sí | Comando a ejecutar |
+| `cwd` | string | No | Directorio de trabajo |
+| `timeout` | int | No | Timeout en segundos |
+| `background` | bool | No | Ejecutar en segundo plano |
+
+## Code
+
+### `execute_code`
+
+Ejecuta código en un sandbox aislado.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `code` | string | Sí | Código a ejecutar |
+| `language` | string | Sí | `python` o `javascript` |
+| `timeout` | int | No | Timeout en segundos |
+
+## Memory
+
+### `save_memory`
+
+Guarda una nota persistente.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `key` | string | Sí | Identificador de la nota |
+| `content` | string | Sí | Contenido a guardar |
+
+### `recall_memory`
+
+Recupera notas guardadas.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `query` | string | Sí | Consulta de búsqueda |
+
+## Cron
+
+### `cron_add`
+
+Programa una tarea recurrente.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `schedule` | string | Sí | Expresión cron |
+| `prompt` | string | Sí | Prompt a ejecutar |
+| `name` | string | No | Nombre descriptivo |
+
+### `cron_list`
+
+Lista tareas programadas. No requiere parámetros.
+
+### `cron_remove`
+
+Elimina una tarea programada.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `job_id` | string | Sí | ID de la tarea |
+
+## Image
+
+### `generate_image`
+
+Genera una imagen a partir de un prompt de texto.
+
+| Parámetro | Tipo | Requerido | Descripción |
+|-----------|------|-----------|-------------|
+| `prompt` | string | Sí | Descripción de la imagen |
+| `size` | string | No | Dimensiones (predeterminado: `1024x1024`) |
+| `output_path` | string | No | Ruta donde guardar la imagen |

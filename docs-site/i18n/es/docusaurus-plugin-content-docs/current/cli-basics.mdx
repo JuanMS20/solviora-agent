@@ -1,0 +1,96 @@
+---
+slug: /cli-basics
+title: Conceptos básicos del CLI
+description: Aprende a usar la interfaz CLI interactiva de Solviora Agent.
+---
+
+# Conceptos básicos del CLI
+
+El CLI de Solviora es una interfaz de terminal interactiva para chatear con modelos de IA, ejecutar herramientas y gestionar tu sesión de agente.
+
+## Iniciar el CLI
+
+```bash
+solviora
+```
+
+Esto abre el prompt interactivo con tu modelo y proveedor predeterminados.
+
+## Pasar un prompt de un solo uso
+
+```bash
+solviora "Explica async/await en Python"
+```
+
+Solviora procesa el prompt y sale. Útil para scripting y pipes.
+
+## Especificar el modelo
+
+```bash
+solviora --model gpt-4o
+solviora --model claude-sonnet-4-20250514
+solviora --model gemini-2.5-pro
+```
+
+## Comandos interactivos
+
+Dentro del prompt interactivo, usa comandos con barra diagonal:
+
+| Comando | Descripción |
+|---------|-------------|
+| `/help` | Mostrar todos los comandos disponibles |
+| `/model <nombre>` | Cambiar modelo durante la sesión |
+| `/tools` | Listar herramientas activas |
+| `/skills` | Listar skills cargados |
+| `/history` | Mostrar historial de conversación |
+| `/save` | Guardar sesión actual |
+| `/new` | Iniciar una nueva sesión |
+| `/compact` | Comprimir contexto para mantenerse dentro de los límites |
+| `/exit` | Salir de Solviora |
+
+## Sesiones
+
+Solviora guarda tu historial de conversación automáticamente. Retoma una sesión anterior:
+
+```bash
+solviora --resume
+```
+
+O selecciona una sesión interactivamente:
+
+```bash
+solviora --resume
+# Muestra una lista de sesiones pasadas para elegir
+```
+
+## Variables de entorno
+
+| Variable | Propósito |
+|----------|-----------|
+| `SOLVIORA_HOME` | Directorio de configuración (predeterminado: `~/.solviora`) |
+| `OPENAI_API_KEY` | Clave API de OpenAI |
+| `ANTHROPIC_API_KEY` | Clave API de Anthropic |
+| `GOOGLE_API_KEY` | Clave API de Google Gemini |
+
+:::note
+Solviora también lee `HERMES_HOME` para compatibilidad con instalaciones migradas.
+:::
+
+## Archivo de configuración
+
+Tu configuración principal está en `~/.solviora/config.yaml`. Consulta [Configuración](./configuration) para todas las opciones.
+
+## Perfiles
+
+Ejecuta múltiples instancias aisladas con diferentes configuraciones:
+
+```bash
+solviora -p trabajo      # Usa ~/.solviora/profiles/trabajo/
+solviora -p personal     # Usa ~/.solviora/profiles/personal/
+```
+
+Cada perfil tiene su propia configuración, claves API, sesiones y skills.
+
+## Siguiente paso
+
+→ [Configuración](./configuration) — personaliza tu modelo, herramientas y comportamiento predeterminados.

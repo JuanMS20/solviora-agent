@@ -1,0 +1,160 @@
+/* ── Hero — Vercel × Cursor editorial ─────────────────── */
+
+.heroBanner {
+  padding: 7rem 1rem 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle dot-grid pattern (Cursor-inspired) */
+.heroBanner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    var(--solv-hairline) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  opacity: 0.5;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+
+.heroBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--solv-accent-light);
+  color: var(--solv-accent);
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+  color: var(--solv-ink);
+}
+
+.heroSubtitle {
+  font-size: 1.125rem;
+  color: var(--solv-body);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.65;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.heroButtons .button {
+  min-width: 160px;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9375rem;
+}
+
+/* ── Features — elevated cards on cream canvas ──────── */
+
+.features {
+  padding: 5rem 1rem;
+}
+
+.featureCard {
+  text-align: left;
+  height: 100%;
+}
+
+.featureIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--solv-accent-light);
+  color: var(--solv-accent);
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.features h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+  color: var(--solv-ink);
+}
+
+.features p {
+  font-size: 0.875rem;
+  color: var(--solv-body);
+  margin: 0;
+  line-height: 1.65;
+}
+
+/* ── Quick look — terminal-style code block ──────── */
+
+.quickLook {
+  padding: 5rem 1rem 6rem;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+  color: var(--solv-ink);
+}
+
+.codeBlock {
+  background: var(--solv-surface);
+  border-radius: var(--ifm-card-border-radius);
+  padding: 1.75rem 2rem;
+  text-align: left;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.875rem;
+  line-height: 1.8;
+  box-shadow: var(--solv-shadow-elevated), var(--solv-shadow-inner-ring);
+}
+
+.comment {
+  color: var(--solv-muted);
+}
+
+.command {
+  color: var(--solv-ink);
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+
+@media (max-width: 996px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .heroBanner {
+    padding: 5rem 1rem 3rem;
+  }
+  .heroTitle {
+    font-size: 2rem;
+  }
+}

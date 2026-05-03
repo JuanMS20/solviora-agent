@@ -1,0 +1,466 @@
+/**
+ * Solviora Agent — Vercel × Cursor hybrid design system
+ *
+ * Light canvas:  Warm cream (#f7f7f4) — Cursor editorial warmth
+ * Ink:           Warm near-black (#26251e) — not pure black
+ * Accent:        Solviora teal (#2BA8A0) — used scarcely like Cursor Orange
+ * Depth:         Shadow-as-border (Vercel) — no traditional borders
+ * Typography:    Inter with negative tracking — magazine editorial voice
+ * Code:          JetBrains Mono on every code surface
+ */
+
+@import url("./fonts.css");
+
+/* ── Design tokens ───────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --solv-accent: #2BA8A0;
+  --solv-accent-hover: #249590;
+  --solv-accent-light: rgba(43, 168, 160, 0.08);
+
+  /* Surfaces */
+  --solv-canvas: #f7f7f4;
+  --solv-canvas-soft: #fafaf7;
+  --solv-surface: #ffffff;
+  --solv-surface-dim: #efeee8;
+
+  /* Text */
+  --solv-ink: #26251e;
+  --solv-body: #5a5852;
+  --solv-muted: #807d72;
+  --solv-muted-soft: #a09c92;
+
+  /* Hairlines */
+  --solv-hairline: #e6e5e0;
+  --solv-hairline-soft: #efeee8;
+  --solv-hairline-strong: #cfcdc4;
+
+  /* Shadows (Vercel-style layered) */
+  --solv-shadow-border: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  --solv-shadow-card: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.03) 0px 2px 4px;
+  --solv-shadow-elevated: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.03) 0px 2px 4px,
+    rgba(0, 0, 0, 0.02) 0px 8px 16px -4px;
+  --solv-shadow-inner-ring: var(--solv-canvas-soft) 0px 0px 0px 1px;
+
+  /* Semantic overrides for Infima (light mode) */
+  --ifm-color-primary: #2BA8A0;
+  --ifm-color-primary-dark: #249590;
+  --ifm-color-primary-darker: #1F8580;
+  --ifm-color-primary-light: #3CC0B8;
+  --ifm-color-primary-lighter: #56D4CC;
+  --ifm-color-primary-contrast-background: var(--solv-canvas);
+  --ifm-color-primary-contrast-foreground: var(--solv-ink);
+
+  --ifm-background-color: var(--solv-canvas);
+  --ifm-background-surface-color: var(--solv-surface);
+
+  --ifm-heading-color: var(--solv-ink);
+  --ifm-font-color-base: var(--solv-body);
+
+  --ifm-code-background: var(--solv-surface-dim);
+  --ifm-code-color: var(--solv-ink);
+
+  --ifm-border-color: var(--solv-hairline);
+
+  --ifm-footer-background-color: var(--solv-ink);
+  --ifm-footer-color: var(--solv-muted);
+
+  /* Typography */
+  --ifm-font-family-base: "Inter", system-ui, -apple-system, "Segoe UI",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ifm-font-family-monospace: "JetBrains Mono", "Fira Code", "Cascadia Code",
+    Consolas, monospace;
+  --ifm-heading-font-weight: 600;
+  --ifm-font-size-base: 16px;
+
+  /* Radius — Vercel/Cursor hybrid */
+  --ifm-global-radius: 8px;
+  --ifm-button-border-radius: 8px;
+  --ifm-card-border-radius: 12px;
+
+  /* Navbar */
+  --ifm-navbar-background-color: rgba(247, 247, 244, 0.85);
+  --ifm-navbar-shadow: var(--solv-shadow-border);
+
+  /* Sidebar */
+  --ifm-menu-color: var(--solv-body);
+  --ifm-menu-color-active: var(--solv-accent);
+
+  /* Pagination */
+  --ifm-pagination-nav-active-color: var(--solv-accent);
+}
+
+/* ── Dark mode — warm dark (Warp-inspired) ──────────────── */
+
+html[data-theme="dark"] {
+  /* Brand */
+  --solv-accent: #3CC0B8;
+  --solv-accent-hover: #56D4CC;
+  --solv-accent-light: rgba(60, 192, 184, 0.1);
+
+  /* Surfaces */
+  --solv-canvas: #1a1917;
+  --solv-canvas-soft: #1f1e1b;
+  --solv-surface: #26251e;
+  --solv-surface-dim: #2e2d27;
+
+  /* Text */
+  --solv-ink: #faf9f6;
+  --solv-body: #a09c92;
+  --solv-muted: #807d72;
+  --solv-muted-soft: #5a5852;
+
+  /* Hairlines */
+  --solv-hairline: rgba(255, 255, 255, 0.08);
+  --solv-hairline-soft: rgba(255, 255, 255, 0.04);
+  --solv-hairline-strong: rgba(255, 255, 255, 0.12);
+
+  /* Shadows */
+  --solv-shadow-border: rgba(0, 0, 0, 0.3) 0px 0px 0px 1px;
+  --solv-shadow-card: rgba(0, 0, 0, 0.3) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.2) 0px 2px 4px;
+  --solv-shadow-elevated: rgba(0, 0, 0, 0.3) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.2) 0px 2px 4px,
+    rgba(0, 0, 0, 0.15) 0px 8px 16px -4px;
+  --solv-shadow-inner-ring: var(--solv-canvas-soft) 0px 0px 0px 1px;
+
+  /* Semantic overrides */
+  --ifm-color-primary: #3CC0B8;
+  --ifm-color-primary-dark: #2BA8A0;
+  --ifm-color-primary-darker: #249590;
+  --ifm-color-primary-light: #56D4CC;
+  --ifm-color-primary-lighter: #70E0DA;
+  --ifm-color-primary-contrast-background: var(--solv-canvas);
+  --ifm-color-primary-contrast-foreground: var(--solv-ink);
+
+  --ifm-background-color: var(--solv-canvas);
+  --ifm-background-surface-color: var(--solv-surface);
+
+  --ifm-heading-color: var(--solv-ink);
+  --ifm-font-color-base: var(--solv-body);
+
+  --ifm-code-background: var(--solv-surface-dim);
+  --ifm-code-color: var(--solv-ink);
+
+  --ifm-border-color: var(--solv-hairline);
+
+  --ifm-footer-background-color: #111110;
+  --ifm-footer-color: var(--solv-muted);
+
+  --ifm-navbar-background-color: rgba(26, 25, 23, 0.85);
+  --ifm-navbar-shadow: var(--solv-shadow-border);
+
+  --ifm-menu-color: var(--solv-body);
+  --ifm-menu-color-active: var(--solv-accent);
+
+  --ifm-pagination-nav-active-color: var(--solv-accent);
+
+  --ifm-toc-link-color: var(--solv-muted);
+}
+
+/* ── Global resets ──────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--ifm-font-family-base);
+}
+
+/* ── Headings — magazine editorial (weight 600, negative tracking) ── */
+
+h1 {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--solv-ink);
+}
+
+h2 {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--solv-ink);
+}
+
+h3, h4, h5, h6 {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--solv-ink);
+}
+
+/* ── Code blocks — JetBrains Mono on every code surface ── */
+
+code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.875em;
+}
+
+pre code {
+  font-size: 0.8125em;
+  line-height: 1.6;
+}
+
+pre {
+  border-radius: var(--ifm-card-border-radius) !important;
+  box-shadow: var(--solv-shadow-card), var(--solv-shadow-inner-ring);
+  border: none !important;
+}
+
+/* ── Links ──────────────────────────────────────────────── */
+
+a {
+  color: var(--solv-accent);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--solv-accent-hover);
+  text-decoration: underline;
+}
+
+/* ── Navbar ─────────────────────────────────────────────── */
+
+.navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: none;
+}
+
+.navbar__title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--solv-ink);
+}
+
+.navbar__link {
+  color: var(--solv-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.navbar__link:hover {
+  color: var(--solv-ink);
+  text-decoration: none;
+}
+
+.navbar__link--active {
+  color: var(--solv-ink);
+}
+
+.navbar__item--languages {
+  font-size: 0.875rem;
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
+
+.button--primary {
+  background: var(--solv-ink);
+  color: var(--solv-canvas);
+  border: none;
+  font-weight: 500;
+  letter-spacing: 0;
+  border-radius: var(--ifm-button-border-radius);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.button--primary:hover {
+  background: var(--solv-ink);
+  opacity: 0.85;
+  color: var(--solv-canvas);
+  text-decoration: none;
+}
+
+.button--secondary,
+.button--outline {
+  background: var(--solv-surface);
+  color: var(--solv-ink);
+  border: none;
+  box-shadow: var(--solv-shadow-border);
+  font-weight: 500;
+  border-radius: var(--ifm-button-border-radius);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.button--secondary:hover,
+.button--outline:hover {
+  color: var(--solv-ink);
+  box-shadow: var(--solv-shadow-elevated);
+  text-decoration: none;
+}
+
+/* ── Sidebar ────────────────────────────────────────────── */
+
+.menu__link--active {
+  font-weight: 600;
+  color: var(--solv-accent);
+}
+
+/* ── Footer ─────────────────────────────────────────────── */
+
+.footer {
+  border-top: none;
+}
+
+.footer__title {
+  color: var(--solv-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.footer__link-item {
+  color: var(--solv-muted);
+  font-size: 0.875rem;
+}
+
+.footer__link-item:hover {
+  color: var(--solv-ink);
+}
+
+/* ── Announcement bar ───────────────────────────────────── */
+
+div[class*="announcementBar"] {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  background: var(--solv-accent) !important;
+  color: var(--solv-canvas) !important;
+}
+
+div[class*="announcementBar"] a {
+  color: var(--solv-canvas);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* ── Admonitions ────────────────────────────────────────── */
+
+.admonition {
+  border-radius: var(--ifm-card-border-radius);
+  box-shadow: var(--solv-shadow-card);
+  border: none !important;
+}
+
+.admonition-note {
+  border-left: 3px solid var(--solv-accent) !important;
+}
+
+.admonition-tip {
+  border-left: 3px solid #1f8a65 !important;
+}
+
+.admonition-warning {
+  border-left: 3px solid #c08532 !important;
+}
+
+.admonition-caution {
+  border-left: 3px solid #cf2d56 !important;
+}
+
+/* ── Table of contents ──────────────────────────────────── */
+
+.table-of-contents__link--active {
+  color: var(--solv-accent);
+  font-weight: 600;
+}
+
+.table-of-contents__link {
+  color: var(--solv-muted);
+}
+
+.table-of-contents__link:hover {
+  color: var(--solv-body);
+}
+
+/* ── Pagination nav ─────────────────────────────────────── */
+
+.pagination-nav__link {
+  border: none;
+  box-shadow: var(--solv-shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.pagination-nav__link:hover {
+  box-shadow: var(--solv-shadow-elevated);
+  transform: translateY(-1px);
+}
+
+/* ── Search ─────────────────────────────────────────────── */
+
+.DocSearch-Button {
+  border-radius: var(--ifm-button-border-radius) !important;
+  box-shadow: var(--solv-shadow-border) !important;
+  border: none !important;
+  background: var(--solv-surface) !important;
+  transition: box-shadow 0.15s ease;
+}
+
+.DocSearch-Button:hover {
+  box-shadow: var(--solv-shadow-card) !important;
+}
+
+/* ── Custom utilities ───────────────────────────────────── */
+
+.solviora-card {
+  background: var(--solv-surface);
+  border: none;
+  border-radius: var(--ifm-card-border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--solv-shadow-card), var(--solv-shadow-inner-ring);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.solviora-card:hover {
+  box-shadow: var(--solv-shadow-elevated);
+  transform: translateY(-2px);
+}
+
+.solviora-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--solv-accent-light);
+  color: var(--solv-accent);
+}
+
+/* ── Theme SVG inline images ────────────────────────────── */
+
+.theme-doc-markdown img {
+  border-radius: var(--ifm-card-border-radius);
+  box-shadow: var(--solv-shadow-card);
+}
+
+/* ── Scrollbar (subtle) ─────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--solv-hairline-strong);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--solv-muted);
+}

@@ -1,0 +1,134 @@
+---
+sidebar_position: 6
+slug: /wsl-smoke-test
+title: Smoke Test WSL
+description: Pasos para verificar que Solviora Agent funciona correctamente en WSL (Ubuntu).
+---
+
+# Smoke Test WSL
+
+Verificación paso a paso de que Solviora Agent se instala y ejecuta correctamente en **WSL 2 (Ubuntu)**.
+
+> **Tip:** Haz clic en el botón de copiar (📋) en cualquier bloque de código.
+
+---
+
+## Paso 0 — Abrir WSL
+
+```bash
+wsl
+```
+
+Verifica que estás en Ubuntu. El prompt debería verse así: `user@machine:~$`.
+
+---
+
+## Paso 1 — Verificar Python y pip
+
+```bash
+python3 --version && pip3 --version
+```
+
+**Esperado:**
+
+<ul>
+<li>Python 3.11+ (<code>Python 3.12.3</code> o superior)</li>
+<li>pip 24.0+</li>
+</ul>
+
+:::warning ¿Python muy antiguo?
+Instala una versión más reciente:
+```bash
+sudo apt update && sudo apt install python3.12 python3.12-venv python3-pip -y
+```
+:::
+
+---
+
+## Paso 2 — Crear venv e instalar
+
+```bash
+cd /mnt/c/Users/ASUS/Downloads/Solviora_Agent
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+**Esperado:** `Successfully installed solviora-agent ...` sin errores.
+
+:::note
+El `.venv` se crea dentro del repositorio. Actívalo cada vez que abras una nueva sesión de WSL:
+```bash
+cd /mnt/c/Users/ASUS/Downloads/Solviora_Agent
+source .venv/bin/activate
+```
+:::
+
+---
+
+## Paso 3 — Verificar que el CLI carga
+
+```bash
+solviora --help
+```
+
+**Esperado:** Texto de ayuda con los comandos y opciones disponibles.
+
+Si falla con `command not found`, asegúrate de que el venv esté activado:
+```bash
+source .venv/bin/activate
+```
+
+---
+
+## Paso 4 — Ejecutar doctor
+
+```bash
+solviora doctor
+```
+
+**Esperado:** Resultados de diagnóstico mostrando estado de configuración, herramientas disponibles y conectividad con el proveedor.
+
+---
+
+## Paso 5 — Prueba de chat rápida (opcional)
+
+```bash
+solviora chat
+```
+
+Esto abre el REPL interactivo. Escribe un mensaje y presiona Enter. Escribe `/exit` para salir.
+
+:::info
+Esto requiere al menos una clave de API configurada en `~/.solviora/.env` o `~/.hermes/.env`.
+:::
+
+---
+
+## Comandos de depuración
+
+Si algo falla, ejecuta estos comandos y comparte la salida:
+
+```bash
+# Verificar qué Python está activo
+which python3 && python3 --version
+
+# Verificar paquetes pip
+pip show solviora-agent 2>/dev/null || echo "NO INSTALADO"
+
+# Verificar entry points
+which solviora 2>/dev/null || echo "NO EN PATH"
+```
+
+---
+
+## Lista de verificación
+
+| Paso | Comando | Estado |
+|------|---------|--------|
+| 0 | `wsl` | ⬜ |
+| 1 | `python3 --version && pip3 --version` | ⬜ |
+| 2 | `pip install -e .` | ⬜ |
+| 3 | `solviora --help` | ⬜ |
+| 4 | `solviora doctor` | ⬜ |
+| 5 | `solviora chat` | ⬜ (opcional) |

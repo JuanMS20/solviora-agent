@@ -1,0 +1,117 @@
+---
+slug: /configuration-reference
+title: Referencia de configuración
+description: Todas las claves de config.yaml, variables .env y ajustes de Solviora Agent.
+---
+
+# Referencia de configuración
+
+## config.yaml
+
+### Raíz
+
+| Clave | Tipo | Predeterminado | Descripción |
+|-------|------|----------------|-------------|
+| `model` | string | `gpt-4o` | Modelo LLM predeterminado |
+| `provider` | string | `openai` | Proveedor de API predeterminado |
+| `base_url` | string | — | URL base personalizada para la API |
+| `max_iterations` | int | `90` | Máximo de iteraciones de herramientas por conversación |
+| `quiet_mode` | bool | `false` | Suprimir salida de herramientas |
+
+### `display`
+
+| Clave | Tipo | Predeterminado | Descripción |
+|-------|------|----------------|-------------|
+| `skin` | string | `default` | Tema visual (default, ares, mono, slate) |
+| `tool_progress` | bool | `true` | Mostrar progreso de herramientas en CLI |
+| `background_process_notifications` | string | `all` | `all`, `result`, `error` u `off` |
+
+### `terminal`
+
+| Clave | Tipo | Predeterminado | Descripción |
+|-------|------|----------------|-------------|
+| `cwd` | string | `~` | Directorio de trabajo para herramientas |
+| `shell` | string | auto | Shell a usar (bash, zsh, fish, etc.) |
+| `timeout` | int | `120` | Timeout por defecto en segundos |
+
+### `memory`
+
+| Clave | Tipo | Predeterminado | Descripción |
+|-------|------|----------------|-------------|
+| `provider` | string | `builtin` | Backend de memoria |
+| `auto_sync` | bool | `true` | Sincronizar memoria automáticamente |
+
+### `safety`
+
+| Clave | Tipo | Predeterminado | Descripción |
+|-------|------|----------------|-------------|
+| `confirm_before_execute` | bool | `false` | Pedir confirmación antes de ejecutar comandos |
+| `restricted_paths` | list | `[]` | Directorios restringidos para herramientas de archivos |
+
+### `logging`
+
+| Clave | Tipo | Predeterminado | Descripción |
+|-------|------|----------------|-------------|
+| `level` | string | `INFO` | Nivel de log (DEBUG, INFO, WARNING, ERROR) |
+
+### `enabled_toolsets`
+
+Lista de toolsets habilitados:
+
+```yaml
+enabled_toolsets:
+  - core
+  - web
+  - code
+  - terminal
+  - memory
+  - cron
+  - image
+```
+
+## Variables .env
+
+Solo secretos — claves API y tokens de autenticación:
+
+| Variable | Categoría | Descripción |
+|----------|-----------|-------------|
+| `OPENAI_API_KEY` | provider | Clave API de OpenAI |
+| `ANTHROPIC_API_KEY` | provider | Clave API de Anthropic |
+| `GOOGLE_API_KEY` | provider | Clave API de Google Gemini |
+| `MISTRAL_API_KEY` | provider | Clave API de Mistral |
+| `GROQ_API_KEY` | provider | Clave API de Groq |
+| `TOGETHER_API_KEY` | provider | Clave API de Together AI |
+| `FIREWORKS_API_KEY` | provider | Clave API de Fireworks AI |
+| `DEEPSEEK_API_KEY` | provider | Clave API de DeepSeek |
+| `OPENROUTER_API_KEY` | provider | Clave API de OpenRouter |
+| `COHERE_API_KEY` | provider | Clave API de Cohere |
+| `XAI_API_KEY` | provider | Clave API de xAI |
+| `AZURE_OPENAI_API_KEY` | provider | Clave API de Azure OpenAI |
+| `TELEGRAM_BOT_TOKEN` | messaging | Token del bot de Telegram |
+| `DISCORD_BOT_TOKEN` | messaging | Token del bot de Discord |
+| `SLACK_BOT_TOKEN` | messaging | Token del bot de Slack |
+
+:::warning
+Los archivos `.env` son **solo para secretos**. Los ajustes no secretos ( timeouts, umbrales, preferencias de UI) pertenecen a `config.yaml`.
+:::
+
+## Variables de entorno
+
+| Variable | Propósito |
+|----------|-----------|
+| `SOLVIORA_HOME` | Directorio base (predeterminado: `~/.solviora`) |
+| `HERMES_HOME` | Retrocompatibilidad — se resuelve a `SOLVIORA_HOME` |
+
+## Perfiles
+
+Cada perfil hereda y sobrescribe la configuración base:
+
+```
+~/.solviora/
+├── config.yaml        # Configuración base (perfil predeterminado)
+├── .env               # Secretos base
+└── profiles/
+    └── <nombre>/
+        ├── config.yaml   # Sobrescrituras para este perfil
+        └── .env          # Secretos específicos del perfil
+```

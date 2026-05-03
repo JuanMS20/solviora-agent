@@ -1,0 +1,98 @@
+---
+slug: /installation
+title: Installation
+description: How to install Solviora Agent on macOS, Linux, and Windows.
+---
+
+# Installation
+
+Solviora Agent is distributed as a Python package. Install it with `pip` or your preferred package manager.
+
+## Requirements
+
+| Requirement | Minimum |
+|-------------|---------|
+| Python | 3.11 or newer |
+| pip | Latest recommended |
+| OS | macOS, Linux, Windows (WSL recommended) |
+
+## Install with pip
+
+```bash
+pip install solviora-agent
+```
+
+This installs the `solviora` CLI command and all core dependencies.
+
+## Verify the installation
+
+```bash
+solviora --version
+```
+
+Expected output:
+
+```
+solviora-agent 0.1.0
+```
+
+## Optional dependencies
+
+Solviora ships several optional dependency groups for specific features:
+
+| Group | Install command | What it enables |
+|-------|----------------|-----------------|
+| `messaging` | `pip install "solviora-agent[messaging]"` | Telegram, Discord, Slack, WhatsApp bots |
+| `matrix` | `pip install "solviora-agent[matrix]"` | Matrix/Element bridge |
+| `slack` | `pip install "solviora-agent[slack]"` | Slack app |
+| `modal` | `pip install "solviora-agent[modal]"` | Modal cloud execution |
+| `dev` | `pip install "solviora-agent[dev]"` | Debugging, testing, linting |
+
+You can combine multiple groups:
+
+```bash
+pip install "solviora-agent[messaging,dev]"
+```
+
+## Install from source
+
+```bash
+git clone https://github.com/solviora/solviora-agent.git
+cd solviora-agent
+pip install -e ".[dev]"
+```
+
+## Shell completion (optional)
+
+To enable tab completion for the `solviora` command:
+
+```bash
+# Bash
+eval "$(_SOLVIORA_COMPLETE=bash_source solviora)" >> ~/.bashrc
+
+# Zsh
+eval "$(_SOLVIORA_COMPLETE=zsh_source solviora)" >> ~/.zshrc
+
+# Fish
+_SOLVIORA_COMPLETE=fish_source solviora > ~/.config/fish/completions/solviora.fish
+```
+
+## Troubleshooting
+
+### `command not found: solviora`
+
+Make sure your Python `bin` directory is on your `PATH`. With `pip install --user`, that's usually `~/.local/bin` on Linux or `~/Library/Python/3.XX/bin` on macOS.
+
+### Python version too old
+
+Solviora requires Python 3.11 or newer. Check with:
+
+```bash
+python --version
+```
+
+If your system Python is older, use [pyenv](https://github.com/pyenv/pyenv) or [conda](https://docs.conda.io/) to install a newer version.
+
+## Next step
+
+→ [Quickstart](./quickstart) — configure your API key and start chatting.

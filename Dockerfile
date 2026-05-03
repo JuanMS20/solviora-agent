@@ -11,14 +11,14 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/hermes/.playwright
 
 # Install system dependencies in one layer, clear APT cache
 # tini reaps orphaned zombie processes (MCP stdio subprocesses, git, bun, etc.)
-# that would otherwise accumulate when hermes runs as PID 1. See #15012.
+# that would otherwise accumulate when solviora runs as PID 1. See #15012.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential curl nodejs npm python3 ripgrep ffmpeg gcc python3-dev libffi-dev procps git openssh-client docker-cli tini && \
     rm -rf /var/lib/apt/lists/*
 
-# Non-root user for runtime; UID can be overridden via HERMES_UID at runtime
-RUN useradd -u 10000 -m -d /opt/data hermes
+# Non-root user for runtime; UID can be overridden via SOLVIORA_UID at runtime
+RUN useradd -u 10000 -m -d /opt/data solviora
 
 COPY --chmod=0755 --from=gosu_source /gosu /usr/local/bin/
 COPY --chmod=0755 --from=uv_source /usr/local/bin/uv /usr/local/bin/uvx /usr/local/bin/
@@ -57,14 +57,14 @@ RUN npm install --prefer-offline --no-audit && \
 
 # ---------- Source code ----------
 # .dockerignore excludes node_modules, so the installs above survive.
-COPY --chown=hermes:hermes . .
+COPY --chown=solviora:solviora . .
 
 # Build browser dashboard and terminal UI assets.
 RUN cd web && npm run build && \
     cd ../ui-tui && npm run build
 
 # ---------- Permissions ----------
-# Make install dir world-readable so any HERMES_UID can read it at runtime.
+# Make install dir world-readable so any SOLVIORA_UID can read it at runtime.
 # The venv needs to be traversable too.
 USER root
 RUN chmod -R a+rX /opt/hermes
@@ -76,6 +76,8 @@ RUN uv venv && \
     uv pip install --no-cache-dir -e ".[all]"
 
 # ---------- Runtime ----------
+ENV SOLVIORA_WEB_DIST=/opt/hermes/hermes_cli/web_dist
+ENV SOLVIORA_HOME=/opt/data
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 ENV HERMES_HOME=/opt/data
 ENV PATH="/opt/data/.local/bin:${PATH}"

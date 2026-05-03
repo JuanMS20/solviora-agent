@@ -1,0 +1,141 @@
+---
+slug: /cli-commands
+title: Referencia de CLI
+description: Todos los comandos y flags del CLI de Solviora Agent.
+---
+
+# Referencia de CLI
+
+## `solviora`
+
+El comando principal. Inicia una sesión interactiva.
+
+```bash
+solviora [opciones] [prompt]
+```
+
+| Flag | Descripción |
+|------|-------------|
+| `--model <modelo>` | Modelo LLM a usar |
+| `--provider <proveedor>` | Proveedor de API |
+| `--base-url <url>` | URL base personalizada para la API |
+| `-p, --profile <nombre>` | Usar un perfil específico |
+| `--resume` | Retomar última sesión |
+| `--quiet` | Modo silencioso |
+| `--no-tools` | Deshabilitar todas las herramientas |
+| `--tui` | Usar interfaz de terminal (TUI) moderna |
+| `--max-iterations <n>` | Máximo de iteraciones de llamada a herramientas |
+| `-v, --version` | Mostrar versión |
+| `-h, --help` | Mostrar ayuda |
+
+### Ejemplos
+
+```bash
+# Chat interactivo
+solviora
+
+# Prompt único
+solviora "Explica async/await"
+
+# Modelo específico
+solviora --model claude-sonnet-4-20250514 --provider anthropic
+
+# Retomar sesión
+solviora --resume
+```
+
+## `solviora setup`
+
+Asistente de configuración inicial. Te guía para elegir proveedor, clave API y herramientas.
+
+```bash
+solviora setup
+```
+
+## `solviora gateway`
+
+Inicia el gateway de mensajería para bots (Telegram, Discord, Slack, etc.).
+
+```bash
+solviora gateway [opciones]
+```
+
+| Flag | Descripción |
+|------|-------------|
+| `--platform <plataforma>` | Plataforma a iniciar (telegram, discord, slack, ...) |
+| `--all` | Iniciar todas las plataformas configuradas |
+| `--port <puerto>` | Puerto para el servidor webhook |
+
+## `solviora cron`
+
+Gestiona tareas programadas.
+
+```bash
+solviora cron <subcomando>
+```
+
+| Subcomando | Descripción |
+|------------|-------------|
+| `list` | Listar tareas programadas |
+| `add` | Agregar una tarea |
+| `remove <id>` | Eliminar una tarea |
+| `run <id>` | Ejecutar una tarea ahora |
+
+## `solviora doctor`
+
+Diagnostica problemas comunes en tu instalación.
+
+```bash
+solviora doctor
+```
+
+Verifica: Python, dependencias, claves API, configuración y conectividad.
+
+## `solviora skills`
+
+Gestiona skills instalados.
+
+```bash
+solviora skills <subcomando>
+```
+
+| Subcomando | Descripción |
+|------------|-------------|
+| `list` | Listar skills disponibles |
+| `install <fuente>` | Instalar un skill |
+| `uninstall <nombre>` | Desinstalar un skill |
+| `update [nombre]` | Actualizar skills |
+
+## `solviora logs`
+
+Muestra logs del agente.
+
+```bash
+solviora logs [opciones]
+```
+
+| Flag | Descripción |
+|------|-------------|
+| `--follow` | Seguir logs en tiempo real |
+| `--level <nivel>` | Filtrar por nivel (DEBUG, INFO, WARNING, ERROR) |
+| `--session <id>` | Filtrar por sesión |
+
+## `solviora --tui`
+
+Inicia la interfaz de terminal moderna basada en Ink (React).
+
+```bash
+solviora --tui
+```
+
+Ofrece: vista de transcripción enriquecida, paneles de herramientas, autocompletado mejorado y temas visuales.
+
+## Alias de compatibilidad
+
+Los siguientes comandos son alias de compatibilidad con Hermes:
+
+| Alias | Equivalente |
+|-------|-------------|
+| `hermes` | `solviora` |
+| `hermes-agent` | `solviora-agent` |
+| `hermes-acp` | `solviora-acp` |

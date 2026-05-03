@@ -1,0 +1,122 @@
+---
+slug: /configuration
+title: Configuration
+description: Configure Solviora Agent with config.yaml and .env files.
+---
+
+# Configuration
+
+Solviora Agent uses two files for configuration:
+
+| File | Purpose |
+|------|---------|
+| `~/.solviora/config.yaml` | Settings — model, tools, display, etc. |
+| `~/.solviora/.env` | Secrets — API keys and tokens only |
+
+## First-time setup
+
+Run the setup wizard:
+
+```bash
+solviora setup
+```
+
+This walks you through choosing a provider, entering your API key, and selecting default tools.
+
+## config.yaml
+
+Solviora generates a default config on first run. Here's the structure:
+
+```yaml
+# ~/.solviora/config.yaml
+
+# Default model
+model: gpt-4o
+provider: openai
+
+# Display settings
+display:
+  skin: default          # CLI theme (default, ares, mono, slate)
+  tool_progress: true    # Show tool execution progress
+
+# Terminal settings
+terminal:
+  cwd: ~                 # Working directory for tool execution
+
+# Memory
+memory:
+  provider: builtin      # Memory backend (builtin, honcho, mem0, ...)
+
+# Toolsets enabled by default
+enabled_toolsets:
+  - core
+  - web
+  - code
+
+# Logging level
+logging:
+  level: INFO
+```
+
+### Key settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `model` | `gpt-4o` | Default LLM model |
+| `provider` | `openai` | Default provider |
+| `display.skin` | `default` | CLI visual theme |
+| `terminal.cwd` | `~` | Default working directory |
+| `memory.provider` | `builtin` | Memory backend |
+| `logging.level` | `INFO` | Log verbosity |
+
+## .env (secrets only)
+
+Store API keys in `~/.solviora/.env`:
+
+```bash
+# ~/.solviora/.env
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=...
+```
+
+:::warning
+Never commit `.env` files to version control. Solviora adds `~/.solviora/.env` to `.gitignore` automatically.
+:::
+
+## Runtime overrides
+
+Override config at the command line:
+
+```bash
+solviora --model claude-sonnet-4-20250514 --provider anthropic
+solviora --quiet     # Suppress tool output
+solviora --no-tools  # Disable all tools for this session
+```
+
+## Profiles
+
+Each profile has its own `config.yaml` and `.env`:
+
+```
+~/.solviora/
+├── config.yaml          # Default profile
+├── .env
+└── profiles/
+    ├── work/
+    │   ├── config.yaml
+    │   └── .env
+    └── personal/
+        ├── config.yaml
+        └── .env
+```
+
+Switch profiles with `-p`:
+
+```bash
+solviora -p work
+```
+
+## Next step
+
+→ [Providers](./providers) — configure OpenAI, Anthropic, Gemini, and more.

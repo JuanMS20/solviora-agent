@@ -1,0 +1,133 @@
+---
+slug: /troubleshooting
+title: Troubleshooting
+description: Common issues and their solutions.
+---
+
+# Troubleshooting
+
+## Installation issues
+
+### `command not found: solviora`
+
+Your Python bin directory isn't on `PATH`.
+
+**Fix:** Add it to your shell profile:
+
+```bash
+# Linux/macOS
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Or reinstall with `--user`:
+
+```bash
+pip install --user solviora-agent
+```
+
+### `error: externally-managed-environment`
+
+Your system Python doesn't allow direct pip installs.
+
+**Fix:** Use a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install solviora-agent
+```
+
+### Python version mismatch
+
+```bash
+python --version
+# Need 3.11+
+```
+
+**Fix:** Install Python 3.11+ via [pyenv](https://github.com/pyenv/pyenv) or your system package manager.
+
+## API key issues
+
+### `AuthenticationError` or 401
+
+- Check that your API key is valid and not expired
+- Verify it's set in `~/.solviora/.env` or as an environment variable
+- Run `solviora doctor` to check config
+
+### Wrong provider for model
+
+```
+Error: Model claude-sonnet-4-20250514 not found
+```
+
+You likely have `provider: openai` but are using an Anthropic model.
+
+**Fix:** Set the correct provider:
+
+```bash
+solviora --provider anthropic --model claude-sonnet-4-20250514
+```
+
+## Performance issues
+
+### Slow responses
+
+- Try a faster model (e.g., `gpt-4o-mini` instead of `gpt-4o`)
+- Check your network connection
+- Use a local provider (Ollama, LM Studio) to eliminate API latency
+
+### Context window exceeded
+
+The conversation got too long.
+
+**Fix:**
+
+```
+/compact    # Compress context
+/new        # Or start a fresh session
+```
+
+### High token usage
+
+- Disable unused toolsets to reduce system prompt size
+- Use `/compact` periodically during long sessions
+- Set a lower `max_iterations` if the agent loops too much
+
+## Tool issues
+
+### Tools not responding
+
+Check that the required toolset is enabled:
+
+```bash
+solviora --enabled-toolsets core,web,code
+```
+
+### File not found errors
+
+Verify `terminal.cwd` in your config points to the right directory.
+
+## Messaging gateway issues
+
+### Bot not responding
+
+1. Check the bot token is correct
+2. Verify the gateway is running: `solviora gateway --platform telegram`
+3. Check logs: `solviora logs --follow`
+
+### Multiple instances conflict
+
+Use profiles to isolate bots:
+
+```bash
+solviora -p telegram-bot gateway --platform telegram
+```
+
+## Getting help
+
+If your issue isn't listed here:
+
+1. Check [FAQ](./faq)
+2. Search [GitHub Issues](https://github.com/solviora/solviora-agent/issues)
+3. Ask on [Discord](https://discord.gg/solviora)

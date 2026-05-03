@@ -1,12 +1,16 @@
 #!/bin/bash
 # ============================================================================
-# Hermes Agent Setup Script
+# [OBSOLETE] Hermes Agent Setup Script
 # ============================================================================
-# Quick setup for developers who cloned the repo manually.
-# Uses uv for desktop/server setup and Python's stdlib venv + pip on Termux.
+# This script is kept for backward compatibility. New installs should use
+# setup-solviora.sh instead.
 #
 # Usage:
-#   ./setup-hermes.sh
+#   ./setup-solviora.sh     # <-- use this instead
+#
+# What changed:
+#   - hermes → solviora (binary name, user config dirs, env vars)
+#   - ~/.hermes/ → ~/.solviora/
 #
 # This script:
 # 1. Detects desktop/server vs Android/Termux setup path
@@ -16,6 +20,8 @@
 # 5. Symlinks the 'hermes' CLI command into a user-facing bin dir
 # 6. Runs the setup wizard (optional)
 # ============================================================================
+#
+# TODO(solviora): remove this file after one release cycle.
 
 set -e
 

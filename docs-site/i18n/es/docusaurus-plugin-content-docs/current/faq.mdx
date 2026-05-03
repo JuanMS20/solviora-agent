@@ -1,0 +1,103 @@
+---
+slug: /faq
+title: FAQ
+description: Preguntas frecuentes sobre Solviora Agent.
+---
+
+# Preguntas frecuentes
+
+## General
+
+### ¿Qué es Solviora Agent?
+
+Solviora Agent es un agente de IA para terminal que se conecta con múltiples proveedores de LLM (OpenAI, Anthropic, Google, etc.) y ejecuta herramientas locales — archivos, código, web, terminal — de forma autónoma dentro de una conversación.
+
+### ¿En qué se diferencia de ChatGPT/Claude?
+
+Solviora se ejecuta en **tu terminal** con acceso a tu sistema de archivos, comandos de shell y herramientas personalizadas. No es solo un chat — es un agente que puede tomar acciones reales en tu máquina.
+
+### ¿Es gratuito?
+
+Solviora Agent es software libre (licencia MIT). Pagas por el uso de la API del proveedor de LLM que elijas. También puedes usar modelos locales con Ollama o LM Studio sin costo de API.
+
+### ¿Solviora envía mis datos a terceros?
+
+Solo se envían a tu proveedor de LLM los datos necesarios para la petición. Solviora no tiene servidores propios ni telemetría. Tus datos se quedan en tu máquina y en el proveedor que configures.
+
+## Configuración
+
+### ¿Necesito una clave API?
+
+Sí, a menos que uses un modelo local (Ollama, LM Studio). Necesitas al menos una clave API de un proveedor soportado.
+
+### ¿Puedo usar múltiples proveedores?
+
+Sí. Cambia de proveedor en tiempo de ejecución:
+
+```bash
+solviora --provider anthropic --model claude-sonnet-4-20250514
+```
+
+O dentro de una sesión con `/model`.
+
+### ¿Dónde se guardan mis datos?
+
+Todo se guarda en `~/.solviora/`:
+
+```
+~/.solviora/
+├── config.yaml     # Configuración
+├── .env            # Secretos
+├── sessions/       # Historial de conversaciones
+├── logs/           # Logs del agente
+├── skills/         # Skills instalados
+└── plugins/        # Plugins instalados
+```
+
+## Privacidad y seguridad
+
+### ¿Las herramientas son seguras?
+
+Las herramientas se ejecutan con tus permisos de usuario. Solviora incluye protecciones:
+
+- Aprobación humana para comandos potencialmente peligrosos.
+- Restricciones de ruta para proteger directorios sensibles.
+- Timeouts para evitar procesos colgados.
+
+### ¿Puedo limitar qué puede hacer el agente?
+
+Sí:
+
+```yaml
+safety:
+  confirm_before_execute: true
+  restricted_paths:
+    - /etc
+    - ~/.ssh
+```
+
+Esto pide confirmación antes de ejecutar comandos y bloquea el acceso a directorios sensibles.
+
+## Características
+
+### ¿Qué herramientas están disponibles?
+
+Solviora incluye toolsets para: gestión de archivos, búsqueda web, ejecución de código, terminal, memoria persistente, tareas programadas (cron) y generación de imágenes.
+
+Consulta [Herramientas](./tools) para la lista completa.
+
+### ¿Puedo crear mis propias herramientas?
+
+Sí, a través de plugins. Consulta [Skills y Plugins](./skills) para más información.
+
+### ¿Funciona en Windows?
+
+Sí, pero se recomienda usar WSL (Windows Subsystem for Linux) para la mejor experiencia. Algunas herramientas de terminal pueden tener comportamientos diferentes en Windows nativo.
+
+### ¿Puedo usar Solviora como bot?
+
+Sí. Solviora incluye un gateway de mensajería para Telegram, Discord, Slack, WhatsApp y más.
+
+```bash
+solviora gateway --platform telegram
+```

@@ -1,0 +1,18 @@
+{
+  "title": {
+    "message": "Solviora",
+    "description": "The title in the navbar"
+  },
+  "item.label.Docs": {
+    "message": "Documentación",
+    "description": "Navbar item with label Docs"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  },
+  "announcementBar.content": {
+    "message": "🚧 Solviora Agent está en desarrollo inicial. <a href=\"/docs/about\">Más información</a>",
+    "description": "The announcement bar content"
+  }
+}

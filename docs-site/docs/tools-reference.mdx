@@ -1,0 +1,144 @@
+---
+slug: /tools-reference
+title: Tools Reference
+description: Complete reference for built-in tools and their parameters.
+---
+
+# Tools Reference
+
+This page lists all built-in tools organized by toolset. Tools are called automatically by the agent — you don't invoke them directly.
+
+## Core (`core`)
+
+### `read_file`
+
+Read the contents of a file.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `path` | string | Yes | File path (relative to `terminal.cwd`) |
+| `startLine` | number | No | Start line (1-indexed) |
+| `endLine` | number | No | End line (inclusive) |
+
+### `write_file`
+
+Write content to a file. Creates the file if it doesn't exist.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `path` | string | Yes | File path |
+| `content` | string | Yes | Content to write |
+
+### `execute_code`
+
+Execute code in a sandboxed environment.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `code` | string | Yes | Code to execute |
+| `language` | string | No | `python`, `javascript`, `bash` |
+| `timeout` | number | No | Max execution time in seconds |
+
+### `list_directory`
+
+List contents of a directory.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `path` | string | Yes | Directory path |
+| `recursive` | boolean | No | List recursively |
+
+## Web (`web`)
+
+### `web_search`
+
+Search the web using Exa or Firecrawl.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | string | Yes | Search query |
+| `max_results` | number | No | Max results to return |
+
+### `fetch_webpage`
+
+Fetch and extract content from a URL.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `url` | string | Yes | URL to fetch |
+| `query` | string | No | Query to focus extraction |
+
+## Terminal (`terminal`)
+
+### `terminal`
+
+Execute shell commands in a persistent terminal session.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `command` | string | Yes | Command to run |
+| `background` | boolean | No | Run in background |
+| `cwd` | string | No | Working directory override |
+| `timeout` | number | No | Timeout in seconds |
+
+## Memory (`memory`)
+
+### `memory_save`
+
+Store a long-term memory.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `content` | string | Yes | Content to remember |
+| `tags` | string[] | No | Tags for categorization |
+
+### `memory_recall`
+
+Retrieve memories relevant to a query.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | string | Yes | Search query |
+| `limit` | number | No | Max results |
+
+## Cron (`cron`)
+
+### `cron_add`
+
+Schedule a recurring job.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `schedule` | string | Yes | Cron expression |
+| `prompt` | string | Yes | Prompt to run |
+| `description` | string | No | Human-readable description |
+
+### `cron_list`
+
+List all scheduled jobs.
+
+### `cron_remove`
+
+Remove a scheduled job.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `job_id` | string | Yes | Job ID to remove |
+
+## Image (`image`)
+
+### `generate_image`
+
+Generate an image from a text prompt.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `prompt` | string | Yes | Image description |
+| `size` | string | No | Dimensions (e.g. `1024x1024`) |
+| `style` | string | No | Style preset |
+
+---
+
+:::note
+The exact list of available tools depends on your configuration and which toolsets are enabled. Run `/tools` in an interactive session to see what's currently active.
+:::

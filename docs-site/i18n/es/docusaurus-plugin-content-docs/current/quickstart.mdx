@@ -1,0 +1,74 @@
+---
+slug: /quickstart
+title: Inicio rápido
+description: Ten Solviora Agent funcionando en menos de dos minutos.
+---
+
+# Inicio rápido
+
+Instala Solviora Agent, configura tu clave API y comienza tu primera conversación.
+
+## Requisitos previos
+
+- **Python 3.11+** — [python.org](https://www.python.org/downloads/) o el gestor de paquetes de tu sistema.
+- **Una clave API** de cualquier proveedor soportado (OpenAI, Anthropic, Google, etc.).
+
+## Instalar
+
+```bash
+pip install solviora-agent
+```
+
+## Configurar tu clave API
+
+Elige un proveedor para empezar:
+
+```bash
+# OpenAI
+export OPENAI_API_KEY=sk-...
+
+# Anthropic
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Google Gemini
+export GOOGLE_API_KEY=...
+```
+
+:::tip
+También puedes guardar las claves en `~/.solviora/.env` — Solviora las carga automáticamente.
+Consulta [Configuración](./configuration) para todas las opciones.
+:::
+
+## Iniciar una conversación
+
+```bash
+solviora
+```
+
+Verás el prompt interactivo:
+
+```
+╭──────────────────────────────────────╮
+│  Solviora Agent v0.1.0               │
+│  Modelo: gpt-4o · Proveedor: openai  │
+╰──────────────────────────────────────╯
+
+Tú › ¡Hola! ¿Qué puedes hacer?
+```
+
+## Verificar que funciona
+
+Escribe una pregunta y presiona **Enter**. Si recibes una respuesta, todo está configurado correctamente.
+
+Para salir:
+
+```
+/exit
+```
+
+## Siguientes pasos
+
+- [Configurar tu modelo y proveedor predeterminados](./configuration)
+- [Aprender los comandos básicos del CLI](./cli-basics)
+- [Explorar las herramientas disponibles](./tools)
+- [Explorar skills](./skills)

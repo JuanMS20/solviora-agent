@@ -1,0 +1,122 @@
+---
+slug: /configuration
+title: Configuración
+description: Configura Solviora Agent con config.yaml y archivos .env.
+---
+
+# Configuración
+
+Solviora Agent usa dos archivos de configuración:
+
+| Archivo | Propósito |
+|---------|-----------|
+| `~/.solviora/config.yaml` | Ajustes — modelo, herramientas, visualización, etc. |
+| `~/.solviora/.env` | Secretos — solo claves API y tokens |
+
+## Configuración inicial
+
+Ejecuta el asistente de configuración:
+
+```bash
+solviora setup
+```
+
+Te guiará para elegir un proveedor, ingresar tu clave API y seleccionar las herramientas predeterminadas.
+
+## config.yaml
+
+Solviora genera una configuración predeterminada en la primera ejecución. Aquí está la estructura:
+
+```yaml
+# ~/.solviora/config.yaml
+
+# Modelo predeterminado
+model: gpt-4o
+provider: openai
+
+# Ajustes de visualización
+display:
+  skin: default          # Tema del CLI (default, ares, mono, slate)
+  tool_progress: true    # Mostrar progreso de ejecución de herramientas
+
+# Ajustes de terminal
+terminal:
+  cwd: ~                 # Directorio de trabajo para ejecución de herramientas
+
+# Memoria
+memory:
+  provider: builtin      # Backend de memoria (builtin, honcho, mem0, ...)
+
+# Toolsets habilitados por defecto
+enabled_toolsets:
+  - core
+  - web
+  - code
+
+# Nivel de logging
+logging:
+  level: INFO
+```
+
+### Ajustes principales
+
+| Ajuste | Predeterminado | Descripción |
+|--------|----------------|-------------|
+| `model` | `gpt-4o` | Modelo LLM predeterminado |
+| `provider` | `openai` | Proveedor predeterminado |
+| `display.skin` | `default` | Tema visual del CLI |
+| `terminal.cwd` | `~` | Directorio de trabajo predeterminado |
+| `memory.provider` | `builtin` | Backend de memoria |
+| `logging.level` | `INFO` | Verbosidad de logs |
+
+## .env (solo secretos)
+
+Guarda las claves API en `~/.solviora/.env`:
+
+```bash
+# ~/.solviora/.env
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=...
+```
+
+:::warning
+Nunca subas archivos `.env` al control de versiones. Solviora agrega `~/.solviora/.env` a `.gitignore` automáticamente.
+:::
+
+## Sobrescrituras en tiempo de ejecución
+
+Sobrescribe la configuración desde la línea de comandos:
+
+```bash
+solviora --model claude-sonnet-4-20250514 --provider anthropic
+solviora --quiet     # Suprimir salida de herramientas
+solviora --no-tools  # Deshabilitar todas las herramientas para esta sesión
+```
+
+## Perfiles
+
+Cada perfil tiene su propio `config.yaml` y `.env`:
+
+```
+~/.solviora/
+├── config.yaml          # Perfil predeterminado
+├── .env
+└── profiles/
+    ├── trabajo/
+    │   ├── config.yaml
+    │   └── .env
+    └── personal/
+        ├── config.yaml
+        └── .env
+```
+
+Cambia de perfil con `-p`:
+
+```bash
+solviora -p trabajo
+```
+
+## Siguiente paso
+
+→ [Proveedores](./providers) — configura OpenAI, Anthropic, Gemini y más.

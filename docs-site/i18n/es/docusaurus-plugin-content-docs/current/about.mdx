@@ -1,0 +1,55 @@
+---
+slug: /about
+title: Acerca de
+description: Qué es Solviora Agent, su origen y cómo contribuir.
+---
+
+# Acerca de Solviora Agent
+
+## Qué es
+
+Solviora Agent es un agente de IA para terminal, diseñado para desarrolladores. Se conecta con múltiples proveedores de modelos de lenguaje (OpenAI, Anthropic, Google, etc.) y ejecuta herramientas de forma autónoma — lectura de archivos, ejecución de código, búsqueda web y más — dentro de una conversación interactiva.
+
+## Origen
+
+Solviora Agent es un fork de [Hermes Agent](https://github.com/hello-tasker/hermes-agent), un proyecto de código abierto para agentes de IA en terminal. Solviora extiende la base con:
+
+- Marca y configuración propias (`~/.solviora/`).
+- Comandos CLI con nombre `solviora`.
+- Documentación bilingüe (EN/ES).
+- Ajustes y mejoras específicas del proyecto.
+
+## Licencia {#license}
+
+Solviora Agent se distribuye bajo la **licencia MIT**. Consulta el archivo [LICENSE](https://github.com/solviora/solviora-agent/blob/main/LICENSE) para más detalles.
+
+## Contribuir
+
+Las contribuciones son bienvenidas. Consulta [CONTRIBUTING.md](https://github.com/solviora/solviora-agent/blob/main/CONTRIBUTING.md) para:
+
+- Configurar tu entorno de desarrollo.
+- Estándares de código y pruebas.
+- Proceso de pull requests.
+
+### Guía rápida
+
+```bash
+# Clonar
+git clone https://github.com/solviora/solviora-agent.git
+cd solviora-agent
+
+# Instalar en modo desarrollo
+pip install -e ".[dev]"
+
+# Ejecutar tests
+scripts/run_tests.sh
+```
+
+## Comunidad
+
+- **GitHub** — [github.com/solviora/solviora-agent](https://github.com/solviora/solviora-agent)
+- **Issues** — Reporta bugs o sugiere funcionalidades en [GitHub Issues](https://github.com/solviora/solviora-agent/issues).
+
+## Seguridad
+
+Si encuentras una vulnerabilidad de seguridad, reportala de forma responsable a través de los canales indicados en [SECURITY.md](https://github.com/solviora/solviora-agent/blob/main/SECURITY.md).

@@ -1,0 +1,114 @@
+{
+  "title": {
+    "message": "Solviora Agent",
+    "description": "The title in the navbar"
+  },
+  "item.label.Docs": {
+    "message": "Documentación",
+    "description": "Navbar item with label Docs"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  },
+  "announcementBar.content": {
+    "message": "🚧 Solviora Agent está en desarrollo inicial. <a href=\"/docs/about\">Más información</a>",
+    "description": "The announcement bar content"
+  },
+  "Documentation": {
+    "message": "Documentación",
+    "description": "Footer section title: Documentation"
+  },
+  "Community": {
+    "message": "Comunidad",
+    "description": "Footer section title: Community"
+  },
+  "More": {
+    "message": "Más",
+    "description": "Footer section title: More"
+  },
+  "item.label.Quickstart": {
+    "message": "Inicio rápido",
+    "description": "Footer link with label Quickstart"
+  },
+  "item.label.Installation": {
+    "message": "Instalación",
+    "description": "Footer link with label Installation"
+  },
+  "item.label.Configuration": {
+    "message": "Configuración",
+    "description": "Footer link with label Configuration"
+  },
+  "item.label.Discord": {
+    "message": "Discord",
+    "description": "Footer link with label Discord"
+  },
+  "item.label.About": {
+    "message": "Acerca de",
+    "description": "Footer link with label About"
+  },
+  "item.label.License (MIT)": {
+    "message": "Licencia (MIT)",
+    "description": "Footer link with label License (MIT)"
+  },
+  "theme.common.editThisPage": {
+    "message": "Editar esta página",
+    "description": "The edit this page link label"
+  },
+  "theme.lastUpdated.at": {
+    "message": "a las",
+    "description": "The label used to say at which time a page was last updated"
+  },
+  "theme.lastUpdated.by": {
+    "message": "por",
+    "description": "The label used to say who last updated the page"
+  },
+  "theme.lastUpdated.lastUpdatedBy": {
+    "message": "Última actualización por {author}",
+    "description": "The label used to display the last updater's name"
+  },
+  "theme.common.headingLinkTitle": {
+    "message": "Enlace directo a {heading}",
+    "description": "Title for link to heading"
+  },
+  "theme.SearchPage.documentsFound.plural": {
+    "message": "{count} documentos encontrados",
+    "description": "Pluralized label for {count} documents found"
+  },
+  "theme.SearchPage.documentsFound.singular": {
+    "message": "1 documento encontrado",
+    "description": "Singular label for 1 document found"
+  },
+  "theme.SearchPage.inputPlaceholder": {
+    "message": "Escribe tu búsqueda aquí",
+    "description": "Placeholder text in search input"
+  },
+  "theme.SearchPage.noResultsText": {
+    "message": "No se encontraron resultados",
+    "description": "No results text"
+  },
+  "theme.SearchPage.title": {
+    "message": "Búsqueda",
+    "description": "Search page title"
+  },
+  "theme.admonition.note": {
+    "message": "Nota",
+    "description": "The default label used for the Note admonition"
+  },
+  "theme.admonition.tip": {
+    "message": "Consejo",
+    "description": "The default label used for the Tip admonition"
+  },
+  "theme.admonition.warning": {
+    "message": "Advertencia",
+    "description": "The default label used for the Warning admonition"
+  },
+  "theme.admonition.info": {
+    "message": "Información",
+    "description": "The default label used for the Info admonition"
+  },
+  "theme.admonition.danger": {
+    "message": "Peligro",
+    "description": "The default label used for the Danger admonition"
+  }
+}

@@ -33,6 +33,19 @@ data/*
 node_modules/
 browser-use/
 agent-browser/
+# Docusaurus docs site
+docs-site/node_modules/
+docs-site/build/
+docs-site/.docusaurus/
+.docusaurus/
+
+# Build outputs
+solviora_agent.egg-info/
+hermes_agent.egg-info/
+
+# Legacy docs (moved to docs-site/)
+docs/quickstart.md
+
 # Private keys
 *.ppk
 *.pem

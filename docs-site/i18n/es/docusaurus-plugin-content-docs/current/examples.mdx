@@ -1,0 +1,113 @@
+---
+slug: /examples
+title: Ejemplos
+description: Patrones de uso de Solviora Agent para tareas comunes.
+---
+
+# Ejemplos
+
+Patrones prácticos para usar Solviora Agent en tu flujo de trabajo diario.
+
+## Chat de un solo turno
+
+```bash
+solviora "¿Cuál es la diferencia entre git merge y git rebase?"
+```
+
+## Explicar código
+
+```bash
+solviora "Explica qué hace este código:" < src/auth.py
+```
+
+## Investigación web
+
+```
+Tú › Investiga las mejores prácticas para migrar de REST a GraphQL en 2024.
+```
+
+Solviora usará `web_search` y `web_scrape` para recopilar información y generar un resumen.
+
+## Manipulación de archivos
+
+```
+Tú › Lee todos los archivos .py en src/utils/ y escribe un resumen de cada módulo en docs/utils-summary.md
+```
+
+El agente usará `list_directory`, `read_file` y `write_file` para completar la tarea.
+
+## Ejecutar código
+
+```
+Tú › Escribe un script en Python que convierta el CSV en data/clients.csv a JSON y guárdalo en data/clients.json
+```
+
+Solviora escribirá el código, lo ejecutará con `execute_code` y verificará el resultado.
+
+## Automatización DevOps
+
+### Programar un chequeo de salud
+
+```bash
+solviora cron add --schedule "0 9 * * 1-5" --name "health-check" \
+  "Ejecuta curl -s https://api.example.com/health y reporta el estado"
+```
+
+### Revisar logs de producción
+
+```
+Tú › Lee los últimos 100 logs de /var/log/app/error.log y clasifica los errores por tipo
+```
+
+## Gateway de mensajería
+
+### Bot de Telegram
+
+1. Configura `TELEGRAM_BOT_TOKEN` en `.env`
+2. Inicia el gateway:
+
+```bash
+solviora gateway --platform telegram
+```
+
+3. Tu bot de Telegram ahora responde usando Solviora Agent.
+
+### Bot de Discord
+
+```bash
+export DISCORD_BOT_TOKEN=...
+solviora gateway --platform discord
+```
+
+## Sesión interactiva avanzada
+
+```
+Tú › Estoy refactorizando mi app Express. Lee server.js y routes/*.js, identifica los endpoints, y sugiere cómo organizarlos en controladores separados.
+
+Solviora › Voy a leer los archivos que mencionaste...
+[lee server.js y todos los archivos en routes/]
+
+He encontrado 23 endpoints en server.js y routes/. Te sugiero esta estructura:
+
+├── controllers/
+│   ├── auth.controller.js
+│   ├── users.controller.js
+│   └── products.controller.js
+├── routes/
+│   ├── auth.routes.js
+│   ├── users.routes.js
+│   └── products.routes.js
+└── middleware/
+    ├── auth.middleware.js
+    └── validation.middleware.js
+
+¿Quieres que genere los archivos?
+```
+
+## Tutoriales paso a paso
+
+Para más guías detalladas, consulta:
+
+- [Inicio rápido](./quickstart) — configuración en 2 minutos
+- [Conceptos básicos del CLI](./cli-basics) — domina el prompt interactivo
+- [Configuración](./configuration) — personaliza tu experiencia

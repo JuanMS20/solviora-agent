@@ -1,0 +1,176 @@
+---
+slug: /troubleshooting
+title: Solución de problemas
+description: Soluciones a problemas comunes de Solviora Agent.
+---
+
+# Solución de problemas
+
+## Instalación
+
+### `command not found: solviora`
+
+El directorio `bin` de Python no está en tu `PATH`.
+
+**Solución:**
+
+```bash
+# Verifica dónde se instaló
+pip show solviora-agent
+
+# Agrega el directorio bin a tu PATH
+# Linux/macOS
+export PATH="$HOME/.local/bin:$PATH"
+
+# O reinstala con --user
+pip install --user solviora-agent
+```
+
+### Versión de Python incompatible
+
+Solviora requiere Python 3.11+.
+
+**Solución:**
+
+```bash
+python --version
+# Si es < 3.11, instala una versión más reciente
+
+# Con pyenv
+pyenv install 3.12
+pyenv global 3.12
+
+# O con conda
+conda install python=3.12
+```
+
+### Error de dependencia al instalar
+
+**Solución:**
+
+```bash
+pip install --upgrade pip
+pip install solviora-agent --no-cache-dir
+```
+
+## Claves API
+
+### `AuthenticationError` o `401 Unauthorized`
+
+Tu clave API no es válida o no está configurada.
+
+**Solución:**
+
+1. Verifica que la clave esté en el archivo correcto:
+   ```bash
+   cat ~/.solviora/.env
+   ```
+
+2. O como variable de entorno:
+   ```bash
+   echo $OPENAI_API_KEY
+   ```
+
+3. Regenera la clave desde el panel de tu proveedor si es necesario.
+
+### `RateLimitError` o `429 Too Many Requests`
+
+Has excedido el límite de peticiones de tu plan de API.
+
+**Solución:**
+
+- Espera un momento y reintenta.
+- Configura un pool de credenciales con múltiples claves.
+- Reduce `max_iterations` en tu configuración.
+
+## Rendimiento
+
+### El agente es lento
+
+**Posibles causas y soluciones:**
+
+| Causa | Solución |
+|-------|----------|
+| Modelo grande (GPT-4) | Cambia a un modelo más rápido: `--model gpt-4o-mini` |
+| Muchas herramientas habilitadas | Deshabilita toolsets que no uses en `config.yaml` |
+| Contexto de conversación largo | Usa `/compact` para comprimir el contexto |
+| Latencia de red | Considera un proveedor más cercano o usa un modelo local |
+
+### Uso alto de memoria
+
+El historial de conversación crece con cada turno.
+
+**Solución:**
+
+```bash
+# Comprimir contexto
+/compact
+
+# Iniciar una nueva sesión
+/new
+```
+
+## Herramientas
+
+### Las herramientas no aparecen
+
+**Solución:**
+
+1. Verifica los toolsets habilitados:
+   ```bash
+   solviora doctor
+   ```
+
+2. Habilita el toolset en `config.yaml`:
+   ```yaml
+   enabled_toolsets:
+     - core
+     - web
+   ```
+
+### `execute_code` falla
+
+**Solución:**
+
+- Verifica que el lenguaje esté soportado (`python` o `javascript`).
+- Asegúrate de que el código sea válido.
+- Revisa el timeout — puede ser demasiado corto.
+
+## Gateway
+
+### El bot no responde
+
+**Solución:**
+
+1. Verifica que el token esté configurado:
+   ```bash
+   solviora doctor
+   ```
+
+2. Revisa los logs del gateway:
+   ```bash
+   solviora logs --follow --level ERROR
+   ```
+
+3. Verifica la conexión a la plataforma.
+
+### Mensajes duplicados
+
+Esto puede pasar si hay múltiples instancias del gateway usando el mismo token.
+
+**Solución:** Asegúrate de que solo una instancia del gateway esté corriendo con ese token.
+
+## Diagnóstico automático
+
+Ejecuta el doctor para un diagnóstico completo:
+
+```bash
+solviora doctor
+```
+
+Verifica: Python, dependencias, claves API, configuración y conectividad con los proveedores.
+
+## ¿Aún tienes problemas?
+
+- [FAQ](./faq) — preguntas frecuentes
+- [GitHub Issues](https://github.com/solviora/solviora-agent/issues) — reporta un bug
