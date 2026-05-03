@@ -77,6 +77,22 @@ model_tools.py  (imports tools/registry + triggers tool discovery)
 run_agent.py, cli.py, batch_runner.py, environments/
 ```
 
+## Import Policy
+
+New code MUST import from the ``solviora_*`` namespace:
+
+  ✅ ``from solviora_cli import ...``  — canonical CLI package
+  ✅ ``from solviora_state import ...`` — session database
+  ✅ ``from solviora_logging import ...`` — logging setup
+  ✅ ``from solviora_time import ...`` — clock helper
+  ✅ ``from solviora_constants import ...`` — shared constants
+
+The legacy ``hermes_*`` names are backward-compat shims (Phase 3A + 3B).
+They still work for existing code but MUST NOT be used in new imports.
+Shims will be removed in Phase 3C.
+
+Run ``tests/test_solviora_cli_compat.py`` to verify both namespaces.
+
 ---
 
 ## AIAgent Class (run_agent.py)
