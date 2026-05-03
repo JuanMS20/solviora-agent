@@ -592,6 +592,7 @@ def load_cli_config() -> Dict[str, Any]:
     if isinstance(security_config, dict):
         redact = security_config.get("redact_secrets")
         if redact is not None:
+            os.environ["SOLVIORA_REDACT_SECRETS"] = str(redact).lower()
             os.environ["HERMES_REDACT_SECRETS"] = str(redact).lower()
 
     return defaults
@@ -7334,14 +7335,16 @@ class SolvioraCLI:
         import os
         from solviora_cli.colors import Colors as _Colors
 
-        current = is_truthy_value(os.environ.get("HERMES_YOLO_MODE"))
+        current = is_truthy_value(os.environ.get("SOLVIORA_YOLO_MODE")) or is_truthy_value(os.environ.get("HERMES_YOLO_MODE"))
         if current:
+            os.environ.pop("SOLVIORA_YOLO_MODE", None)
             os.environ.pop("HERMES_YOLO_MODE", None)
             _cprint(
                 f"  ⚠ YOLO mode {_Colors.BOLD}{_Colors.RED}OFF{_Colors.RESET}"
                 " — dangerous commands will require approval."
             )
         else:
+            os.environ["SOLVIORA_YOLO_MODE"] = "1"
             os.environ["HERMES_YOLO_MODE"] = "1"
             _cprint(
                 f"  ⚡ YOLO mode {_Colors.BOLD}{_Colors.GREEN}ON{_Colors.RESET}"
@@ -11832,6 +11835,7 @@ def main(
 
     # Signal to terminal_tool that we're in interactive mode
     # This enables interactive sudo password prompts with timeout
+    os.environ["SOLVIORA_INTERACTIVE"] = "1"
     os.environ["HERMES_INTERACTIVE"] = "1"
     
     # Handle gateway mode (messaging + cron)
