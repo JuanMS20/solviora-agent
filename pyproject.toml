@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hermes-agent"
-version = "0.12.0"
-description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
+name = "solviora-agent"
+version = "0.1.0"
+description = "Solviora Agent — your adaptive AI partner for autonomous task execution"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "Nous Research" }]
+authors = [{ name = "Solviora" }]
 license = { text = "MIT" }
 dependencies = [
   # Core — pinned to known-good ranges to limit supply chain attack surface
@@ -18,10 +18,8 @@ dependencies = [
   "fire>=0.7.1,<1",
   "httpx[socks]>=0.28.1,<1",
   "rich>=14.3.3,<15",
-  "tenacity>=9.1.4,<10",
   "pyyaml>=6.0.2,<7",
   "requests>=2.33.0,<3",  # CVE-2026-25645
-  "jinja2>=3.1.5,<4",
   "pydantic>=2.12.5,<3",
   # Interactive CLI (prompt_toolkit is used directly by cli.py)
   "prompt_toolkit>=3.0.52,<4",
@@ -72,12 +70,12 @@ termux = [
   # avoiding extras that currently depend on non-Android wheels (notably
   # faster-whisper -> ctranslate2 via the voice extra).
   "python-telegram-bot[webhooks]>=22.6,<23",
-  "hermes-agent[cron]",
-  "hermes-agent[cli]",
-  "hermes-agent[pty]",
-  "hermes-agent[mcp]",
-  "hermes-agent[honcho]",
-  "hermes-agent[acp]",
+  "solviora-agent[cron]",
+  "solviora-agent[cli]",
+  "solviora-agent[pty]",
+  "solviora-agent[mcp]",
+  "solviora-agent[honcho]",
+  "solviora-agent[acp]",
 ]
 dingtalk = ["dingtalk-stream>=0.20,<1", "alibabacloud-dingtalk>=2.0.0", "qrcode>=7.0,<8"]
 feishu = ["lark-oapi>=1.5.3,<2", "qrcode>=7.0,<8"]
@@ -101,47 +99,50 @@ rl = [
 ]
 yc-bench = ["yc-bench @ git+https://github.com/collinear-ai/yc-bench.git@bfb0c88062450f46341bd9a5298903fc2e952a5c ; python_version >= '3.12'"]
 all = [
-  "hermes-agent[modal]",
-  "hermes-agent[daytona]",
-  "hermes-agent[vercel]",
-  "hermes-agent[messaging]",
+  "solviora-agent[modal]",
+  "solviora-agent[daytona]",
+  "solviora-agent[vercel]",
+  "solviora-agent[messaging]",
   # matrix: python-olm (required by matrix-nio[e2e]) is upstream-broken on
   # modern macOS (archived libolm, C++ errors with Clang 21+).  On Linux the
   # [matrix] extra's own marker pulls in the [e2e] variant automatically.
-  "hermes-agent[matrix]; sys_platform == 'linux'",
-  "hermes-agent[cron]",
-  "hermes-agent[cli]",
-  "hermes-agent[dev]",
-  "hermes-agent[tts-premium]",
-  "hermes-agent[slack]",
-  "hermes-agent[pty]",
-  "hermes-agent[honcho]",
-  "hermes-agent[mcp]",
-  "hermes-agent[homeassistant]",
-  "hermes-agent[sms]",
-  "hermes-agent[acp]",
-  "hermes-agent[voice]",
-  "hermes-agent[dingtalk]",
-  "hermes-agent[feishu]",
-  "hermes-agent[google]",
-  "hermes-agent[mistral]",
-  "hermes-agent[bedrock]",
-  "hermes-agent[web]",
+  "solviora-agent[matrix]; sys_platform == 'linux'",
+  "solviora-agent[cron]",
+  "solviora-agent[cli]",
+  "solviora-agent[dev]",
+  "solviora-agent[tts-premium]",
+  "solviora-agent[slack]",
+  "solviora-agent[pty]",
+  "solviora-agent[honcho]",
+  "solviora-agent[mcp]",
+  "solviora-agent[homeassistant]",
+  "solviora-agent[sms]",
+  "solviora-agent[acp]",
+  "solviora-agent[voice]",
+  "solviora-agent[dingtalk]",
+  "solviora-agent[feishu]",
+  "solviora-agent[google]",
+  "solviora-agent[mistral]",
+  "solviora-agent[bedrock]",
+  "solviora-agent[web]",
 ]
 
 [project.scripts]
+solviora = "hermes_cli.main:main"
+solviora-agent = "run_agent:main"
+solviora-acp = "acp_adapter.entry:main"
 hermes = "hermes_cli.main:main"
 hermes-agent = "run_agent:main"
 hermes-acp = "acp_adapter.entry:main"
 
 [tool.setuptools]
-py-modules = ["run_agent", "model_tools", "toolsets", "batch_runner", "trajectory_compressor", "toolset_distributions", "cli", "hermes_constants", "hermes_state", "hermes_time", "hermes_logging", "rl_cli", "utils"]
+py-modules = ["run_agent", "model_tools", "toolsets", "batch_runner", "trajectory_compressor", "toolset_distributions", "cli", "solviora_constants", "solviora_logging", "solviora_state", "solviora_time", "hermes_constants", "hermes_state", "hermes_time", "hermes_logging", "rl_cli", "utils"]
 
 [tool.setuptools.package-data]
 hermes_cli = ["web_dist/**/*"]
 
 [tool.setuptools.packages.find]
-include = ["agent", "agent.*", "tools", "tools.*", "hermes_cli", "gateway", "gateway.*", "tui_gateway", "tui_gateway.*", "cron", "acp_adapter", "plugins", "plugins.*"]
+include = ["agent", "agent.*", "tools", "tools.*", "hermes_cli", "solviora_cli", "solviora_cli.*", "gateway", "gateway.*", "tui_gateway", "tui_gateway.*", "cron", "acp_adapter", "plugins", "plugins.*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
